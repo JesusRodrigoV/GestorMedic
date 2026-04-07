@@ -34,7 +34,10 @@ def create_audit_log(
         db.close()
 
 
-def get_audit_logs_query(db: Session) -> Query:
-    return db.query(AuditLog).options(
-        joinedload(AuditLog.user)
-    ).order_by(AuditLog.timestamp.desc())
+def get_audit_logs_query(db: Session, clinic_id: int = None, event_type: str = None):
+    query = db.query(AuditLog)
+    if clinic_id:
+        query = query.filter(AuditLog.clinic_id == clinic_id)
+    if event_type:
+        query = query.filter(AuditLog.event == event_type)
+    return query.order_by(AuditLog.timestamp.desc())

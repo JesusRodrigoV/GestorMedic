@@ -1,15 +1,16 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+
 from app.core.config import settings
 from app.db.session import get_db
 from app.crud import user as crud_user
 from app.models.user import User
 from app.core.enums import UserRole
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
@@ -32,87 +33,64 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-def get_current_active_user(current_user: User = Depends(get_current_user)):
+def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
     if not getattr(current_user, "is_active", True):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Usuario inactivo")
-    return current_user
-
-def require_admin_user(current_user: User = Depends(get_current_active_user)):
-    """"
-    role_name = str(getattr(current_user.role, "value", getattr(current_user, "role", ""))).lower()
-    if role_name == "administrador" or getattr(current_user, "role_id", None) == 1:
-        return current_user
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Permisos insuficientes (admin requerido)")
-    """
-    if not current_user.is_admin:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permisos insuficientes (admin requerido)"
-        )
-    return current_user
-#la logica de lo que es un admin ahora esta en el modelo
-
-ANIMAL_MANAGEMENT_ROLES = {"ADMINISTRADOR", "VETERINARIO", "CUIDADOR"}
-TASKS_MANAGEMENT_ROLES = {"ADMINISTRADOR", "CUIDADOR"}
-
-def require_animal_management_permission(
-    current_user: User = Depends(get_current_active_user),
-):
-    user_role = str(
-        current_user.role.name
-        if hasattr(current_user.role, "name")
-        else current_user.role
-    ).upper()
-
-    if user_role not in ANIMAL_MANAGEMENT_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permisos insuficientes para gestionar animales",
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Usuario inactivo"
         )
     return current_user
 
-def require_task_management_permission(current_user: User = Depends(get_current_active_user)):
-    user_role = str(current_user.role.name if hasattr(current_user.role, 'name') else current_user.role).upper()
+
+def _get_user_role_name(user: User) -> str:
+    return str(user.role.name if hasattr(user.role, 'name') else user.role).upper()
+
+def require_superadmin(current_user: User = Depends(get_current_active_user)) -> User:
+    user_role = _get_user_role_name(current_user)
+    if user_role != "SUPERADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permisos insuficientes (SuperAdmin requerido)"
+        )
+    return current_user
+
+def require_clinic_admin(current_user: User = Depends(get_current_active_user)) -> User:
+    user_role = _get_user_role_name(current_user)
+    if user_role not in ["SUPERADMIN", "ADMIN_CLINICA"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permisos insuficientes (Administrador de Clínica requerido)"
+        )
+    return current_user
+
+def require_doctor(current_user: User = Depends(get_current_active_user)) -> User:
+    user_role = _get_user_role_name(current_user)
+    if user_role not in ["SUPERADMIN", "ADMIN_CLINICA", "MEDICO"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permisos insuficientes (Médico requerido)"
+        )
+    return current_user
+
+def require_staff(current_user: User = Depends(get_current_active_user)) -> User:
+    user_role = _get_user_role_name(current_user)
+    if user_role not in ["SUPERADMIN", "ADMIN_CLINICA", "MEDICO", "PERSONAL"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permisos insuficientes (Personal requerido)"
+        )
+    return current_user
+
+
+def verify_tenant_access(clinic_id: int, current_user: User = Depends(get_current_active_user)):
+    user_role = _get_user_role_name(current_user)
     
-    if current_user.is_admin:
-        return current_user
+    if user_role == "SUPERADMIN":
+        return True
         
-    if user_role not in TASKS_MANAGEMENT_ROLES:
+    if current_user.clinic_id != clinic_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permisos insuficientes para realizar esta accion"
+            detail="Acceso denegado. No perteneces a esta clínica."
         )
-    return current_user
-
-#jesus
-INVENTORY_READ_ROLES = {"ADMINISTRADOR", "VETERINARIO", "CUIDADOR"}
-
-
-def require_inventory_read_permission(
-    current_user: User = Depends(get_current_active_user),
-):
-    if getattr(current_user, "is_admin", False):
-        return current_user
-
-    role_obj = current_user.role
-    role_name = str(getattr(role_obj, "name", role_obj))
-
-    user_role = role_name.upper()
-
-    if user_role not in INVENTORY_READ_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permisos insuficientes para ver el inventario",
-        )
-
-    return current_user
-
-
-def require_veterinario(current_user: User = Depends(get_current_active_user)):
-    is_vet = current_user.role.name.upper() == "VETERINARIO" or current_user.role_id == 4
-    if not is_vet:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Se requieren permisos de Veterinario para realizar esta accion"
-        )
-    return current_user
+    return True

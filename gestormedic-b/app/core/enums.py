@@ -17,3 +17,7 @@ class UserStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     INACTIVE = "inactive"
+
+class AuditEvent(str, Enum):
+    LOGIN = "LOGIN"
+    LOGOUT = "LOGOUT"

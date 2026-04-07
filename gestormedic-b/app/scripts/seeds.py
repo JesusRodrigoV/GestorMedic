@@ -1,24 +1,26 @@
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
-from app.models.tarea import TipoTarea
-from app.models.inventario import TipoSalida
 from app.models.role import Role
 
 def init_db():
     db = SessionLocal()
     try:
-        print("--- Iniciando Semillas (Seeds) ---")
-
-        print("1. Verificando Roles...")
+        print("--- Iniciando Semillas (Seeds) para SaaS Médico ---")
+        print("1. Verificando Roles Base...")
+        
         roles_basicos = [
-            {"id": 1, "name": "administrador"},
-            {"id": 2, "name": "visitante"},
-            {"id": 3, "name": "cuidador"},
-            {"id": 4, "name": "veterinario"}
+            {"id": 1, "name": "SUPERADMIN"},
+            {"id": 2, "name": "ADMIN_CLINICA"},
+            {"id": 3, "name": "MEDICO"},
+            {"id": 4, "name": "PERSONAL"},
+            {"id": 5, "name": "PACIENTE"}
         ]
 
         for rol in roles_basicos:
             rol_existente = db.query(Role).filter_by(id=rol["id"]).first()
+            if not rol_existente:
+                rol_existente = db.query(Role).filter_by(name=rol["name"]).first()
+
             if not rol_existente:
                 print(f"   + Creando Rol: {rol['name']}")
                 nuevo_rol = Role(id=rol["id"], name=rol["name"])

@@ -13,16 +13,16 @@ logger = logging.getLogger(__name__)
 def create_default_admin():
     db: Session = SessionLocal()
     try:
-        admin_role_name = UserRole.ADMINISTRADOR.value
+        admin_role_name = "SUPERADMIN"
         db_admin_role = db.query(Role).filter(Role.name == admin_role_name).first()
 
         if not db_admin_role:
-            logger.info(f"El rol '{admin_role_name}' no existe. vamos a crearlo")
+            logger.info(f"El rol '{admin_role_name}' no existe. Vamos a crearlo")
             db_admin_role = Role(name=admin_role_name) 
             db.add(db_admin_role)
             db.commit()
             db.refresh(db_admin_role)
-            logger.info("Rol 'ADMINISTRADOR' creado exitosamente")
+            logger.info("Rol 'SUPERADMIN' creado exitosamente")
 
         existing_admin = get_user_by_email(db, email=settings.DEFAULT_ADMIN_EMAIL)
 
@@ -35,7 +35,7 @@ def create_default_admin():
 
         admin_user = User(
             email=settings.DEFAULT_ADMIN_EMAIL,
-            username="admin",
+            username="superadmin",
             hashed_password=hashed_password,
             is_active=True,
             role_id=db_admin_role.id 
@@ -43,7 +43,7 @@ def create_default_admin():
 
         db.add(admin_user)
         db.commit()
-        logger.info(f"Usuario administrador ({settings.DEFAULT_ADMIN_EMAIL}) creado exitosamente")
+        logger.info(f"Usuario SuperAdmin ({settings.DEFAULT_ADMIN_EMAIL}) creado exitosamente")
 
     except Exception as e:
         logger.error(f"Error al crear el usuario administrador por defecto: {e}", exc_info=True)
