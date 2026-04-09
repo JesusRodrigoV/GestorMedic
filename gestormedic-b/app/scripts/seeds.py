@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.models.role import Role
+from app.core.enums import UserRole
 
 def init_db():
     db = SessionLocal()
@@ -9,17 +10,17 @@ def init_db():
         print("1. Verificando Roles Base...")
         
         roles_basicos = [
-            {"id": 1, "name": "SUPERADMIN"},
-            {"id": 2, "name": "ADMIN_CLINICA"},
-            {"id": 3, "name": "MEDICO"},
-            {"id": 4, "name": "PERSONAL"},
-            {"id": 5, "name": "PACIENTE"}
+            {"id": 1, "name": UserRole.SUPERADMIN.value},
+            {"id": 2, "name": UserRole.ADMIN_CLINICA.value},
+            {"id": 3, "name": UserRole.MEDICO.value},
+            {"id": 4, "name": UserRole.PERSONAL.value},
+            {"id": 5, "name": UserRole.PACIENTE.value}
         ]
 
         for rol in roles_basicos:
-            rol_existente = db.query(Role).filter_by(id=rol["id"]).first()
-            if not rol_existente:
-                rol_existente = db.query(Role).filter_by(name=rol["name"]).first()
+            rol_existente = db.query(Role).filter(
+                (Role.id == rol["id"]) | (Role.name == rol["name"])
+            ).first()
 
             if not rol_existente:
                 print(f"   + Creando Rol: {rol['name']}")

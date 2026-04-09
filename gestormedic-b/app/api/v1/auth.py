@@ -11,6 +11,7 @@ from app.schemas.auth import (
     LoginRequest, TokenResponse,
     LoginStep2Response, TOTPLoginRequest,
     ForgotPasswordRequest, ResetPasswordRequest
+
 )
 from app.crud import user as crud_user
 from app.crud import token as crud_token
@@ -90,12 +91,12 @@ async def login(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Credenciales inválidas"
         )
-    
-    if policia.is_account_locked(user):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cuenta bloqueada temporalmente, intente más tarde"
-        )
+   # 
+    #if policia.is_account_locked(user):
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="Cuenta bloqueada temporalmente, intente más tarde"
+    #    )
 
     if not verify_password(payload.password, user.hashed_password):
         background_tasks.add_task(

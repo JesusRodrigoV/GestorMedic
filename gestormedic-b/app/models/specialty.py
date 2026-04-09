@@ -11,4 +11,3 @@ class Specialty(Base):
 
     doctors = relationship("DoctorProfile", secondary="doctor_specialties", back_populates="specialties")
     clinics = relationship("Clinic", secondary="clinic_specialties", back_populates="specialties")
-    specialties = relationship("Specialty", secondary="clinic_specialties", back_populates="clinics")
