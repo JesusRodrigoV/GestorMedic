@@ -1,0 +1,100 @@
+<main class="gm-search-layout">
+  <header class="search-header">
+    <span class="search-tag">Red Federal de Salud</span>
+    <h1 class="title">Directorio de Especialistas</h1>
+    <p class="subtitle">
+      Perfiles médicos acreditados en
+      <strong class="highlight">{{ specialty() || 'Especialidades Globales' }}</strong> —
+      Jurisdicción: <strong class="highlight">{{ location() || 'Toda la Red' }}</strong>
+    </p>
+  </header>
+
+  <div class="search-grid">
+    <aside class="search-sidebar gm-glass-panel">
+      <div class="filter-group">
+        <h3 class="filter-title">Rango Arancelario (Bs.)</h3>
+        <span class="filter-value">{{ maxPrice() | currency: 'Bs. ' : 'symbol' : '1.0-0' }}</span>
+        <p-slider [(ngModel)]="maxPrice" [min]="50" [max]="1000" [step]="50" class="gm-slider" />
+      </div>
+
+      <div class="filter-group">
+        <h3 class="filter-title">Protocolo de Atención</h3>
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <p-checkbox
+              name="modality"
+              value="presencial"
+              [(ngModel)]="selectedModalities"
+              inputId="mod-presencial"
+            />
+            <label for="mod-presencial">Asistencia en Clínica</label>
+          </div>
+          <div class="checkbox-item">
+            <p-checkbox
+              name="modality"
+              value="online"
+              [(ngModel)]="selectedModalities"
+              inputId="mod-online"
+            />
+            <label for="mod-online">Consulta Virtual (Sincronizada)</label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="search-results">
+      @for (doc of filteredDoctors(); track doc.id) {
+        <article class="doctor-card gm-glass-panel">
+          <div class="doc-profile">
+            <div class="doc-avatar">
+              <img
+                ngSrc='profile/1.webp'
+                alt="Retrato oficial de {{ doc.name }}"
+                width="80"
+                height="80"
+                priority
+              />
+            </div>
+            <div class="doc-info">
+              <h2 class="doc-name">{{ doc.name }}</h2>
+              <span class="doc-specialty">{{ doc.specialty }}</span>
+              <div class="doc-meta">
+                <span class="meta-item"><i class="bx bx-map-pin"></i> {{ doc.location }}</span>
+                <span class="meta-item">
+                  <i class="bx bx-certification"></i> {{ doc.experience }} años de trayectoria
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-actions">
+            <div class="doc-rating">
+              <p-rating [(ngModel)]="doc.rating" [readonly]="true" />
+              <span class="review-count">{{ doc.reviews }} revisiones clínicas</span>
+            </div>
+            <div class="doc-price">
+              <span class="price-label">Honorarios Base</span>
+              <span class="price-amount">{{
+                doc.price | currency: 'Bs. ' : 'symbol' : '1.0-0'
+              }}</span>
+            </div>
+            <gm-rounded-button
+              label="Agendar Intervención"
+              severity="primary"
+              (onClick)="onBookAppointment(doc.id)"
+              class="book-btn"
+            />
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state gm-glass-panel">
+          <i class="bx bx-search-alt"></i>
+          <h3>Sin coincidencias en la base de datos</h3>
+          <p>
+            Ajuste los criterios del motor de búsqueda para localizar otros perfiles disponibles.
+          </p>
+        </div>
+      }
+    </section>
+  </div>
+</main>

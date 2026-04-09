@@ -1,0 +1,18 @@
+<section class="settings-section">
+  <header class="section-header">
+    <h3>Entorno Atmosférico</h3>
+    <p>Ajuste la iluminación de la interfaz para reducir la fatiga visual.</p>
+  </header>
+
+  <div class="settings-list">
+    <div class="settings-item">
+      <div class="item-copy">
+        <span class="item-title">Modo Oscuro (Noche)</span>
+        <span class="item-desc"
+          >Activa una paleta de alta protección para entornos de baja luz.</span
+        >
+      </div>
+      <p-toggleswitch [ngModel]="isDarkActive()" (onChange)="onToggleTheme()" />
+    </div>
+  </div>
+</section>

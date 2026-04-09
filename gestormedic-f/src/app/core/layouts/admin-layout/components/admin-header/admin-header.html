@@ -1,0 +1,56 @@
+<header class="admin-navbar" role="banner">
+  <div class="context-zone">
+    <button
+      class="sidebar-toggle"
+      (click)="onToggleSidebar.emit()"
+      pTooltip="Alternar menú"
+      tooltipPosition="bottom"
+      showDelay="1000"
+    >
+      <i class="bx bx-menu"></i>
+    </button>
+
+    <div class="v-sep"></div>
+
+    <div class="tenant-display">
+      <span class="tenant-label">Panel de Control</span>
+      <h1 class="tenant-name">{{ tenantName() }}</h1>
+    </div>
+  </div>
+
+  <div class="search-zone">
+    <div class="omni-search">
+      <i class="bx bx-search search-icon"></i>
+      <input
+        type="search"
+        placeholder="Buscar paciente, cita o folio médico... (⌘K)"
+        aria-label="Buscador de entidades"
+      />
+    </div>
+  </div>
+
+  <div class="actions-zone">
+    <gm-rounded-button
+      label="Nueva Cita"
+      icon="bx bx-plus"
+      severity="primary"
+      size="small"
+      (onClick)="onNewAction()"
+    />
+
+    <div class="v-sep"></div> 
+
+    <gm-notification-button />
+
+    <div class="user-capsule" pTooltip="Opciones de cuenta" tooltipPosition="bottom">
+      <div class="user-meta">
+        <span class="user-name">{{ userDisplayName() }}</span>
+        <span class="user-role">{{ userRoleName() }}</span>
+      </div>
+      <p-avatar [image]="selectedPhoto()" shape="circle" />
+      <button class="logout-btn" (click)="onLogout()" title="Cerrar sesión">
+        <i class="bx bx-log-out"></i>
+      </button>
+    </div>
+  </div>
+</header>

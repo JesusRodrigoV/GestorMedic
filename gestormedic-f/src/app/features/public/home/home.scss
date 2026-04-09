@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.gm-landing {
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f8fafc 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease;
+
+  :root.dark-mode & {
+    background: #09090b;
+  }
+}

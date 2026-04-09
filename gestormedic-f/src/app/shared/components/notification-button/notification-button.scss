@@ -1,0 +1,94 @@
+.notif-trigger {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  &:hover {
+    color: var(--p-energy-500);
+    background: var(--search-bg);
+  }
+}
+
+::ng-deep .gm-notif-popover {
+  background: var(--nav-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid var(--nav-border) !important;
+  padding: 0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.gm-notif-panel {
+  width: 360px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .panel-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--nav-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h3 {
+      font-size: 0.9rem;
+      font-weight: 850;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .mark-all-btn {
+      background: transparent;
+      border: none;
+      font-size: 0.7rem;
+      color: var(--p-energy-500);
+      font-weight: 700;
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .panel-body {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .panel-footer {
+    padding: 0.75rem;
+    border-top: 1px solid var(--nav-border);
+    text-align: center;
+    .view-all-btn {
+      width: 100%;
+      padding: 0.6rem;
+      background: transparent;
+      border: none;
+      color: var(--p-slate-400);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      &:hover {
+        color: var(--p-yale-600);
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--p-slate-300);
+    i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 0.85rem;
+    }
+  }
+}

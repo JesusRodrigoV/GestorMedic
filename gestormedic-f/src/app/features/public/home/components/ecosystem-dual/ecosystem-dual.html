@@ -1,0 +1,68 @@
+<section class="gm-dual-section" aria-label="Ecosistema Médico-Paciente">
+  <div class="gm-dual-container">
+    <article class="dual-panel dual-panel--doctor">
+      <div class="panel-glow" aria-hidden="true"></div>
+      <header class="panel-header">
+        <span class="panel-tag">Profesionales de Salud</span>
+        <h2 class="panel-title">Soberanía <br /><strong>Profesional</strong></h2>
+      </header>
+
+      <div class="panel-list">
+        @for (item of doctorFeatures(); track item.title) {
+          <div class="dual-feature-item">
+            <div class="feature-icon">
+              <i class="bx" [class]="item.icon"></i>
+            </div>
+            <div class="feature-text">
+              <h4>{{ item.title }}</h4>
+              <p>{{ item.desc }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="panel-footer">
+        <gm-rounded-button
+          label="Digitalizar mi Consultorio"
+          severity="primary"
+          size="large"
+        ></gm-rounded-button>
+      </div>
+    </article>
+
+    <div class="dual-separator" aria-hidden="true">
+      <i class="bx bx-sync bx-spin-hover"></i>
+    </div>
+
+    <article class="dual-panel dual-panel--patient">
+      <header class="panel-header">
+        <span class="panel-tag">Atención al Paciente</span>
+        <h2 class="panel-title">Empoderamiento <br /><strong>Ciudadano</strong></h2>
+      </header>
+
+      <div class="panel-list">
+        @for (item of patientFeatures(); track item.title) {
+          <div class="dual-feature-item">
+            <div class="feature-icon feature-icon--energy">
+              <i class="bx" [class]="item.icon"></i>
+            </div>
+            <div class="feature-text">
+              <h4>{{ item.title }}</h4>
+              <p>{{ item.desc }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="panel-footer">
+        <gm-rounded-button
+          label="Buscar un Especialista"
+          [outlined]="true"
+          severity="secondary"
+          size="large"
+          routerLink="/search"
+        ></gm-rounded-button>
+      </div>
+    </article>
+  </div>
+</section>

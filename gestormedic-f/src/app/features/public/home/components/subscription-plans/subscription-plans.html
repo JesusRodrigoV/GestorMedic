@@ -1,0 +1,65 @@
+<section class="gm-plans-section" aria-labelledby="plans-title">
+  <header class="gm-plans-header">
+    <span class="gm-plans-tag">Inversión en Eficiencia</span>
+    <h2 id="plans-title" class="gm-plans-main-title">
+      Escalabilidad e <strong>Integridad Financiera</strong>
+    </h2>
+    <p class="gm-plans-subtitle">Seleccione el nivel de automatización que requiere su práctica clínica.</p>
+  </header>
+
+  <div class="gm-plans-grid">
+    <article class="plan-card plan-card--basic">
+      <div class="plan-card__header">
+        <h3 class="plan-name">Plan Esencial</h3>
+        <div class="plan-price">
+          <span class="currency">Bs</span>
+          <span class="amount">0</span>
+          <span class="period">/ perpetuo</span>
+        </div>
+        <p class="plan-desc">Soberanía digital básica para profesionales independientes en etapa de transición.</p>
+      </div>
+
+      <ul class="plan-features">
+        @for (feature of basicFeatures(); track feature) {
+          <li><i class="bx bx-check-circle"></i> {{ feature }}</li>
+        }
+      </ul>
+
+      <div class="plan-footer">
+        <gm-rounded-button
+          label="Iniciar Digitalización"
+          [outlined]="true"
+          severity="secondary"
+          class="w-full"
+        />
+      </div>
+    </article>
+
+    <article class="plan-card plan-card--pro">
+      <div class="pro-badge"><i class="bx bxs-zap"></i> RECOMENDADO PARA CLÍNICAS</div>
+      <div class="plan-card__header">
+        <h3 class="plan-name">Plan Profesional</h3>
+        <div class="plan-price">
+          <span class="currency">Bs</span>
+          <span class="amount">199</span>
+          <span class="period">/ mensual</span>
+        </div>
+        <p class="plan-desc">Arquitectura robusta y automatización avanzada para centros de alta demanda asistencial.</p>
+      </div>
+
+      <ul class="plan-features">
+        @for (feature of proFeatures(); track feature) {
+          <li><i class="bx bx-check-double"></i> {{ feature }}</li>
+        }
+      </ul>
+
+      <div class="plan-footer">
+        <gm-rounded-button 
+          label="Adquirir Licencia Pro" 
+          severity="primary" 
+          class="w-full" 
+        />
+      </div>
+    </article>
+  </div>
+</section>
