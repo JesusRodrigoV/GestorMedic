@@ -1,0 +1,32 @@
+<section class="gm-faq-section" aria-labelledby="faq-title">
+  <header class="gm-faq-header">
+    <span class="gm-faq-tag">Certidumbre Operativa</span>
+    <h2 id="faq-title" class="gm-faq-main-title">
+      Protocolos y <strong>Consultas Frecuentes</strong>
+    </h2>
+    <p class="gm-faq-subtitle">
+      Resolviendo las dimensiones técnicas y legales de su práctica digital.
+    </p>
+  </header>
+
+  <div class="gm-faq-container">
+    <p-accordion [multiple]="false" [transitionOptions]="'400ms cubic-bezier(0.16, 1, 0.3, 1)'">
+      @for (item of faqItems(); track item.id) {
+        <p-accordion-panel [value]="item.id" class="gm-faq-panel">
+          <p-accordion-header class="gm-faq-header-bar">
+            <div class="header-content">
+              <i class="bx bx-help-circle question-icon"></i>
+              <span class="question-text">{{ item.question }}</span>
+            </div>
+          </p-accordion-header>
+          <p-accordion-content>
+            <div class="answer-wrapper">
+              <div class="answer-indicator"></div>
+              <p class="answer-text">{{ item.answer }}</p>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
+    </p-accordion>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+<section class="gm-domains-section" aria-labelledby="domains-title">
+  <header class="gm-domains-header">
+    <span class="gm-domains-tag">Motor Funcional</span>
+    <h2 id="domains-title" class="gm-domains-main-title">
+      Especialidades de <strong>Alto Nivel</strong>
+    </h2>
+  </header>
+
+  <div class="gm-domains-grid">
+    @for (domain of domains(); track domain.id) {
+      <article class="domain-card">
+        <div class="domain-card__glow" aria-hidden="true"></div>
+
+        <div class="domain-card__icon-wrapper">
+          <i class="bx" [class]="domain.icon" aria-hidden="true"></i>
+        </div>
+
+        <div class="domain-card__body">
+          <span class="domain-card__microcopy">{{ domain.microcopy }}</span>
+          <h3 class="domain-card__title">{{ domain.title }}</h3>
+          <h4 class="domain-card__subtitle">{{ domain.subtitle }}</h4>
+          <div class="domain-card__divider"></div>
+          <p class="domain-card__desc">{{ domain.description }}</p>
+        </div>
+
+        <footer class="domain-card__footer">
+          <span class="domain-card__action">
+            Ver detalles técnicos <i class="bx bx-right-arrow-alt"></i>
+          </span>
+        </footer>
+      </article>
+    }
+  </div>
+</section>

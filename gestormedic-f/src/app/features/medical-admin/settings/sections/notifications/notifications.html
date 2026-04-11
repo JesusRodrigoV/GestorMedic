@@ -1,0 +1,24 @@
+<section class="settings-section">
+  <header class="section-header">
+    <h3>Canales de Comunicación</h3>
+    <p>Controle la interacción automática con sus pacientes.</p>
+  </header>
+
+  <div class="settings-list" [formGroup]="configForm">
+    <div class="settings-item">
+      <div class="item-copy">
+        <span class="item-title">Alertas por WhatsApp</span>
+        <span class="item-desc">Confirmación y recordatorios de citas en tiempo real.</span>
+      </div>
+      <p-toggleswitch formControlName="whatsappAlerts" (onChange)="onSave()" />
+    </div>
+
+    <div class="settings-item">
+      <div class="item-copy">
+        <span class="item-title">Reportes por Email</span>
+        <span class="item-desc">Envío automatizado de resultados clínicos y facturas.</span>
+      </div>
+      <p-toggleswitch formControlName="emailAlerts" (onChange)="onSave()" />
+    </div>
+  </div>
+</section>

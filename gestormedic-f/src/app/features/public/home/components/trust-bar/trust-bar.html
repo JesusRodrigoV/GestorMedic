@@ -1,0 +1,19 @@
+<section class="container" aria-label="Pilares de confianza institucional">
+  <div class="grid">
+    @for (item of pillars(); track item.label) {
+      <article class="item">
+        <div class="icon" aria-hidden="true">
+          <i class="bx" [class]="item.icon"></i>
+        </div>
+        
+        <div class="data">
+          <span class="value">{{ item.value }}</span>
+          <div class="copy">
+            <span class="label">{{ item.label }}</span>
+            <span class="sub">{{ item.subLabel }}</span>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

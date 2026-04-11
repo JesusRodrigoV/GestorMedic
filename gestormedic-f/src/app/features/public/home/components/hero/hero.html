@@ -1,0 +1,90 @@
+<section class="gm-hero">
+  <div class="gm-hero-ambient" aria-hidden="true"></div>
+
+  <div class="gm-hero-layout">
+    <div class="gm-hero-content">
+      <h1 class="gm-hero-title">Encuentra tu especialista y <span>pide cita</span></h1>
+      <h2 class="gm-hero-subtitle">
+        Más de 100,000 profesionales están listos para optimizar su consulta con GestorMedic.
+      </h2>
+
+      <div class="gm-search-container">
+        <div class="gm-search-tabs">
+          <button class="tab-btn active">
+            <i class="bx bxs-building-house"></i> Visita presencial
+          </button>
+        </div>
+
+        <div class="gm-search-bar">
+          <p-multiselect
+            [options]="specialties()"
+            [(ngModel)]="selectedSpecialties"
+            optionLabel="name"
+            placeholder="Especialidad, enfermedad o nombre"
+            display="chip"
+            [filter]="true"
+            [maxSelectedLabels]="3"
+            selectedItemsLabel="{0} especialidades elegidas"
+            [showClear]="true"
+            emptyFilterMessage="No hay coincidencias"
+            fluid
+            class="gm-search-multi"
+          >
+          </p-multiselect>
+          <gm-rounded-button label="Buscar" (click)="onSearch()" />
+        </div>
+      </div>
+
+      <div class="gm-hero-trust">
+        <span class="trust-label">Plataforma líder en HealthTech</span>
+        <div class="trust-icons">
+          <i class="bx bxs-shield-check"></i>
+          <i class="bx bxs-certification"></i>
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="gm-hero-visuals">
+      <div class="gm-bento-mock agenda">
+        <div class="mock-header">
+          <span class="mock-title">Agenda</span>
+          <i class="bx bx-calendar-check"></i>
+        </div>
+        <div class="mock-body">
+          <div class="mock-line w-70"></div>
+          <div class="mock-line w-100"></div>
+        </div>
+      </div>
+
+      <div class="gm-bento-mock history">
+        <div class="mock-header">
+          <span class="mock-title">Bio-Métricas</span>
+          <i class="bx bx-pulse"></i>
+        </div>
+        <div class="mock-body center">
+          <svg viewBox="0 0 100 30" class="pulse-line">
+            <polyline
+              points="0,15 20,15 25,5 30,25 35,15 100,15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <div class="gm-bento-mock billing">
+        <div class="mock-header">
+          <span class="mock-title">Flujo de Caja</span>
+          <i class="bx bx-trending-up"></i>
+        </div>
+        <div class="mock-body flex-end">
+          <div class="mock-bar h-40"></div>
+          <div class="mock-bar h-70"></div>
+          <div class="mock-bar h-100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
