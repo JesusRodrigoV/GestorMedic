@@ -1,0 +1,59 @@
+services:
+  gm-notifications-db:
+    image: postgres:15-alpine
+    container_name: gm-notifications-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: notifications_db
+    networks:
+      - gm-network
+
+  gm-notifications-redis:
+    image: redis:8.6-alpine
+    container_name: gm-notifications-redis
+    networks:
+      - gm-network
+
+  gm-notifications-api:
+    build:
+      context: ./gestormedic-notification
+      dockerfile: Dockerfile
+    container_name: gm-notifications-api
+    ports:
+      - "8001:8000"  
+    env_file:
+      - ./gestormedic-notification/.env_do
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - gm-notifications-db
+      - gm-notifications-redis
+    networks:
+      - gm-network
+
+  gm-notifications-worker:
+    build:
+      context: ./gestormedic-notification
+      dockerfile: Dockerfile
+    container_name: gm-notifications-worker
+    command: celery -A app.tasks worker --loglevel=info -Q high_priority,default,bulk
+    env_file:
+      - ./gestormedic-notification/.env_do
+    depends_on:
+      - gm-notifications-redis
+      - gm-notifications-db
+    networks:
+      - gm-network
+
+volumes:
+  gm-notifications-data:
+    driver: local
+
+networks:
+  gm-network:
+    driver: bridge

@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333">
+    <div
+      style="
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        padding: 20px;
+      "
+    >
+      <h2 style="color: #2c3e50">GestorMedic - {{ clinic_name }}</h2>
+      <p>Estimado/a <strong>{{ patient_name }}</strong>,</p>
+      <p>Le recordamos su próxima cita médica con los siguientes detalles:</p>
+      <table style="width: 100%; border-collapse: collapse">
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            <strong>Especialidad:</strong>
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            {{ specialty }}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            <strong>Médico:</strong>
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            {{ doctor_name }}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            <strong>Fecha y Hora:</strong>
+          </td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee">
+            {{ date }} a las {{ time }}
+          </td>
+        </tr>
+      </table>
+      <p>
+        Por favor, llegue 15 minutos antes. Si necesita reprogramar, llame al {{
+        clinic_phone }}.
+      </p>
+    </div>
+  </body>
+</html>

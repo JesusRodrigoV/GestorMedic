@@ -1,0 +1,6 @@
+{% extends "base_message.txt" %}
+{% block content %}
+Hola {{ patient_name }}, le recordamos su cita de {{ specialty }} para el día {{ date }} a las {{ time }}.
+Médico: {{ doctor_name }}
+Consultorio: {{ room }}
+{% endblock %}
