@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'gm-home',
@@ -38,12 +39,30 @@ export default class Home implements OnInit {
   ]);
 
   readonly features = signal([
-    'Directorio médico por ciudad, especialidad y seguro',
-    'Agenda en línea con disponibilidad en tiempo real',
-    'Videoconsulta con sala segura y comprobante de atención',
-    'Recetas digitales y seguimiento de tratamiento',
-    'Panel de paciente con historial y próximos pasos',
-    'Notificaciones para estudios, controles y renovaciones',
+    {
+      text: 'Directorio médico por ciudad, especialidad y seguro',
+      img: 'https://images.unsplash.com/photo-1588776814546-1d4f9f7f4c6b?w=800&q=60&auto=format&fit=crop'
+    },
+    {
+      text: 'Agenda en línea con disponibilidad en tiempo real',
+      img: 'https://images.unsplash.com/photo-1586281380396-4bb0d7f661b6?w=800&q=60&auto=format&fit=crop'
+    },
+    {
+      text: 'Videoconsulta con sala segura y comprobante de atención',
+      img: 'https://images.unsplash.com/photo-1587502536263-3f8e3b9a0b5a?w=800&q=60&auto=format&fit=crop'
+    },
+    {
+      text: 'Recetas digitales y seguimiento de tratamiento',
+      img: 'https://images.unsplash.com/photo-1580281657528-6b0a0b9b0f6a?w=800&q=60&auto=format&fit=crop'
+    },
+    {
+      text: 'Panel de paciente con historial y próximos pasos',
+      img: 'https://images.unsplash.com/photo-1550831107-1553da8c8464?w=800&q=60&auto=format&fit=crop'
+    },
+    {
+      text: 'Notificaciones para estudios, controles y renovaciones',
+      img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=60&auto=format&fit=crop'
+    },
   ]);
 
   readonly testimonials = signal([
@@ -51,16 +70,19 @@ export default class Home implements OnInit {
       name: 'Ana P., madre de paciente pediátrico',
       quote:
         'Antes tardaba días en coordinar una cita. Ahora en minutos encuentro pediatra y tengo todo el historial ordenado.',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
     },
     {
       name: 'Dr. Mauricio R., cardiología',
       quote:
         'La plataforma reduce ausencias y mejora el seguimiento. Tengo contexto del paciente antes de cada consulta.',
+      avatar: 'https://randomuser.me/api/portraits/men/56.jpg'
     },
     {
       name: 'Clínica aliada en Cochabamba',
       quote:
         'Integrar agenda, videollamada y documentación en un solo flujo nos ahorra tiempo administrativo cada semana.',
+      avatar: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&q=60&auto=format&fit=crop'
     },
   ]);
 
@@ -105,7 +127,10 @@ export default class Home implements OnInit {
   ]);
 
   ngOnInit(): void {
-    setTimeout(() => this.runHeroAnimation(), 0);
+    setTimeout(() => {
+      this.runHeroAnimation();
+      this.runScrollAnimations();
+    }, 0);
   }
 
   private runHeroAnimation(): void {
@@ -134,5 +159,52 @@ export default class Home implements OnInit {
       },
       '-=0.25',
     );
+  }
+
+  private runScrollAnimations(): void {
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Features cards
+      gsap.from('.feature-card', {
+        y: 40,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.feature-grid',
+          start: 'top 85%',
+        },
+      });
+
+      // Onboarding steps
+      gsap.from('.onboarding .steps-grid article', {
+        x: -30,
+        opacity: 0,
+        stagger: 0.14,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.onboarding',
+          start: 'top 85%',
+        },
+      });
+
+      // Testimonials
+      gsap.from('.testimonials-grid blockquote', {
+        y: 30,
+        opacity: 0,
+        stagger: 0.18,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.testimonials-grid',
+          start: 'top 88%',
+        },
+      });
+    } catch (e) {
+      // if ScrollTrigger not available, silently ignore
+    }
   }
 }

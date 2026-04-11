@@ -63,10 +63,13 @@
   <section class="section card-section">
     <h2>Funcionalidades Clave (Features)</h2>
     <div class="feature-grid">
-      @for (feature of features(); track feature) {
+      @for (feature of features(); track feature.text) {
         <article class="feature-card">
-          <i class="bx bx-check-shield"></i>
-          <p>{{ feature }}</p>
+          <img class="feature-image" [src]="feature.img" alt="{{ feature.text }}" loading="lazy" />
+          <div class="feature-copy">
+            <i class="bx bx-check-shield"></i>
+            <p>{{ feature.text }}</p>
+          </div>
         </article>
       }
     </div>
@@ -98,8 +101,11 @@
     <div class="testimonials-grid">
       @for (item of testimonials(); track item.name) {
         <blockquote>
+          <div class="testimonial-head">
+            <img class="testimonial-avatar" [src]="item.avatar" alt="{{ item.name }}" loading="lazy" />
+            <footer>{{ item.name }}</footer>
+          </div>
           <p>"{{ item.quote }}"</p>
-          <footer>{{ item.name }}</footer>
         </blockquote>
       }
     </div>
