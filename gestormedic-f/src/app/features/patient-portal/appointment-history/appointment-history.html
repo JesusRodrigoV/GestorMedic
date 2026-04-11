@@ -1,1 +1,47 @@
-<p>appointment-history works!</p>
+<main class="patient-portal">
+	<section class="portal-hero">
+		<div>
+			<span>Patient Portal</span>
+			<h1>Seguimiento clinico en un solo lugar</h1>
+			<p>
+				Administra tus citas, conserva documentos medicos y ejecuta acciones frecuentes sin salir de
+				tu panel.
+			</p>
+		</div>
+		<a routerLink="/directorio">Agendar nueva consulta</a>
+	</section>
+
+	<section class="portal-grid">
+		<article class="panel">
+			<h2>Proximas citas</h2>
+			<div class="list">
+				@for (item of nextAppointments(); track item.date) {
+					<div class="list-item">
+						<h3>{{ item.date }}</h3>
+						<p>{{ item.doctor }} · {{ item.type }}</p>
+						<small>{{ item.mode }} · {{ item.status }}</small>
+					</div>
+				}
+			</div>
+		</article>
+
+		<article class="panel">
+			<h2>Documentos y antecedentes</h2>
+			<ul>
+				@for (item of records(); track item) {
+					<li>{{ item }}</li>
+				}
+			</ul>
+		</article>
+	</section>
+
+	<section class="actions-grid">
+		@for (card of actionCards(); track card.title) {
+			<article class="action-card">
+				<h3>{{ card.title }}</h3>
+				<p>{{ card.detail }}</p>
+				<button type="button">Continuar</button>
+			</article>
+		}
+	</section>
+</main>

@@ -1,0 +1,24 @@
+<main class="sections-page">
+  <section class="hero">
+    <span>{{ config().badge }}</span>
+    <h1>{{ config().title }}</h1>
+    <p>{{ config().subtitle }}</p>
+    <div class="hero-actions">
+      <a routerLink="/home">Volver al inicio</a>
+      <a routerLink="/acceso" class="secondary">Comenzar ahora</a>
+    </div>
+  </section>
+
+  <section class="grid">
+    @for (section of config().sections; track section.heading) {
+      <article class="card">
+        <h2>{{ section.heading }}</h2>
+        <ul>
+          @for (point of section.points; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </section>
+</main>

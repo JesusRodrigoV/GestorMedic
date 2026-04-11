@@ -10,6 +10,36 @@ export const routes: Routes = [
         loadComponent: () => import('./features/public/home/home'),
       },
       {
+        path: 'especialidades',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'especialidades' },
+      },
+      {
+        path: 'directorio',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'directorio' },
+      },
+      {
+        path: 'videollamada',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'videollamada' },
+      },
+      {
+        path: 'recetas',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'recetas' },
+      },
+      {
+        path: 'nosotros',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'nosotros' },
+      },
+      {
+        path: 'acceso',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'acceso' },
+      },
+      {
         path: 'search',
         loadComponent: () => import('./features/public/search/search'),
       },
@@ -88,6 +118,11 @@ export const routes: Routes = [
     path: 'portal',
     loadComponent: () => import('./core/layouts/admin-layout/admin-layout'),
     children: [
+      {
+        path: '',
+        redirectTo: 'appointments',
+        pathMatch: 'full',
+      },
       {
         path: 'appointments',
         loadComponent: () =>

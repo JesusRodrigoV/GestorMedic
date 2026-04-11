@@ -1,0 +1,137 @@
+.patient-portal {
+	padding: 1.5rem;
+	display: grid;
+	gap: 1rem;
+	background: radial-gradient(circle at 20% 0%, #f2f8f5, #f8fafc 40%);
+	min-height: 100vh;
+}
+
+.portal-hero,
+.panel,
+.action-card {
+	border: 1px solid #dbe3ea;
+	border-radius: 18px;
+	background: #ffffff;
+	box-shadow: 0 8px 20px rgba(2, 6, 23, 0.03);
+}
+
+.portal-hero {
+	padding: 1.2rem;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: end;
+
+	span {
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		font-size: 0.75rem;
+		color: #0f766e;
+		font-weight: 700;
+	}
+
+	h1 {
+		margin: 0.5rem 0;
+		color: #0f172a;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+	}
+
+	p {
+		margin: 0;
+		color: #475569;
+		max-width: 62ch;
+	}
+
+	a {
+		text-decoration: none;
+		border-radius: 999px;
+		background: #0f172a;
+		color: #ffffff;
+		font-weight: 700;
+		padding: 0.7rem 1rem;
+		white-space: nowrap;
+	}
+}
+
+.portal-grid {
+	display: grid;
+	gap: 1rem;
+
+	@media (min-width: 960px) {
+		grid-template-columns: 1.5fr 1fr;
+	}
+}
+
+.panel {
+	padding: 1rem;
+
+	h2 {
+		margin: 0 0 0.8rem;
+		color: #0f172a;
+	}
+
+	ul {
+		margin: 0;
+		padding-left: 1.2rem;
+		color: #334155;
+		display: grid;
+		gap: 0.6rem;
+	}
+}
+
+.list {
+	display: grid;
+	gap: 0.6rem;
+}
+
+.list-item {
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 0.75rem;
+
+	h3 {
+		margin: 0;
+		color: #0f172a;
+		font-size: 1rem;
+	}
+
+	p {
+		margin: 0.35rem 0;
+		color: #334155;
+	}
+
+	small {
+		color: #0f766e;
+		font-weight: 700;
+	}
+}
+
+.actions-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
+}
+
+.action-card {
+	padding: 1rem;
+
+	h3 {
+		margin: 0;
+		color: #0f172a;
+	}
+
+	p {
+		margin: 0.5rem 0 0.9rem;
+		color: #475569;
+	}
+
+	button {
+		border: 1px solid #0f172a;
+		background: transparent;
+		color: #0f172a;
+		border-radius: 999px;
+		font-weight: 700;
+		padding: 0.45rem 0.8rem;
+		cursor: pointer;
+	}
+}

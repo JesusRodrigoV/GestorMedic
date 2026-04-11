@@ -1,9 +1,138 @@
 <main class="gm-landing">
-  <gm-hero />
-  <gm-trust-bar />
-  <gm-ecosystem-dual />
-  <gm-specialty-domains />
-  <gm-subscription-plans />
-  <gm-final-cta />
-  <gm-faq-objections />
+  <section class="hero-section">
+    <img
+      class="hero-image"
+      src="https://www.ucinmedica.com/wp-content/uploads/2020/08/consultorio-medico.jpg"
+      alt="Consultorio medico moderno"
+    />
+    <div class="hero-overlay"></div>
+
+    <div class="hero-words" aria-hidden="true">
+      <div class="hero-word hero-line-1">
+        <span>G</span><span>E</span><span>S</span><span>T</span><span>O</span><span>R</span>
+      </div>
+      <div class="hero-word hero-line-2">
+        <span>M</span><span>E</span><span>D</span><span>I</span><span>C</span>
+      </div>
+    </div>
+
+
+    <div class="hero-content">
+      <span class="hero-kicker">Atencion medica digital en Bolivia</span>
+      <h1>GestorMedic conecta pacientes y especialistas con una ruta clinica simple y segura</h1>
+      <p>
+        Agenda consulta, realiza videollamada, recibe receta digital y conserva seguimiento
+        documental en un solo espacio.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/directorio">Buscar especialistas</a>
+        <a routerLink="/acceso" class="secondary">Ingresar o registrarme</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section card-section">
+    <h2>Barra de Confianza</h2>
+    <p>Instituciones y aliados que respaldan la experiencia de atencion digital.</p>
+    <div class="trust-logos">
+      @for (logo of trustLogos(); track logo) {
+        <article class="logo-card">
+          <img [src]="logo" alt="Entidad aliada" loading="lazy" />
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section split-section">
+    <div>
+      <h2>Problem &amp; Solution (Puntos de Dolor)</h2>
+      <p>Convertimos friccion operativa en decisiones claras para pacientes y profesionales.</p>
+    </div>
+    <div class="pain-grid">
+      @for (item of painPoints(); track item.problem) {
+        <article>
+          <h3>Problema</h3>
+          <p>{{ item.problem }}</p>
+          <h3>Solucion</h3>
+          <p>{{ item.solution }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section card-section">
+    <h2>Funcionalidades Clave (Features)</h2>
+    <div class="feature-grid">
+      @for (feature of features(); track feature) {
+        <article class="feature-card">
+          <i class="bx bx-check-shield"></i>
+          <p>{{ feature }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section onboarding">
+    <h2>Proceso de Onboarding (3 Pasos)</h2>
+    <div class="steps-grid">
+      <article>
+        <span>01</span>
+        <h3>Crear cuenta</h3>
+        <p>Selecciona perfil paciente o profesional y completa datos base.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>Configurar atencion</h3>
+        <p>Define especialidad, cobertura, disponibilidad y antecedentes relevantes.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>Activar y atender</h3>
+        <p>Inicia citas, videollamada y seguimiento con documentos centralizados.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section card-section">
+    <h2>Testimonios Reales</h2>
+    <div class="testimonials-grid">
+      @for (item of testimonials(); track item.name) {
+        <blockquote>
+          <p>"{{ item.quote }}"</p>
+          <footer>{{ item.name }}</footer>
+        </blockquote>
+      }
+    </div>
+  </section>
+
+  <section class="section card-section">
+    <h2>Planes de Precios (Pricing)</h2>
+    <div class="pricing-grid">
+      @for (plan of pricing(); track plan.title) {
+        <article class="plan-card">
+          <h3>{{ plan.title }}</h3>
+          <p class="price">{{ plan.price }}</p>
+          <p>{{ plan.description }}</p>
+          <ul>
+            @for (bullet of plan.bullets; track bullet) {
+              <li>{{ bullet }}</li>
+            }
+          </ul>
+          <a routerLink="/acceso">Elegir plan</a>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section card-section">
+    <h2>Seccion de FAQ</h2>
+    <div class="faq-list">
+      @for (item of faqs(); track item.q) {
+        <article>
+          <h3>{{ item.q }}</h3>
+          <p>{{ item.a }}</p>
+        </article>
+      }
+    </div>
+  </section>
 </main>
