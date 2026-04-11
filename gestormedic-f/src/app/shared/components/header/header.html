@@ -1,0 +1,86 @@
+<header class="gm-header-wrapper" role="banner">
+  <div class="gm-header-container">
+    <div class="gm-header__section gm-header__brand">
+      <a routerLink="/" class="brand-link">
+        <div class="logo-wrapper">
+          <img ngSrc="logos/logo.png" alt="GestorMedic" width="32" height="32" priority />
+        </div>
+        <div class="brand-text">
+          <span class="brand-text__main">GestorMedic</span>
+          <span class="brand-text__tagline">SaaS de Precisión Médica</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="gm-header__section gm-header__main">
+      @if (isLoggedIn()) {
+        <div class="search-bar">
+          <i class="bx bx-search"></i>
+          <input
+            type="text"
+            placeholder="Buscar pacientes, citas o historial... (⌘K)"
+            aria-label="Buscador global"
+          />
+        </div>
+      } @else {
+        <nav class="public-nav">
+          @for (link of navLinks(); track link.label) {
+            <a
+              [routerLink]="link.route"
+              routerLinkActive="active-link"
+              [routerLinkActiveOptions]="{
+                paths: 'exact',
+                queryParams: 'ignored',
+                fragment: 'ignored',
+                matrixParams: 'ignored',
+              }"
+            >
+              {{ link.label }}
+            </a>
+          }
+        </nav>
+      }
+    </div>
+
+    <div class="gm-header__section gm-header__actions">
+      @if (isLoggedIn()) {
+        <div class="action-group">
+          <div class="plan-badge" [class.plan-badge--pro]="isPro()">
+            @if (isPro()) {
+              <i class="bx bxs-badge-check"></i>
+            }
+            {{ isPro() ? 'PLAN PRO' : 'PLAN BÁSICO' }}
+          </div>
+
+          <p-overlayBadge [value]="unreadNotifications().toString()" severity="danger">
+            <button class="icon-btn" (click)="onShowNotifications()">
+              <i class="bx bx-bell"></i>
+            </button>
+          </p-overlayBadge>
+
+          <div class="v-divider"></div>
+
+          <div class="user-capsule">
+            <div class="user-info">
+              <span class="user-name">{{ userName() }}</span>
+              <span class="user-role">{{ isPro() ? 'Administrador' : 'Médico' }}</span>
+            </div>
+            <p-avatar [image]="userAvatar()" shape="circle" size="normal" />
+            <button class="logout-btn" (click)="onLogout()">
+              <i class="bx bx-log-out"></i>
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="guest-group">
+          <gm-rounded-button label="Iniciar Sesión" [text]="true" routerLink="/auth/login" />
+          <gm-rounded-button
+            label="¿Eres profesional médico?"
+            severity="primary"
+            routerLink="/auth/register"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</header>

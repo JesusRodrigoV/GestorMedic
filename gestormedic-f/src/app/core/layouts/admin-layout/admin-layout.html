@@ -1,0 +1,15 @@
+@defer (on viewport) {
+  <gm-admin-header (onToggleSidebar)="toggleSidebar()" />
+
+  <div class="gm-admin-body">
+    <gm-sidebar [isCollapsed]="isSidebarCollapsed()" [items]="menuItems()" />
+
+    <main class="gm-content-view">
+      <router-outlet />
+    </main>
+  </div>
+
+  <p-toast position="bottom-right" />
+} @placeholder {
+  <div class="skeleton"></div>
+}

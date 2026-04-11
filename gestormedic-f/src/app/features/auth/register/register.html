@@ -1,0 +1,39 @@
+<main class="gm-register-gate">
+  <header class="gate-header">
+    <div class="logo-wrapper">
+      <img ngSrc="logos/logo.png" alt="GestorMedic" width="45" height="45" priority />
+    </div>
+    <h1 class="gate-title">Bienvenido a GestorMedic</h1>
+    <p class="gate-subtitle">
+      Seleccione su perfil para personalizar su experiencia en la plataforma.
+    </p>
+  </header>
+
+  <div class="role-grid">
+    @for (role of roles(); track role.id) {
+      <article class="role-card" [routerLink]="role.route">
+        <div class="role-card__glow"></div>
+
+        <header class="role-card__header">
+          <span class="role-tag">{{ role.tag }}</span>
+          <div class="role-icon">
+            <i class="bx" [class]="role.icon"></i>
+          </div>
+        </header>
+
+        <div class="role-card__body">
+          <h3 class="role-title">{{ role.title }}</h3>
+          <p class="role-desc">{{ role.desc }}</p>
+        </div>
+
+        <footer class="role-card__footer">
+          <span class="role-action"> Iniciar registro <i class="bx bx-right-arrow-alt"></i> </span>
+        </footer>
+      </article>
+    }
+  </div>
+
+  <footer class="gate-footer">
+    <p>¿Ya tiene una cuenta? <a routerLink="/auth/login" class="login-link">Iniciar sesión</a></p>
+  </footer>
+</main>

@@ -1,0 +1,33 @@
+<p-overlayBadge
+  [value]="service.unreadCount().toString()"
+  [hidden]="service.unreadCount() === 0"
+  severity="danger"
+>
+  <button class="notif-trigger" (click)="op.toggle($event)" aria-label="Notificaciones">
+    <i class="bx bx-bell"></i>
+  </button>
+</p-overlayBadge>
+
+<p-popover #op styleClass="gm-notif-popover">
+  <div class="gm-notif-panel">
+    <header class="panel-header">
+      <h3>Centro de Mensajes</h3>
+      <button class="mark-all-btn" (click)="onMarkAll()">Marcar todo como leído</button>
+    </header>
+
+    <div class="panel-body">
+      @for (item of service.notifications(); track item.id) {
+        <gm-notification-item [notification]="item" (onRead)="onMarkRead($event)" />
+      } @empty {
+        <div class="empty-state">
+          <i class="bx bxs-inbox"></i>
+          <p>No hay alertas pendientes</p>
+        </div>
+      }
+    </div>
+
+    <footer class="panel-footer">
+      <button class="view-all-btn">Ver historial completo</button>
+    </footer>
+  </div>
+</p-popover>

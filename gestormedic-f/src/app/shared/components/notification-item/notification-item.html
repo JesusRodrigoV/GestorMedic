@@ -1,0 +1,29 @@
+<div
+  class="gm-notif-item"
+  [class.gm-notif-item--unread]="!notification().isRead"
+  (click)="onRead.emit(notification().id)"
+>
+  <div class="gm-notif-item__icon" [class]="'gm-notif-item__icon--' + notification().type">
+    <i
+      class="pi"
+      [class]="{
+        'pi-check-circle': notification().type === 'success',
+        'pi-info-circle': notification().type === 'info',
+        'pi-exclamation-triangle': notification().type === 'warning',
+        'pi-bolt': notification().type === 'critical',
+      }"
+    ></i>
+  </div>
+
+  <div class="gm-notif-item__content">
+    <header class="item-header">
+      <span class="item-title">{{ notification().title }}</span>
+      <span class="item-time">{{ notification().timestamp | date: 'shortTime' }}</span>
+    </header>
+    <p class="item-desc">{{ notification().description }}</p>
+  </div>
+
+  @if (!notification().isRead) {
+    <div class="unread-dot"></div>
+  }
+</div>

@@ -1,0 +1,108 @@
+<main class="gm-auth-layout">
+  <div class="auth-bento-card glass-morphism">
+    <header class="auth-header">
+      <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="56" height="56" priority />
+      <h1 class="yale-title">Crear Cuenta</h1>
+      <p class="slate-subtitle">Únase a la red de salud para agendar citas y gestionar sus resultados.</p>
+    </header>
+
+    <div class="social-login">
+      <p-button 
+        label="Continuar con Google" 
+        rounded="true"
+        icon="bx bxl-google" 
+        (onClick)="onGoogleRegister()"
+        fluid
+      />
+    </div>
+
+    <div class="auth-divider">
+      <p-divider align="center">
+        <span class="divider-text">o regístrese con su correo</span>
+      </p-divider>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+      
+      <div class="field-container">
+        <label for="fullName">Nombre Completo</label>
+        <input 
+          pInputText 
+          id="fullName" 
+          formControlName="fullName" 
+          [invalid]="isInvalid('fullName')"
+          placeholder="Ej. María Pérez" 
+          fluid 
+        />
+        @if (isInvalid('fullName')) {
+          <p-message severity="error" size="small" variant="simple">El nombre es obligatorio.</p-message>
+        }
+      </div>
+
+      <div class="field-container">
+        <label for="email">Correo Electrónico</label>
+        <input 
+          pInputText 
+          id="email" 
+          type="email" 
+          formControlName="email" 
+          [invalid]="isInvalid('email')"
+          placeholder="maria@ejemplo.com" 
+          fluid 
+        />
+        @if (isInvalid('email')) {
+          @if (hasError('email', 'required')) {
+            <p-message severity="error" size="small" variant="simple">El correo es obligatorio.</p-message>
+          }
+          @if (hasError('email', 'email')) {
+            <p-message severity="error" size="small" variant="simple">Ingrese un correo válido.</p-message>
+          }
+        }
+      </div>
+
+      <div class="field-container">
+        <label for="password">Contraseña Segura</label>
+        <p-password 
+          id="password" 
+          formControlName="password" 
+          [toggleMask]="true" 
+          [invalid]="isInvalid('password')"
+          promptLabel="Ingrese una contraseña" 
+          weakLabel="Débil" 
+          mediumLabel="Media" 
+          strongLabel="Fuerte"
+          placeholder="Mínimo 10 caracteres"
+          fluid 
+        >
+          <ng-template #footer>
+            <p-divider />
+            <ul class="password-rules">
+              <li [class.valid]="!hasError('password', 'minlength')">Al menos 10 caracteres</li>
+              <li [class.valid]="!hasError('password', 'pattern')">Una mayúscula y un número</li>
+              <li [class.valid]="!hasError('password', 'pattern')">Un carácter especial (@$!%*?&)</li>
+            </ul>
+          </ng-template>
+        </p-password>
+        @if (isInvalid('password') && hasError('password', 'required')) {
+          <p-message severity="error" size="small" variant="simple">La contraseña es obligatoria.</p-message>
+        }
+      </div>
+
+      <div class="form-actions">
+        <gm-rounded-button
+          label="Completar Registro"
+          type="submit"
+          [loading]="isProcessing()"
+          severity="primary"
+        />
+      </div>
+    </form>
+
+    <footer class="auth-footer">
+      <p>¿Ya tiene una cuenta? <a routerLink="/auth/login" class="text-energy">Iniciar sesión</a></p>
+      <div class="auth-links">
+        <a href="#" class="muted-link">¿Olvidó su contraseña?</a>
+      </div>
+    </footer>
+  </div>
+</main>

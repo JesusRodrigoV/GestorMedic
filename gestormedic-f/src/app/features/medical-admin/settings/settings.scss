@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  height: 100%;
+
+  --settings-nav-title: var(--p-yale-900);
+  --settings-nav-desc: var(--p-slate-400);
+  --settings-btn-text: var(--p-slate-500);
+  --settings-btn-active-bg: #ffffff;
+  --panel-bg: rgba(255, 255, 255, 0.7);
+  --panel-border: var(--p-slate-100);
+  --panel-shadow: rgba(12, 30, 45, 0.05);
+
+  :root.dark-mode & {
+    --settings-nav-title: #ffffff;
+    --settings-nav-desc: var(--p-slate-400);
+    --settings-btn-text: var(--p-slate-400);
+    --settings-btn-active-bg: rgba(255, 255, 255, 0.05);
+    --panel-bg: rgba(15, 35, 55, 0.85);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-shadow: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.gm-settings-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  height: 100%;
+}
+
+.gm-settings-nav {
+  .nav-header {
+    margin-bottom: 2.5rem;
+    .nav-header-title {
+      font-size: 1.4rem;
+      font-weight: 850;
+      color: var(--settings-nav-title);
+    }
+    .nav-header-desc {
+      font-size: 0.75rem;
+      color: var(--settings-nav-desc);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    color: var(--settings-btn-text);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    i {
+      font-size: 1.3rem;
+    }
+    &:hover {
+      background: rgba(var(--p-energy-500-rgb), 0.04);
+      color: var(--p-energy-600);
+    }
+
+    &--active {
+      background: var(--settings-btn-active-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--p-energy-500);
+      box-shadow: 0 4px 15px var(--panel-shadow);
+    }
+  }
+}
+
+.gm-settings-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 3.5rem;
+  box-shadow: 0 10px 40px var(--panel-shadow);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+  min-height: 600px;
+  overflow-y: auto;
+}
