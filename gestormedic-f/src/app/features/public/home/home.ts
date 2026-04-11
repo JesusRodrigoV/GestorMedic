@@ -16,10 +16,10 @@ export default class Home implements OnInit {
   private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly trustLogos = signal([
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Logo_del_Ministerio_de_Salud_de_Bolivia.svg/640px-Logo_del_Ministerio_de_Salud_de_Bolivia.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/CNS_Bolivia_logo.png/640px-CNS_Bolivia_logo.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Cruz_Roja_Boliviana_logo.svg/512px-Cruz_Roja_Boliviana_logo.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Logo_Banco_Interamericano_de_Desarrollo.svg/640px-Logo_Banco_Interamericano_de_Desarrollo.svg.png',
+    'https://img.freepik.com/vector-gratis/diseno-logotipo-hospital-vector-cruz-medica_53876-136743.jpg?semt=ais_hybrid&w=740&q=80',
+    'https://marketplace.canva.com/EAGiYwibFuE/1/0/1600w/canva-logotipo-salud-medicina-moderno-azul-8WzudOO4y7w.jpg',
+    'https://static.vecteezy.com/system/resources/previews/007/955/420/non_2x/digital-health-medical-technology-logo-design-free-vector.jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjix9TDJ0f4lLjqg3LsNIlXb5T-eO1Z6TZIg&s',
   ]);
 
   readonly painPoints = signal([
