@@ -41,6 +41,10 @@ export const routes: Routes = [
         path: 'register/patient',
         loadComponent: () => import('./features/auth/register-patient/register-patient'),
       },
+      {
+        path: 'register/doctor',
+        loadComponent: () => import('./features/auth/register-doctor/register-doctor'),
+      },
     ],
   },
   {
