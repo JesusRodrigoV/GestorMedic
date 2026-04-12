@@ -1,11 +1,10 @@
-<main class="patient-portal">
+<main class="page">
 	<section class="portal-hero">
 		<div>
-			<span>Patient Portal</span>
-			<h1>Seguimiento clinico en un solo lugar</h1>
+			<span>Agenda</span>
+			<h2>Gestion de citas</h2>
 			<p>
-				Administra tus citas, conserva documentos medicos y ejecuta acciones frecuentes sin salir de
-				tu panel.
+				Visualiza tus consultas pendientes, historial y acciones rapidas para agendar o reprogramar.
 			</p>
 		</div>
 		<a routerLink="/directorio">Agendar nueva consulta</a>
@@ -13,11 +12,11 @@
 
 	<section class="portal-grid">
 		<article class="panel">
-			<h2>Proximas citas</h2>
+			<h3>Proximas citas</h3>
 			<div class="list">
 				@for (item of nextAppointments(); track item.date) {
 					<div class="list-item">
-						<h3>{{ item.date }}</h3>
+						<h4>{{ item.date }}</h4>
 						<p>{{ item.doctor }} · {{ item.type }}</p>
 						<small>{{ item.mode }} · {{ item.status }}</small>
 					</div>
@@ -26,13 +25,28 @@
 		</article>
 
 		<article class="panel">
-			<h2>Documentos y antecedentes</h2>
+			<h3>Documentos y antecedentes</h3>
 			<ul>
 				@for (item of records(); track item) {
 					<li>{{ item }}</li>
 				}
 			</ul>
 		</article>
+	</section>
+
+	<section class="panel">
+		<h3>Historial de consultas</h3>
+		<div class="history-list">
+			@for (item of history(); track item.date) {
+				<article>
+					<span>{{ item.date }}</span>
+					<div>
+						<h4>{{ item.type }} · {{ item.doctor }}</h4>
+						<p>{{ item.result }}</p>
+					</div>
+				</article>
+			}
+		</div>
 	</section>
 
 	<section class="actions-grid">

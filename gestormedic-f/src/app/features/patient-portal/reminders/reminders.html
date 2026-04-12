@@ -1,0 +1,30 @@
+<main class="page">
+  <section class="card intro">
+    <h2>Recordatorios y avisos</h2>
+    <p>Gestiona notificaciones automaticas por WhatsApp, email y SMS.</p>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h3>Canales activos</h3>
+      <div class="channels">
+        @for (channel of channels(); track channel.name) {
+          <div>
+            <h4>{{ channel.name }}</h4>
+            <p>{{ channel.frequency }}</p>
+            <span [class.off]="!channel.enabled">{{ channel.enabled ? 'Activo' : 'Inactivo' }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Campanas recientes</h3>
+      <ul>
+        @for (item of campaigns(); track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+  </section>
+</main>

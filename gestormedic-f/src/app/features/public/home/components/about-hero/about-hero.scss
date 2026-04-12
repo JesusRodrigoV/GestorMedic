@@ -1,0 +1,20 @@
+.gm-about-hero {
+  padding: 2rem 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 12px;
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    h2 {
+      margin: 0 0 .5rem 0;
+      color: #0f172a;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.6;
+    }
+  }
+}

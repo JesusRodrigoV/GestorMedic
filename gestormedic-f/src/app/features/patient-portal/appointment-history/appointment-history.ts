@@ -26,6 +26,21 @@ export default class AppointmentHistory {
     },
   ]);
 
+  readonly history = signal([
+    {
+      date: '04 Abr 2026 - 09:00',
+      doctor: 'Dr. Alberto Vargas',
+      type: 'Traumatologia',
+      result: 'Alta con fisioterapia',
+    },
+    {
+      date: '18 Mar 2026 - 16:30',
+      doctor: 'Dra. Carla Rojas',
+      type: 'Neumologia',
+      result: 'Control en 6 semanas',
+    },
+  ]);
+
   readonly records = signal([
     'Resumen clinico de ultima consulta',
     'Resultado de laboratorio - perfil lipidico',
@@ -34,16 +49,16 @@ export default class AppointmentHistory {
 
   readonly actionCards = signal([
     {
-      title: 'Renovar receta',
-      detail: 'Solicita renovacion en menos de 2 minutos.',
+      title: 'Reservar nueva cita',
+      detail: 'Selecciona medico, especialidad y horario disponible.',
     },
     {
-      title: 'Subir estudios',
-      detail: 'Adjunta imagenes o PDF para tu proxima cita.',
+      title: 'Unirme por videollamada',
+      detail: 'Accede a tu consulta virtual desde la web o movil.',
     },
     {
-      title: 'Configurar recordatorios',
-      detail: 'Activa alertas para medicacion y controles.',
+      title: 'Programar recordatorios',
+      detail: 'Recibe alertas por WhatsApp, SMS o email.',
     },
   ]);
 }

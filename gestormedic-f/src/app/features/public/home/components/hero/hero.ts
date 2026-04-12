@@ -75,7 +75,7 @@ export class Hero {
     const elems: Element[] = [];
     if (title) elems.push(title);
     if (search) elems.push(search);
-    mocks.forEach((m) => elems.push(m));
+    mocks.forEach((m: Element) => elems.push(m));
 
     if (!elems.length) return;
 

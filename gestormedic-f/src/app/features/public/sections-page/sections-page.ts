@@ -1,5 +1,26 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { SpecialtyDomains } from '../home/components/specialty-domains';
+import Search from '../search/search';
+import { SubscriptionPlans } from '../home/components/subscription-plans';
+import { TrustBar } from '../home/components/trust-bar';
+import { DirectoryTopCities } from '../home/components/directory-top-cities';
+import { DirectoryFeaturedClinics } from '../home/components/directory-featured-clinics';
+import { DirectoryMapPreview } from '../home/components/directory-map-preview';
+import { VideocallFeatures } from '../home/components/videocall-features';
+import { VideocallSecurity } from '../home/components/videocall-security';
+import { VideocallSteps } from '../home/components/videocall-steps';
+import { PrescriptionsFeatures } from '../home/components/prescriptions-features';
+import { PrescriptionsSecurity } from '../home/components/prescriptions-security';
+import { PrescriptionsSamples } from '../home/components/prescriptions-samples';
+import { PrescriptionsCta } from '../home/components/prescriptions-cta';
+import { AboutHero } from '../home/components/about-hero';
+import { AboutTeam } from '../home/components/about-team';
+import { AboutValues } from '../home/components/about-values';
+import { AboutStats } from '../home/components/about-stats';
+import { AboutCta } from '../home/components/about-cta';
+import { AccessCards } from '../home/components/access-cards';
 
 type PageConfig = {
   badge: string;
@@ -133,13 +154,38 @@ const PAGE_CONTENT: Record<string, PageConfig> = {
 
 @Component({
   selector: 'gm-sections-page',
-  imports: [RouterLink],
+  imports: [
+    RouterLink,
+    CommonModule,
+    Search,
+    SpecialtyDomains,
+    SubscriptionPlans,
+    TrustBar,
+    DirectoryTopCities,
+    DirectoryFeaturedClinics,
+    DirectoryMapPreview,
+    VideocallFeatures,
+    VideocallSecurity,
+    VideocallSteps,
+    PrescriptionsFeatures,
+    PrescriptionsSecurity,
+    PrescriptionsSamples,
+    PrescriptionsCta,
+    AboutHero,
+    AboutTeam,
+    AboutValues,
+    AboutStats,
+    AboutCta,
+    AccessCards,
+  ],
   templateUrl: './sections-page.html',
   styleUrl: './sections-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SectionsPage {
   private readonly route = inject(ActivatedRoute);
+
+  readonly pageKey = computed(() => this.route.snapshot.data['page'] as string);
 
   readonly config = computed(() => {
     const key = this.route.snapshot.data['page'] as string;

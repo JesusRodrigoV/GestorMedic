@@ -41,19 +41,19 @@ export default class Home implements OnInit {
   readonly features = signal([
     {
       text: 'Directorio médico por ciudad, especialidad y seguro',
-      img: 'https://images.unsplash.com/photo-1588776814546-1d4f9f7f4c6b?w=800&q=60&auto=format&fit=crop'
+      img: 'https://www.shutterstock.com/image-vector/medical-folder-document-paper-vector-600nw-1904640847.jpg'
     },
     {
       text: 'Agenda en línea con disponibilidad en tiempo real',
-      img: 'https://images.unsplash.com/photo-1586281380396-4bb0d7f661b6?w=800&q=60&auto=format&fit=crop'
+      img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaF8jX6bJvVbpe0-KA_kPlhXXQ-lZNvyVjPw&s'
     },
     {
       text: 'Videoconsulta con sala segura y comprobante de atención',
-      img: 'https://images.unsplash.com/photo-1587502536263-3f8e3b9a0b5a?w=800&q=60&auto=format&fit=crop'
+      img: 'https://fastly.mwm-storage.mwmcdn.com/raw_files/463a12bd-473b-4232-b67a-405902545118?height=640&format=webp'
     },
     {
       text: 'Recetas digitales y seguimiento de tratamiento',
-      img: 'https://images.unsplash.com/photo-1580281657528-6b0a0b9b0f6a?w=800&q=60&auto=format&fit=crop'
+      img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVya3g5LRNRVZ80MGRwkSMgBjh90oigqep1Q&s'
     },
     {
       text: 'Panel de paciente con historial y próximos pasos',
