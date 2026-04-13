@@ -62,7 +62,16 @@ export class AuthStore {
         console.log('Datos recibidos del servidor:', user);
         console.groupEnd();
         this.state.update((s) => ({ ...s, user, status: 'authenticated' }));
-        this.router.navigate(['/app/dashboard']);
+        
+        let targetRoute = '/portal/appointments'; // Portal paciente por defecto
+        
+        if (user.is_admin || user.role_id === 1) {
+          targetRoute = '/control/management';
+        } else if (user.role_id === 2 || user.role_id === 3) {
+          targetRoute = '/app/dashboard';
+        }
+
+        this.router.navigate([targetRoute]);
       },
       error: () => this.logout(),
     });
