@@ -1,6 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthResponse, User } from '@core/models/auth.model';
+import {
+  AppearanceSettingsPayload,
+  AuthResponse,
+  NotificationSettingsPayload,
+  UpdateProfilePayload,
+  User,
+} from '@core/models/auth.model';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 
@@ -16,41 +22,33 @@ export class Auth {
   }
 
   login(credentials: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
-  }
+    // FastAPI OAuth2 espera x-www-form-urlencoded
+    const body = new HttpParams()
+      .set('username', credentials.email || credentials.username)
+      .set('password', credentials.password);
 
-  googleLogin(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/google`, data);
-  }
-
-  verify2FA(sessionToken: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/2fa/verify-login`, {
-      session_token: sessionToken,
-      code,
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, body.toString(), {
+      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded'),
     });
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, {});
-  }
-
-  logout(): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/logout`, {});
+  logout(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/logout`, {});
   }
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/me`);
   }
 
-  updateProfile(data: any): Observable<User> {
+  updateProfile(data: UpdateProfilePayload): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/update-profile`, data);
   }
 
-  forgotPassword(email: string): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/forgot-password`, { email });
+  updateNotifications(data: NotificationSettingsPayload): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/update-notifications`, data);
   }
 
-  resetPassword(data: any): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/reset-password`, data);
+  updateAppearance(data: AppearanceSettingsPayload): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/update-appearance`, data);
   }
 }

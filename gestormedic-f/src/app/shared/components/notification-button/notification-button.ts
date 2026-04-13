@@ -14,6 +14,11 @@ import { NotificationItem } from '../notification-item/notification-item';
 export class NotificationButton {
   service = inject(NotificationApp);
 
+  protected onToggle(event: Event, overlay: { toggle: (event: Event) => void }): void {
+    this.service.refresh();
+    overlay.toggle(event);
+  }
+
   protected onMarkRead(id: string): void {
     this.service.markAsRead(id);
   }

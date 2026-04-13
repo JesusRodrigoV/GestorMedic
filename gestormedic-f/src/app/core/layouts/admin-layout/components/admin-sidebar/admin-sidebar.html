@@ -1,1 +1,34 @@
-<p>admin-sidebar works!</p>
+<aside class="sidebar">
+  <div class="logo">
+    <img src="logos/logo.png" alt="GestorMedic">
+    <span>Gestor<span>Medic</span></span>
+  </div>
+
+  <nav class="menu">
+    <a
+      *ngFor="let item of menuItems()" 
+      class="menu-item"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.exact }"
+      [pTooltip]="item.label"
+      tooltipPosition="right">
+      <i class="pi" [ngClass]="item.icon"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <div class="user-profile" *ngIf="user()">
+    <div class="user-avatar">
+      <img [src]="user()?.photo_url || '/profile/1.webp'" alt="Profile">
+    </div>
+    <div class="user-info">
+      <span class="name">{{ user()?.first_name }}</span>
+      <span class="role">{{ userRoleLabel() }}</span>
+    </div>
+    <button class="logout-btn" (click)="onLogout()" pTooltip="Cerrar Sesión">
+      <i class="pi pi-sign-out"></i>
+      <span>Cerrar</span>
+    </button>
+  </div>
+</aside>

@@ -97,8 +97,7 @@ export default class RegisterClinic {
         .success()
         .summary('Infraestructura inicializada con éxito.')
         .show();
-      this.authStore.fetchUser();
-      // fetchUser ya incluye la redirección al dashboard en tu AuthStore
+      this.authStore.fetchUser(true);
     } catch (error: any) {
       console.error('Fallo en la cadena de registro:', error);
       this.notification.builder().error().summary('Error en el protocolo de registro.').show();

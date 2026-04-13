@@ -1,0 +1,43 @@
+<div class="history-container">
+  <div class="header">
+    <div class="title-group">
+      <h2>Historial Clínico</h2>
+      <p>Registro histórico de consultas, diagnósticos y tratamientos.</p>
+    </div>
+    <gm-rounded-button label="Nuevo Registro" icon="pi pi-file-plus" (onClick)="onCreateRecord()"></gm-rounded-button>
+  </div>
+
+  <div class="content-grid">
+    <div class="records-table">
+      <p-card>
+        <p-table [value]="records()" [responsiveLayout]="'scroll'">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Fecha</th>
+              <th>Paciente</th>
+              <th>Diagnóstico</th>
+              <th>Tratamiento</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-record>
+            <tr>
+              <td>{{ record.date }}</td>
+               <td>{{ record.patient }}</td>
+              <td><strong>{{ record.diagnosis }}</strong></td>
+              <td class="treatment-cell">{{ record.treatment }}</td>
+              <td>
+                 <p-tag [value]="record.status" [severity]="record.statusSeverity"></p-tag>
+               </td>
+               <td>
+                 <button pButton icon="pi pi-print" class="p-button-text p-button-secondary" pTooltip="Generar Receta" (click)="onGeneratePrescription(record.id, record.patient, record.patientEmail)"></button>
+                 <button pButton icon="pi pi-external-link" class="p-button-text p-button-secondary" pTooltip="Ver Detalle"></button>
+               </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<section class="book-appointment">
+  <header>
+    <h2>Reservar cita</h2>
+    <p>Elige doctor y horario disponible para tu próxima consulta.</p>
+  </header>
+
+  <div class="filters">
+    <label>
+      Doctor
+      <select [value]="selectedDoctorId() ?? ''" (change)="onDoctorChange($event)">
+        <option *ngFor="let doctor of doctors()" [value]="doctor.id">
+          {{ doctor.name }} - {{ doctor.specialty }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Fecha
+      <input type="date" [value]="selectedDate()" (input)="onDateChange($event)" />
+    </label>
+
+    <label>
+      Motivo
+      <input type="text" [value]="reason()" (input)="onReasonChange($event)" />
+    </label>
+
+    <gm-rounded-button label="Buscar horarios" icon="pi pi-search" (onClick)="loadAvailability()"></gm-rounded-button>
+  </div>
+
+  <div class="slots">
+    <article *ngFor="let slot of availableSlots()">
+      <div>
+        <h4>{{ slot.label }}</h4>
+        <p>{{ slot.doctorName }}</p>
+      </div>
+      <gm-rounded-button label="Reservar" variant="outlined" (onClick)="reserve(slot.id, slot.label)"></gm-rounded-button>
+    </article>
+
+    <p class="empty" *ngIf="availableSlots().length === 0">Sin horarios cargados para la selección actual.</p>
+  </div>
+</section>

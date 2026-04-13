@@ -57,18 +57,42 @@
     }
   }
 
+  // Estilos específicos para los inputs de PrimeNG
+  ::ng-deep {
+    .p-inputtext, .p-password-input {
+      background-color: white !important;
+      color: #1e293b !important; // Slate 800 (Azul oscuro casi negro)
+      border-color: var(--p-slate-200) !important;
+
+      &:focus {
+        border-color: var(--p-energy-500) !important;
+        box-shadow: 0 0 0 3px rgba(var(--p-energy-500-rgb), 0.1) !important;
+      }
+    }
+
+    .p-inputtext::placeholder, .p-password-input::placeholder {
+      color: #94a3b8 !important; // Slate 400
+    }
+  }
+
   .gm-input {
     width: 100%;
-    background: rgba(var(--p-slate-50-rgb), 0.5);
-    border: 1px solid var(--p-slate-200);
+    background: white !important;
+    color: #1e293b !important;
+    border: 1px solid var(--p-slate-200) !important;
     border-radius: 8px;
     padding: 0.75rem 1rem;
     transition: all 0.2s ease;
 
+    &::placeholder {
+      color: #94a3b8 !important;
+    }
+
     &:focus {
-      background: white;
-      border-color: var(--p-energy-500);
-      box-shadow: 0 0 0 3px rgba(var(--p-energy-500-rgb), 0.1);
+      background: white !important;
+      border-color: var(--p-energy-500) !important;
+      box-shadow: 0 0 0 3px rgba(var(--p-energy-500-rgb), 0.1) !important;
+      outline: none;
     }
   }
 }

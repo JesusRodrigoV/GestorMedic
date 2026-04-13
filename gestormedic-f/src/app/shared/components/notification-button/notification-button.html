@@ -3,7 +3,7 @@
   [hidden]="service.unreadCount() === 0"
   severity="danger"
 >
-  <button class="notif-trigger" (click)="op.toggle($event)" aria-label="Notificaciones">
+  <button class="notif-trigger" (click)="onToggle($event, op)" aria-label="Notificaciones">
     <i class="bx bx-bell"></i>
   </button>
 </p-overlayBadge>

@@ -1,24 +1,86 @@
-<section class="settings-section">
-  <header class="section-header">
-    <h3>Canales de Comunicación</h3>
-    <p>Controle la interacción automática con sus pacientes.</p>
-  </header>
-
-  <div class="settings-list" [formGroup]="configForm">
-    <div class="settings-item">
-      <div class="item-copy">
-        <span class="item-title">Alertas por WhatsApp</span>
-        <span class="item-desc">Confirmación y recordatorios de citas en tiempo real.</span>
+<div class="notifications-container">
+  <form [formGroup]="configForm" (ngSubmit)="onSave()">
+    <!-- Citas -->
+    <div class="section-group">
+      <h4>Gestión de Citas</h4>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Nuevas citas reservadas</span>
+          <p>Recibe una alerta inmediata cuando un paciente agende una cita.</p>
+        </div>
+        <p-toggleSwitch formControlName="newAppointment"></p-toggleSwitch>
       </div>
-      <p-toggleswitch formControlName="whatsappAlerts" (onChange)="onSave()" />
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Recordatorios de agenda</span>
+          <p>Notificación diaria con el resumen de tus pacientes del día.</p>
+        </div>
+        <p-toggleSwitch formControlName="appointmentReminder"></p-toggleSwitch>
+      </div>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Cancelaciones</span>
+          <p>Alerta cuando un paciente cancele o mueva su cita.</p>
+        </div>
+        <p-toggleSwitch formControlName="appointmentCancellation"></p-toggleSwitch>
+      </div>
     </div>
 
-    <div class="settings-item">
-      <div class="item-copy">
-        <span class="item-title">Reportes por Email</span>
-        <span class="item-desc">Envío automatizado de resultados clínicos y facturas.</span>
+    <div class="settings-divider"></div>
+
+    <!-- Canales -->
+    <div class="section-group">
+      <h4>Canales de Comunicación</h4>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Alertas vía WhatsApp</span>
+          <p>Enviar notificaciones importantes a tu número vinculado.</p>
+        </div>
+        <p-toggleSwitch formControlName="whatsappAlerts"></p-toggleSwitch>
       </div>
-      <p-toggleswitch formControlName="emailAlerts" (onChange)="onSave()" />
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Notificaciones por Email</span>
+          <p>Recibir copias de las alertas en tu bandeja de entrada.</p>
+        </div>
+        <p-toggleSwitch formControlName="emailAlerts"></p-toggleSwitch>
+      </div>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Emails de Marketing</span>
+          <p>Información sobre nuevas funciones y ofertas del servicio.</p>
+        </div>
+        <p-toggleSwitch formControlName="marketingEmails"></p-toggleSwitch>
+      </div>
     </div>
-  </div>
-</section>
+
+    <div class="settings-divider"></div>
+
+    <!-- Seguridad -->
+    <div class="section-group">
+      <h4>Seguridad</h4>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Alertas de Inicio de Sesión</span>
+          <p>Notificar si se accede a tu cuenta desde un dispositivo nuevo.</p>
+        </div>
+        <p-toggleSwitch formControlName="loginAlerts"></p-toggleSwitch>
+      </div>
+      <div class="setting-item">
+        <div class="item-info">
+          <span>Cambios de Contraseña</span>
+          <p>Confirmación inmediata tras cualquier cambio de credenciales.</p>
+        </div>
+        <p-toggleSwitch formControlName="passwordChanges"></p-toggleSwitch>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <gm-rounded-button
+        type="submit"
+        label="Guardar Preferencias"
+        [loading]="authStore.isLoading()"
+      ></gm-rounded-button>
+    </div>
+  </form>
+</div>

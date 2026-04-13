@@ -1,93 +1,157 @@
-<section class="gm-profile-container">
-  <header class="profile-header">
-    <div class="header-text">
-      <h3>Identidad del Profesional</h3>
-      <p>Datos registrados bajo la jurisdicción de GestorMedic.</p>
-    </div>
-
-    <div class="header-actions">
-      @if (!isEditing()) {
-        <gm-rounded-button
-          label="Editar Perfil"
-          icon="bx bx-edit-alt"
-          (click)="toggleEdit()"
-          severity="secondary"
-        />
-      } @else {
-        <div class="edit-buttons">
-          <gm-rounded-button
-            label="Cancelar"
-            [text]="true"
-            (click)="toggleEdit()"
-            severity="danger"
-          />
-          <gm-rounded-button
-            label="Guardar Cambios"
-            (click)="saveChanges()"
-            [disabled]="profileForm.invalid"
-            severity="primary"
-          />
-        </div>
-      }
-    </div>
-  </header>
-
-  <form [formGroup]="profileForm" class="gm-bento-grid">
-    <div class="bento-card photo-card" [class.is-editing]="isEditing()">
-      <div class="avatar-wrapper">
-        <p-avatar [image]="selectedPhoto()" size="xlarge" shape="circle" />
-
-        @if (isEditing()) {
-          <button
-            type="button"
-            class="change-photo-btn"
-            (click)="showPhotoPicker.set(!showPhotoPicker())"
-          >
-            <i class="bx bx-camera"></i>
-          </button>
-        }
-      </div>
-
-      @if (showPhotoPicker() && isEditing()) {
-        <div class="photo-selector">
-          @for (photo of availablePhotos; track photo) {
-            <img
-              [src]="photo"
-              (click)="selectPhoto(photo)"
-              [class.active]="selectedPhoto() === photo"
-              alt="Avatar option"
-            />
-          }
-        </div>
-      }
-    </div>
-
-    <div class="bento-card fields-card">
-      <div class="field-row">
-        <div class="field-group">
-          <label for="first_name">Nombre(s)</label>
-          <div class="input-container">
-            <i class="bx bx-user"></i>
-            <input pInputText id="first_name" formControlName="first_name" />
+<div class="profile-container">
+  <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
+    <!-- Header: Avatar y Botón Editar -->
+    <div class="profile-header">
+      <div class="avatar-section">
+        <div class="avatar-wrapper" (click)="isEditing() && showPhotoPicker.set(true)">
+          <p-avatar 
+            [image]="selectedPhoto()" 
+            shape="circle" 
+            size="xlarge">
+          </p-avatar>
+          <div class="avatar-overlay" *ngIf="isEditing()">
+            <i class="pi pi-camera"></i>
           </div>
         </div>
+        <div class="user-info">
+          <h2>{{ user()?.first_name }} {{ user()?.last_name }}</h2>
+          <p>{{ profileForm.get('specialty')?.value }}</p>
+        </div>
+      </div>
+      
+      <gm-rounded-button 
+        type="button" 
+        [label]="isEditing() ? 'Cancelar' : 'Editar Perfil'"
+        [variant]="isEditing() ? 'outlined' : undefined"
+        (onClick)="toggleEdit()">
+      </gm-rounded-button>
+    </div>
 
-        <div class="field-group">
-          <label for="last_name">Apellidos</label>
-          <div class="input-container">
-            <i class="bx bx-id-card"></i>
-            <input pInputText id="last_name" formControlName="last_name" />
+    <!-- Photo Picker Overlay -->
+    <div class="photo-picker" *ngIf="showPhotoPicker()">
+      <div class="picker-content">
+        <h3>Selecciona una foto</h3>
+        <div class="photos-grid">
+          <img 
+            *ngFor="let photo of availablePhotos" 
+            [src]="photo" 
+            (click)="selectPhoto(photo)"
+            [class.selected]="selectedPhoto() === photo">
+        </div>
+        <gm-rounded-button label="Cerrar" variant="outlined" (onClick)="showPhotoPicker.set(false)"></gm-rounded-button>
+      </div>
+    </div>
+
+    <div class="sections-grid">
+      <!-- Datos Personales -->
+      <div class="section-card">
+        <h3><i class="pi pi-user"></i> Información Personal</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre(s)</label>
+            <input pInputText formControlName="first_name" placeholder="Ej. Juan">
+          </div>
+          <div class="field">
+            <label>Apellidos</label>
+            <input pInputText formControlName="last_name" placeholder="Ej. Pérez">
+          </div>
+          <div class="field">
+            <label>Usuario</label>
+            <input pInputText formControlName="username">
+          </div>
+          <div class="field">
+            <label>Correo Electrónico</label>
+            <input pInputText formControlName="email">
           </div>
         </div>
       </div>
 
-      <div class="field-group">
-        <label for="username">Nombre de Usuario</label>
-        <div class="input-container">
-          <i class="bx bx-at"></i>
-          <input pInputText id="username" formControlName="username" />
+      <!-- Información Profesional -->
+      <div class="section-card">
+        <h3><i class="pi pi-briefcase"></i> Información Profesional</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label>Especialidad</label>
+            <input pInputText formControlName="specialty">
+          </div>
+          <div class="field">
+            <label>Cédula Profesional</label>
+            <input pInputText formControlName="license">
+          </div>
+          <div class="field">
+            <label>Teléfono de Contacto</label>
+            <input pInputText formControlName="phone">
+          </div>
+          <div class="field full-width">
+            <label>Biografía Profesional</label>
+            <textarea pTextarea formControlName="bio" rows="3" [autoResize]="true"></textarea>
+          </div>
         </div>
       </div>
+
+      <!-- Clínica y Ubicación -->
+      <div class="section-card">
+        <h3><i class="pi pi-map-marker"></i> Consultorio / Clínica</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre de la Clínica</label>
+            <input pInputText formControlName="clinic_name">
+          </div>
+          <div class="field full-width">
+            <label>Dirección Completa</label>
+            <input pInputText formControlName="address">
+          </div>
+        </div>
+      </div>
+
+      <!-- Redes Sociales -->
+      <div class="section-card">
+        <h3><i class="pi pi-share-alt"></i> Presencia Digital</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label><i class="pi pi-instagram"></i> Instagram</label>
+            <input pInputText formControlName="instagram" placeholder="@usuario">
+          </div>
+          <div class="field">
+            <label><i class="pi pi-twitter"></i> Twitter/X</label>
+            <input pInputText formControlName="twitter" placeholder="@usuario">
+          </div>
+          <div class="field">
+            <label><i class="pi pi-facebook"></i> Facebook</label>
+            <input pInputText formControlName="facebook" placeholder="link/perfil">
+          </div>
+        </div>
+      </div>
+
+      <!-- Horarios -->
+      <div class="section-card">
+        <h3><i class="pi pi-calendar"></i> Disponibilidad</h3>
+        <div class="form-grid">
+          <div class="field full-width">
+            <label>Días de Consulta</label>
+            <p-multiSelect 
+              [options]="daysOptions" 
+              formControlName="working_days" 
+              optionLabel="label" 
+              optionValue="value"
+              placeholder="Seleccione días"
+              display="chip">
+            </p-multiSelect>
+          </div>
+          <div class="field full-width">
+            <label>Rango de Horario</label>
+            <input pInputText formControlName="working_hours" placeholder="Ej. 09:00 - 18:00">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" *ngIf="isEditing()">
+      <gm-rounded-button 
+        type="submit" 
+        label="Guardar Cambios" 
+        [loading]="authStore.isLoading()">
+      </gm-rounded-button>
     </div>
   </form>
-</section>
+</div>

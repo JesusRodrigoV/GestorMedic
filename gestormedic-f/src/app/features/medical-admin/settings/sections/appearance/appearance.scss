@@ -1,93 +1,111 @@
-.settings-section {
-  background-color: var(--surface-card, #ffffff);
-  border: 1px solid var(--surface-border, #e2e8f0);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  max-width: 800px;
-  margin: 1rem 0;
+.appearance-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
-  .section-header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 1rem;
+  .settings-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
 
-    h3 {
-      color: #003566;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.025em;
+    &.stack {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
     }
 
-    p {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin: 0;
-      line-height: 1.5;
+    .section-info {
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      p {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
     }
   }
 
-  .settings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  .settings-divider {
+    height: 1px;
+    background: var(--border-color);
+  }
 
-    .settings-item {
+  .accent-picker {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+
+    .accent-option {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 1.25rem;
-      background-color: #f8fafc;
-      border: 1px solid #f1f5f9;
-      border-radius: 10px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
 
       &:hover {
-        background-color: #f1f5f9;
-        border-color: #e2e8f0;
-        transform: translateY(-1px);
+        background: var(--p-surface-50);
       }
 
-      .item-copy {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        padding-right: 1.5rem;
-
-        .item-title {
-          color: #1e293b;
-          font-size: 0.95rem;
+      &.active {
+        border-color: var(--p-primary-500);
+        background: var(--p-primary-50);
+        
+        span {
           font-weight: 600;
+          color: var(--p-primary-700);
         }
-
-        .item-desc {
-          color: #64748b;
-          font-size: 0.8rem;
-          line-height: 1.4;
+        i {
+          margin-left: auto;
+          color: var(--p-primary-600);
         }
       }
 
-      ::ng-deep .p-toggleswitch {
-        width: 3rem;
-        height: 1.5rem;
-
-        .p-toggleswitch-slider {
-          background: #cbd5e1;
-          border-radius: 30px;
-
-          &:before {
-            width: 1.1rem;
-            height: 1.1rem;
-            left: 0.2rem;
-            margin-top: -0.55rem;
-          }
-        }
-
-        &.p-toggleswitch-checked .p-toggleswitch-slider {
-          background: #003566; 
-        }
+      .color-circle {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
       }
     }
+  }
+
+  .density-options {
+    display: flex;
+    gap: 0.75rem;
+
+    .density-chip {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: var(--p-surface-50);
+      }
+
+      &.active {
+        background: var(--p-primary-600);
+        color: white;
+        border-color: var(--p-primary-600);
+      }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
   }
 }

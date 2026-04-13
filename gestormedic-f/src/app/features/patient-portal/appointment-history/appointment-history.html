@@ -1,1 +1,66 @@
-<p>appointment-history works!</p>
+<div class="appointment-history-container">
+  <header class="page-header">
+    <div class="header-info">
+      <h1>Mis Citas Médicas</h1>
+      <p>Consulta tu historial de consultas y próximas citas programadas.</p>
+    </div>
+    <div class="header-actions">
+      <p-button label="Agendar Nueva Cita" icon="pi pi-calendar-plus" severity="primary"></p-button>
+    </div>
+  </header>
+
+  <div class="history-grid">
+    <div class="stats-cards">
+      <div class="stat-card total">
+        <div class="icon-box"><i class="pi pi-calendar"></i></div>
+        <div class="stat-info">
+          <span class="label">Total de Citas</span>
+          <span class="value">12</span>
+        </div>
+      </div>
+      <div class="stat-card upcoming">
+        <div class="icon-box"><i class="pi pi-clock"></i></div>
+        <div class="stat-info">
+          <span class="label">Próximas</span>
+          <span class="value">2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="appointments-list-card">
+      <div class="card-header">
+        <h3>Listado de Consultas</h3>
+      </div>
+
+      <div class="appointment-timeline">
+        @for (appointment of history(); track appointment.id) {
+          <div class="timeline-item" [class.upcoming]="appointment.isUpcoming">
+            <div class="date-col">
+              <span class="day">{{ appointment.day }}</span>
+              <span class="month">{{ appointment.month }}</span>
+            </div>
+            <div class="content-col">
+              <div class="doctor-info">
+                <p-avatar [image]="appointment.doctorPhoto" shape="circle" size="normal"></p-avatar>
+                <div class="text">
+                  <span class="doctor-name">{{ appointment.doctorName }}</span>
+                  <span class="specialty">{{ appointment.specialty }}</span>
+                </div>
+              </div>
+              <div class="details">
+                <span class="time"><i class="pi pi-clock"></i> {{ appointment.time }}</span>
+                <span class="location"><i class="pi pi-map-marker"></i> {{ appointment.location }}</span>
+              </div>
+            </div>
+            <div class="status-col">
+              <p-tag [severity]="appointment.statusSeverity" [value]="appointment.status"></p-tag>
+              @if (appointment.hasReport) {
+                <p-button label="Ver Informe" icon="pi pi-file-pdf" [text]="true" size="small" (onClick)="onViewReport(appointment.id)"></p-button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

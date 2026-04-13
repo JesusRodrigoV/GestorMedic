@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gestormedic_db
+    restart: always
+    environment:
+      POSTGRES_USER: gestor_user
+      POSTGRES_PASSWORD: gestor_password
+      POSTGRES_DB: gestormedic_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./gestormedic-b
+    container_name: gestormedic_api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://gestor_user:gestor_password@db:5432/gestormedic_db
+      SECRET_KEY: "dev_secret_key"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./gestormedic-b:/app
+    depends_on:
+      - db
+
+  frontend:
+    build: ./gestormedic-f
+    container_name: gestormedic_web
+    restart: always
+    command: npm run start
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./gestormedic-f:/app
+      - /app/node_modules # Evita que los node_modules locales sobrescriban los del contenedor
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

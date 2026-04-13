@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
@@ -8,6 +8,8 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { NgOptimizedImage } from '@angular/common';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
+import { Auth } from '@core/services/auth';
+import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'gm-register-patient',
@@ -28,6 +30,9 @@ import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 })
 export default class RegisterPatient {
   private fb = inject(FormBuilder);
+  private auth = inject(Auth);
+  private router = inject(Router);
+  private notification = inject(NotificationService);
 
   isProcessing = signal(false);
   formSubmitted = signal(false);
@@ -63,12 +68,40 @@ export default class RegisterPatient {
 
     this.isProcessing.set(true);
 
-    // Aquí iría la lógica de AuthStore para crear el paciente
-    console.log('Registrando paciente:', this.registerForm.getRawValue());
+    const { fullName, email, password } = this.registerForm.getRawValue();
+    const [firstName, ...rest] = fullName.trim().split(' ');
+    const lastName = rest.join(' ');
 
-    setTimeout(() => {
-      this.isProcessing.set(false);
-    }, 1500); // Simulación
+    this.auth
+      .register({
+        email,
+        username: email.split('@')[0],
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        role_id: 3,
+      })
+      .subscribe({
+        next: () => {
+          this.notification
+            .builder()
+            .success()
+            .summary('Cuenta creada')
+            .detail('Tu cuenta de paciente fue creada. Ahora puedes iniciar sesión.')
+            .show();
+          this.isProcessing.set(false);
+          this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          this.notification
+            .builder()
+            .error()
+            .summary('Registro fallido')
+            .detail('No se pudo crear la cuenta de paciente.')
+            .show();
+          this.isProcessing.set(false);
+        },
+      });
   }
 
   onGoogleRegister() {

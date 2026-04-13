@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { NgOptimizedImage } from '@angular/common';
 import { AuthStore } from '../stores/auth.store';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'gm-login',
@@ -46,12 +47,17 @@ export default class Login {
     const credentials = this.loginForm.getRawValue();
 
     this.authStore.login(credentials).subscribe({
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
+        const detail =
+          err.status === 401
+            ? 'El correo o la contraseña son incorrectos.'
+            : 'Ocurrió un error al intentar iniciar sesión. Por favor, intente más tarde.';
+
         this._notification
           .builder()
           .error()
-          .summary('Fallo en la autenticación')
-          .detail('Las credenciales proporcionadas son incorrectas.')
+          .summary('Error de inicio de sesión')
+          .detail(detail)
           .show();
       },
     });

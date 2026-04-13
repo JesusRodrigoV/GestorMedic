@@ -42,6 +42,14 @@
 
     <gm-notification-button />
 
+    <gm-rounded-button
+      label="Cerrar sesión"
+      icon="bx bx-log-out"
+      variant="outlined"
+      size="small"
+      (onClick)="onLogout()"
+    />
+
     <div class="user-capsule" pTooltip="Opciones de cuenta" tooltipPosition="bottom">
       <div class="user-meta">
         <span class="user-name">{{ userDisplayName() }}</span>

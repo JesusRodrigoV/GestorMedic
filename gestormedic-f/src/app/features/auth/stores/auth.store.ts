@@ -1,7 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
-import { AuthState } from '@core/models/auth.model';
+import { catchError, tap, throwError } from 'rxjs';
+import {
+  AppearanceSettingsPayload,
+  AuthState,
+  NotificationSettingsPayload,
+  UpdateProfilePayload,
+  User,
+} from '@core/models/auth.model';
 import { Auth } from '@core/services/auth';
 
 @Injectable({
@@ -28,41 +34,80 @@ export class AuthStore {
       tap({
         next: (res) => {
           localStorage.setItem('gm_token', res.access_token);
-          this.fetchUser();
+          this.fetchUser(true);
         },
-        error: (err) => this.state.update((s) => ({ ...s, status: 'error', error: err.message })),
       }),
+      catchError((err) => {
+        this.state.update((s) => ({ ...s, status: 'error', error: err.message }));
+        return throwError(() => err);
+      })
     );
   }
 
-  updateProfile(data: any) {
+  private setAuthenticatedUser(user: User) {
+    this.state.update((s) => ({
+      ...s,
+      user,
+      status: 'authenticated',
+      error: null,
+    }));
+  }
+
+  updateProfile(data: UpdateProfilePayload) {
     this.state.update((s) => ({ ...s, status: 'loading' }));
 
     return this.authService.updateProfile(data).pipe(
       tap({
         next: (updatedUser) => {
-          this.state.update((s) => ({
-            ...s,
-            user: updatedUser,
-            status: 'authenticated',
-            error: null,
-          }));
-        },
-        error: (err) => {
-          this.state.update((s) => ({ ...s, status: 'error', error: err.message }));
+          this.setAuthenticatedUser(updatedUser);
         },
       }),
+      catchError((err) => {
+        this.state.update((s) => ({ ...s, status: 'error', error: err.message }));
+        return throwError(() => err);
+      })
     );
   }
 
-  fetchUser() {
+  updateNotificationPreferences(data: NotificationSettingsPayload) {
+    this.state.update((s) => ({ ...s, status: 'loading' }));
+
+    return this.authService.updateNotifications(data).pipe(
+      tap({
+        next: (updatedUser) => {
+          this.setAuthenticatedUser(updatedUser);
+        },
+      }),
+      catchError((err) => {
+        this.state.update((s) => ({ ...s, status: 'error', error: err.message }));
+        return throwError(() => err);
+      })
+    );
+  }
+
+  updateAppearancePreferences(data: AppearanceSettingsPayload) {
+    this.state.update((s) => ({ ...s, status: 'loading' }));
+
+    return this.authService.updateAppearance(data).pipe(
+      tap({
+        next: (updatedUser) => {
+          this.setAuthenticatedUser(updatedUser);
+        },
+      }),
+      catchError((err) => {
+        this.state.update((s) => ({ ...s, status: 'error', error: err.message }));
+        return throwError(() => err);
+      })
+    );
+  }
+
+  fetchUser(redirectToDashboard = false) {
     this.authService.getMe().subscribe({
       next: (user) => {
-        console.group('AuthStore: FetchUser Success');
-        console.log('Datos recibidos del servidor:', user);
-        console.groupEnd();
-        this.state.update((s) => ({ ...s, user, status: 'authenticated' }));
-        this.router.navigate(['/app/dashboard']);
+        this.setAuthenticatedUser(user);
+        if (redirectToDashboard) {
+          this.router.navigate([user.role_id === 3 ? '/portal/appointments' : '/app/dashboard']);
+        }
       },
       error: () => this.logout(),
     });

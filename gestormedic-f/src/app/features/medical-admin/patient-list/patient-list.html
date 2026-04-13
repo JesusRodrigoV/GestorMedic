@@ -1,1 +1,71 @@
-<p>patient-list works!</p>
+<div class="patient-list-container">
+  <div class="header-section">
+    <div class="title-group">
+      <h2>Gestión de Pacientes</h2>
+      <p>Administra y consulta la información de tus pacientes registrados.</p>
+    </div>
+    <gm-rounded-button label="Nuevo Paciente" icon="pi pi-plus"></gm-rounded-button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <p-iconField iconPosition="left">
+        <p-inputIcon class="pi pi-search"></p-inputIcon>
+        <input 
+          pInputText 
+          type="text" 
+          (input)="onSearch($event)" 
+          placeholder="Buscar por nombre o DNI..." 
+          class="search-input"/>
+      </p-iconField>
+      
+      <div class="filters">
+        <gm-rounded-button label="Filtrar" icon="pi pi-filter" variant="outlined"></gm-rounded-button>
+        <gm-rounded-button label="Exportar" icon="pi pi-download" variant="outlined"></gm-rounded-button>
+      </div>
+    </div>
+
+    <p-table 
+      [value]="filteredPatients" 
+      [paginator]="true" 
+      [rows]="10" 
+      [responsiveLayout]="'scroll'"
+      class="custom-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 300px">Paciente</th>
+          <th>DNI / Cédula</th>
+          <th>Teléfono</th>
+          <th>Última Visita</th>
+          <th>Estado</th>
+          <th style="width: 100px">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-patient>
+        <tr>
+          <td>
+            <div class="patient-cell">
+              <p-avatar [image]="patient.photo" shape="circle" size="large"></p-avatar>
+              <div class="info">
+                <span class="name">{{ patient.name }}</span>
+                <span class="email">{{ patient.email }}</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ patient.dni }}</td>
+          <td>{{ patient.phone }}</td>
+          <td>{{ patient.lastVisit }}</td>
+          <td>
+            <p-tag [value]="patient.status" [severity]="patient.statusSeverity" [rounded]="true"></p-tag>
+          </td>
+          <td class="text-center">
+            <div class="actions">
+              <button pButton icon="pi pi-eye" class="p-button-text p-button-secondary" pTooltip="Ver Historia"></button>
+              <button pButton icon="pi pi-pencil" class="p-button-text p-button-secondary" pTooltip="Editar"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

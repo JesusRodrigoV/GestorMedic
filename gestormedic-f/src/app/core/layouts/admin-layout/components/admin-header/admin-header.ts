@@ -53,6 +53,8 @@ export class AdminHeader {
         return 'Administrador de Centro';
       case 2:
         return 'Médico Especialista';
+      case 3:
+        return 'Paciente';
       default:
         return 'Personal Autorizado';
     }

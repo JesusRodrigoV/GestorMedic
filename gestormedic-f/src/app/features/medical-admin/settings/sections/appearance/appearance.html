@@ -1,18 +1,62 @@
-<section class="settings-section">
-  <header class="section-header">
-    <h3>Entorno Atmosférico</h3>
-    <p>Ajuste la iluminación de la interfaz para reducir la fatiga visual.</p>
-  </header>
-
-  <div class="settings-list">
-    <div class="settings-item">
-      <div class="item-copy">
-        <span class="item-title">Modo Oscuro (Noche)</span>
-        <span class="item-desc"
-          >Activa una paleta de alta protección para entornos de baja luz.</span
-        >
-      </div>
-      <p-toggleswitch [ngModel]="isDarkActive()" (onChange)="onToggleTheme()" />
+<div class="appearance-container">
+  <div class="settings-section">
+    <div class="section-info">
+      <h3>Modo Oscuro</h3>
+      <p>Ajusta la interfaz para reducir la fatiga visual en entornos con poca luz.</p>
+    </div>
+    <div class="section-action">
+      <p-toggleSwitch [ngModel]="isDarkActive()" (ngModelChange)="onToggleTheme($event)"></p-toggleSwitch>
     </div>
   </div>
-</section>
+
+  <div class="settings-divider"></div>
+
+  <div class="settings-section stack">
+    <div class="section-info">
+      <h3>Color de Énfasis</h3>
+      <p>Personaliza el color principal de los botones, enlaces y elementos destacados.</p>
+    </div>
+    <div class="accent-picker">
+      <div 
+        *ngFor="let color of accentColors" 
+        class="accent-option" 
+        [class.active]="selectedAccent() === color.value"
+        (click)="onAccentChange(color.value)">
+        <div class="color-circle" [style.backgroundColor]="color.color"></div>
+        <span>{{ color.name }}</span>
+        <i class="pi pi-check" *ngIf="selectedAccent() === color.value"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-divider"></div>
+
+  <div class="settings-section">
+    <div class="section-info">
+      <h3>Densidad de la Interfaz</h3>
+      <p>Cambia el espaciado de los elementos para ver más o menos contenido.</p>
+    </div>
+    <div class="density-options">
+      <div
+        class="density-chip"
+        [class.active]="selectedDensity() === 'standard'"
+        (click)="onDensityChange('standard')">
+        Estándar
+      </div>
+      <div
+        class="density-chip"
+        [class.active]="selectedDensity() === 'compact'"
+        (click)="onDensityChange('compact')">
+        Compacto
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <gm-rounded-button
+      label="Guardar Apariencia"
+      [loading]="authStore.isLoading()"
+      (onClick)="onSave()">
+    </gm-rounded-button>
+  </div>
+</div>

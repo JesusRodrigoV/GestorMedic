@@ -1,3 +1,25 @@
+@layer primeng;
+
+:root {
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+}
+
+:root.dark-mode {
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --bg-card: #0f172a;
+  --border-color: #1e293b;
+  --input-bg: #1e293b;
+  --input-border: #334155;
+}
+
 html {
   height: 100%;
   color-scheme: light;
@@ -12,4 +34,10 @@ body {
   margin: 0;
   box-sizing: border-box;
   font-family: "Source Sans 3", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--p-surface-50);
+  color: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
 }

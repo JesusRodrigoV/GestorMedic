@@ -1,0 +1,21 @@
+<section class="patient-history">
+  <div class="column">
+    <h2>Mi historial clínico</h2>
+    <article *ngFor="let record of records()">
+      <h4>{{ record.diagnosis }}</h4>
+      <p>{{ record.notes }}</p>
+      <small>{{ record.created_at | date: 'medium' }}</small>
+    </article>
+    <p class="empty" *ngIf="records().length === 0">No hay registros clínicos aún.</p>
+  </div>
+
+  <div class="column">
+    <h2>Mis recetas</h2>
+    <article *ngFor="let prescription of prescriptions()">
+      <h4>{{ prescription.medication }}</h4>
+      <p>{{ prescription.indications }}</p>
+      <small>{{ prescription.issued_at | date: 'medium' }} · {{ prescription.status }}</small>
+    </article>
+    <p class="empty" *ngIf="prescriptions().length === 0">No hay recetas registradas aún.</p>
+  </div>
+</section>

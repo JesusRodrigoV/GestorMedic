@@ -1,0 +1,54 @@
+<div class="finance-container">
+  <div class="header">
+    <div class="title-group">
+      <h2>Módulo Financiero</h2>
+      <p>Seguimiento de ingresos, facturación y estados de pago.</p>
+    </div>
+    <div class="actions">
+      <gm-rounded-button label="Nueva Factura" icon="pi pi-file-pdf"></gm-rounded-button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div *ngFor="let stat of stats" class="stat-card" [ngClass]="stat.color">
+      <span class="label">{{ stat.label }}</span>
+      <div class="value-row">
+        <h3>{{ stat.value }}</h3>
+        <span class="change">{{ stat.change }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="chart-section">
+      <p-card header="Evolución de Ingresos">
+        <p-chart type="line" [data]="chartData" height="300px"></p-chart>
+      </p-card>
+    </div>
+
+    <div class="invoices-section">
+      <p-card header="Últimas Facturas">
+        <p-table [value]="invoices">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>Monto</th>
+              <th>Estado</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-inv>
+            <tr>
+              <td>{{ inv.id }}</td>
+              <td>{{ inv.patient }}</td>
+              <td><strong>{{ inv.amount }}</strong></td>
+              <td>
+                <p-tag [value]="inv.status" [severity]="inv.status === 'Pagado' ? 'success' : 'warn'"></p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+</div>
