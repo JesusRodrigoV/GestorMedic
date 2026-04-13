@@ -1,34 +1,39 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException
-from starlette import status
+from fastapi import HTTPException, status
 from typing import Optional
 
 from app.models.staff_profile import StaffProfile
 from app.schemas.staff_profile import StaffProfileCreate, StaffProfileUpdate
 
 def get_staff(db: Session, profile_id: int) -> Optional[StaffProfile]:
-    return db.query(StaffProfile).filter(StaffProfile.id == profile_id).first()
+    stmt = select(StaffProfile).where(StaffProfile.id == profile_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 def get_staff_by_user_id(db: Session, user_id: int) -> Optional[StaffProfile]:
-    return db.query(StaffProfile).filter(StaffProfile.user_id == user_id).first()
+    stmt = select(StaffProfile).where(StaffProfile.user_id == user_id)
+    return db.execute(stmt).scalar_one_or_none()
 
 def create_staff(db: Session, profile_in: StaffProfileCreate) -> StaffProfile:
-    db_profile = StaffProfile(
-        user_id=profile_in.user_id,
-        employee_id=profile_in.employee_id,
-        position=profile_in.position
-    )
+    if get_staff_by_user_id(db, profile_in.user_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El usuario ya tiene un perfil de personal administrativo creado."
+        )
+
+    db_profile = StaffProfile(**profile_in.model_dump())
+    
     db.add(db_profile)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_profile)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Error al crear perfil de personal: {e.orig}"
+            detail="El ID de empleado ya está asignado a otro miembro del personal."
         )
-    db.refresh(db_profile)
     return db_profile
 
 def update_staff(db: Session, db_profile: StaffProfile, profile_in: StaffProfileUpdate) -> StaffProfile:
@@ -36,14 +41,21 @@ def update_staff(db: Session, db_profile: StaffProfile, profile_in: StaffProfile
     for field, value in update_data.items():
         setattr(db_profile, field, value)
 
-    db.add(db_profile)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_profile)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflicto al actualizar personal: {e.orig}"
+            detail="Conflicto de integridad al actualizar los datos del personal."
         )
-    db.refresh(db_profile)
     return db_profile
+
+def delete_staff(db: Session, profile_id: int) -> bool:
+    db_profile = get_staff(db, profile_id)
+    if not db_profile:
+        return False
+    db.delete(db_profile)
+    db.commit()
+    return True

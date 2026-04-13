@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session, Query, joinedload
+from sqlalchemy import select, or_, func
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from starlette import status
@@ -6,32 +7,36 @@ from typing import List, Optional
 
 from app.models.user import User
 from app.models.role import Role
+from app.models.associations import ClinicDoctor
 from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate, UserUpdateProfile
 from app.core.security import get_password_hash
 from app.core.enums import UserRole
 
 def _get_visitante_role_id(db: Session) -> int:
-    role = db.query(Role).filter(Role.name == UserRole.VISITANTE.value).first()
+    stmt = select(Role).where(Role.name == UserRole.VISITANTE.value)
+    role = db.execute(stmt).scalar_one_or_none()
     if not role:
-        raise RuntimeError(f"Rol por defecto '{UserRole.VISITANTE.value}' no encontrado en la base de datos")
+        raise RuntimeError(f"Rol por defecto '{UserRole.VISITANTE.value}' no encontrado")
     return role.id
 
 def get_user(db: Session, user_id: int) -> Optional[User]:
-    """
-    Obtiene un usuario por su ID
-    """
-    return db.query(User).options(
-        joinedload(User.role)
-    ).filter(User.id == user_id).first()
+    """Obtiene un usuario por su ID con su rol cargado"""
+    stmt = (
+        select(User)
+        .options(joinedload(User.role))
+        .where(User.id == user_id)
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
-def get_user_by_email(db: Session, email: str) -> User | None:
-    """
-    Busca un usuario por su email, aplicando normalizacion
-    """
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    """Busca un usuario por email"""
     normalized_email = email.strip().lower()
-    return db.query(User).options(
-        joinedload(User.role)
-    ).filter(User.email == normalized_email).first()
+    stmt = (
+        select(User)
+        .options(joinedload(User.role))
+        .where(User.email == normalized_email)
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
 def get_users_query(
     db: Session, 
@@ -39,44 +44,46 @@ def get_users_query(
     is_active: Optional[bool] = None,
     clinic_id: Optional[int] = None,
     search: Optional[str] = None
-) -> Query:
-    query = db.query(User).options(joinedload(User.role))
+):
+
+    stmt = select(User).options(joinedload(User.role))
     
     if role_id is not None:
-        query = query.filter(User.role_id == role_id)
+        stmt = stmt.where(User.role_id == role_id)
         
     if is_active is not None:
-        query = query.filter(User.is_active == is_active)
+        stmt = stmt.where(User.is_active == is_active)
         
     if clinic_id is not None:
-        query = query.filter(User.clinic_id == clinic_id)
+        stmt = stmt.join(User.clinics).where(ClinicDoctor.clinic_id == clinic_id)
         
     if search:
-        query = query.filter(
-            (User.username.ilike(f"%{search}%")) | 
-            (User.email.ilike(f"%{search}%")) |
-            (User.first_name.ilike(f"%{search}%")) |
-            (User.last_name.ilike(f"%{search}%"))
+        search_filter = f"%{search}%"
+        stmt = stmt.where(
+            or_(
+                User.username.ilike(search_filter),
+                User.email.ilike(search_filter),
+                User.first_name.ilike(search_filter),
+                User.last_name.ilike(search_filter)
+            )
         )
         
-    return query.order_by(User.id)
+    return stmt.order_by(User.id)
 
 def create_public_user(db: Session, user_in: UserCreate) -> User:
     if not user_in.password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La contraseña es obligatoria para el registro estándar."
+            detail="La contraseña es obligatoria."
         )
 
-    hashed_password = get_password_hash(user_in.password)
     role_id = _get_visitante_role_id(db)
-
     user = User(
-        email=user_in.email,
+        email=user_in.email.strip().lower(),
         username=user_in.username,
         first_name=user_in.first_name,
         last_name=user_in.last_name,
-        hashed_password=hashed_password,
+        hashed_password=get_password_hash(user_in.password),
         is_active=True,
         role_id=role_id
     )
@@ -84,13 +91,13 @@ def create_public_user(db: Session, user_in: UserCreate) -> User:
     db.add(user)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(user)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Email o nombre de usuario ya existen: {e.orig}"
+            detail="El email o nombre de usuario ya están registrados."
         )
-    db.refresh(user)
     return user
 
 def create_user_by_google(
@@ -101,13 +108,11 @@ def create_user_by_google(
     first_name: Optional[str] = None, 
     last_name: Optional[str] = None
 ) -> User:
-    """
-    Exclusivo para pacientes: Crea usuario saltándose el hashing de contraseña.
-    """
+    """Crea un usuario autenticado por Google"""
     role_id = _get_visitante_role_id(db)
     
     user = User(
-        email=email,
+        email=email.strip().lower(),
         username=username,
         first_name=first_name,
         last_name=last_name,
@@ -120,28 +125,25 @@ def create_user_by_google(
     db.add(user)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(user)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflicto de cuenta de Google: {e.orig}"
+            detail="Esta cuenta de Google ya esta vinculada a otro usuario."
         )
-    db.refresh(user)
     return user
 
 def create_user_by_admin(db: Session, user_in: AdminUserCreate) -> User:
     if not user_in.password:
         raise HTTPException(status_code=400, detail="Contraseña requerida")
         
-    hashed_password = get_password_hash(user_in.password)
-
     user = User(
-        email=user_in.email,
+        email=user_in.email.strip().lower(),
         username=user_in.username,
         first_name=user_in.first_name,
         last_name=user_in.last_name,
-        clinic_id=user_in.clinic_id,
-        hashed_password=hashed_password,
+        hashed_password=get_password_hash(user_in.password),
         is_active=user_in.is_active,
         role_id=user_in.role_id 
     )
@@ -149,59 +151,56 @@ def create_user_by_admin(db: Session, user_in: AdminUserCreate) -> User:
     db.add(user)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(user)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Email o nombre de usuario ya existen: {e.orig}"
+            detail="Conflicto: Email o Username ya existen."
         )
-    db.refresh(user)
     return user
 
-def update_user_by_admin(db: Session, db_user_to_update: User, user_in: AdminUserUpdate) -> User:
+def update_user_by_admin(db: Session, db_user: User, user_in: AdminUserUpdate) -> User:
+    """Actualización administrativa"""
     update_data = user_in.model_dump(exclude_unset=True)
+    
     for field, value in update_data.items():
-        setattr(db_user_to_update, field, value)
+        setattr(db_user, field, value)
 
-    db.add(db_user_to_update)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_user)
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflicto de datos: {e.orig}"
-        )
-    db.refresh(db_user_to_update)
-    return db_user_to_update
-
-def delete_user_by_admin(db: Session, user_id_to_delete: int) -> Optional[User]:
-    db_user = db.query(User).filter(User.id == user_id_to_delete).first()
-    if not db_user:
-        return None
-    
-    db.delete(db_user)
-    db.commit()
+        raise HTTPException(status_code=409, detail="Conflicto al actualizar datos únicos.")
     return db_user
 
-def update_own_profile(db: Session, db_user_to_update: User, user_in: UserUpdateProfile) -> User:
+def delete_user_by_admin(db: Session, user_id: int) -> bool:
+    """Eliminación física de usuario"""
+    user = get_user(db, user_id)
+    if not user:
+        return False
+    
+    db.delete(user)
+    db.commit()
+    return True
+
+def update_own_profile(db: Session, db_user: User, user_in: UserUpdateProfile) -> User:
+    """Actualización del perfil por el propio usuario"""
     update_data = user_in.model_dump(exclude_unset=True)
     
     for field, value in update_data.items():
-        setattr(db_user_to_update, field, value)
+        setattr(db_user, field, value)
         
-    db.add(db_user_to_update)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_user)
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflicto de datos: {e.orig}"
-        )
-    db.refresh(db_user_to_update)
-    return db_user_to_update
+        raise HTTPException(status_code=409, detail="Datos en uso por otro usuario.")
+    return db_user
 
-def update_password(db: Session, db_user: User, new_password: str) -> User:
+def update_password(db: Session, db_user: User, new_password: str) -> None:
+    """Cambio de contraseña seguro"""
     db_user.hashed_password = get_password_hash(new_password)
-    db
+    db.commit()

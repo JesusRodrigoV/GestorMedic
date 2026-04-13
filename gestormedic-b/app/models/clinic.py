@@ -1,24 +1,36 @@
-from sqlalchemy import Column, Integer, String, Boolean, Enum as SQLEnum, DateTime, func
-from sqlalchemy.orm import relationship
+from typing import Optional, List
+from sqlalchemy import String, Boolean, Enum as SQLEnum, DateTime, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy_utils import EncryptedType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
+
 from app.db.base import Base
 from app.core.enums import PlanType
+from app.core.config import settings
 
 class Clinic(Base):
     __tablename__ = "clinics"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(200), nullable=False, index=True)
-    nit_ruc = Column(String(50), unique=True, nullable=False) 
-    address = Column(String(500), nullable=True)
-    phone = Column(String(50), nullable=True)
-    logo_url = Column(String(2048), nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     
-    is_active = Column(Boolean, default=True)
-    plan = Column(SQLEnum(PlanType), default=PlanType.FREE)
+    #PII Encriptado
+    nit_ruc: Mapped[str] = mapped_column(
+        EncryptedType(String(100), settings.SECRET_KEY, AesEngine, 'pkcs5'),
+        unique=True, nullable=False
+    )
+    phone: Mapped[Optional[str]] = mapped_column(
+        EncryptedType(String(50), settings.SECRET_KEY, AesEngine, 'pkcs5')
+    )
     
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    address: Mapped[Optional[str]] = mapped_column(String(500))
+    logo_url: Mapped[Optional[str]] = mapped_column(String(2048))
+    is_active: Mapped[bool] = mapped_column(default=True)
+    plan: Mapped[PlanType] = mapped_column(SQLEnum(PlanType), default=PlanType.FREE)
+    
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    staff = relationship("User", back_populates="clinic")
-    doctors = relationship("DoctorProfile", secondary="clinic_doctors", back_populates="clinics")
-    specialties = relationship("Specialty", secondary="clinic_specialties", back_populates="clinics")
-    rooms = relationship("Room", back_populates="clinic")
+    doctor_associations: Mapped[List["ClinicDoctor"]] = relationship("ClinicDoctor", back_populates="clinic")
+    specialty_associations: Mapped[List["ClinicSpecialty"]] = relationship("ClinicSpecialty", back_populates="clinic")
+    
+    rooms: Mapped[List["Room"]] = relationship("Room", back_populates="clinic", cascade="all, delete-orphan")

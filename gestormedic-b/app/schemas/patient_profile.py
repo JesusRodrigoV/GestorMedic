@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional
 from datetime import date
+import re
 
 class PatientProfileBase(BaseModel):
     ci_number: str
@@ -11,6 +12,13 @@ class PatientProfileBase(BaseModel):
     occupation: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
+
+    @field_validator('ci_number')
+    @classmethod
+    def validate_ci(cls, v: str) -> str:
+        if not re.match(r"^\d{5,10}(-\w{1,2})?$", v):
+            raise ValueError("Formato de CI no válido")
+        return v
 
 class PatientProfileCreate(PatientProfileBase):
     user_id: int
@@ -29,5 +37,4 @@ class PatientProfileOut(PatientProfileBase):
     id: int
     user_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
