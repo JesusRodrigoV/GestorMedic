@@ -1,0 +1,45 @@
+.gm-videocall-features {
+	margin: 2.25rem 0;
+	padding: 1rem 0.25rem;
+	.features-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1rem;
+	}
+
+	.feature {
+		background: linear-gradient(180deg, #ffffff, #fbfeff);
+		border: 1px solid rgba(2, 62, 86, 0.06);
+		border-left: 4px solid rgba(0, 168, 232, 0.12);
+		border-radius: 14px;
+		padding: 1.1rem 1.2rem;
+		box-shadow: 0 10px 30px rgba(3, 10, 21, 0.04);
+		transition: transform 0.22s ease, box-shadow 0.22s ease;
+
+		&:hover {
+			transform: translateY(-6px);
+			box-shadow: 0 22px 44px rgba(3, 10, 21, 0.07);
+		}
+
+		strong {
+			display: block;
+			color: #062033;
+			font-weight: 800;
+			margin-bottom: 0.35rem;
+			font-size: 1.02rem;
+		}
+
+		p {
+			margin: 0;
+			color: #475569;
+			line-height: 1.5;
+		}
+	}
+
+	&.gm-videocall-features-host {
+		/* subtle section accent */
+		background: linear-gradient(90deg, rgba(0,168,232,0.03), rgba(3,10,21,0.01));
+		padding: 1.5rem 1rem;
+		border-radius: 12px;
+	}
+}

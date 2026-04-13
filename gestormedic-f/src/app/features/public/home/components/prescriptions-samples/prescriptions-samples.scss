@@ -1,0 +1,41 @@
+.gm-prescriptions-samples {
+	margin: 1.75rem 0;
+
+	h3 {
+		color: #0f172a;
+		margin: 0 0 0.75rem 0;
+		font-size: 1.25rem;
+		font-weight: 800;
+	}
+
+	.samples-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+
+	.sample-card {
+		background: #fff;
+		border: 1px solid rgba(3, 10, 21, 0.04);
+		padding: 1rem;
+		border-radius: 12px;
+		box-shadow: 0 8px 20px rgba(3, 10, 21, 0.03);
+
+		strong {
+			display: block;
+			color: #062033;
+			margin-bottom: 0.5rem;
+		}
+
+		ul {
+			margin: 0;
+			padding-left: 1.1rem;
+			color: #475569;
+
+			li {
+				margin-bottom: 0.35rem;
+				color: #475569;
+			}
+		}
+	}
+}

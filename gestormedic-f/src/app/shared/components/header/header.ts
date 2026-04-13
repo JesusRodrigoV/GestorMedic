@@ -39,9 +39,12 @@ export class Header {
 
   navLinks = signal([
     { label: 'Inicio', route: '/home' },
-    { label: 'Médicos', route: '/search' },
-    { label: 'Planes', route: '/public/plans' },
-    { label: 'app', route: '/app' },
+    { label: 'Especialidades', route: '/especialidades' },
+    { label: 'Directorio', route: '/directorio' },
+    { label: 'Videollamada', route: '/videollamada' },
+    { label: 'Recetas', route: '/recetas' },
+    { label: 'Nosotros', route: '/nosotros' },
+    { label: 'Acceso', route: '/acceso' },
   ]);
 
   onLogout(): void {

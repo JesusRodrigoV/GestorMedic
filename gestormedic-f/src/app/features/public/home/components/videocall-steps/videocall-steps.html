@@ -1,0 +1,11 @@
+<section class="gm-videocall-steps">
+  <h3>Flujo de la videollamada</h3>
+  <ol class="steps-list">
+    @for (s of steps(); track s.id) {
+      <li>
+        <strong>{{ s.title }}</strong>
+        <p>{{ s.detail }}</p>
+      </li>
+    }
+  </ol>
+</section>

@@ -1,71 +1,51 @@
 <footer class="gm-footer">
-  <div class="footer-mesh" aria-hidden="true">
-    <div class="mesh-orb mesh-orb--1"></div>
-    <div class="mesh-orb mesh-orb--2"></div>
-  </div>
-
-  <div class="footer-top-rule"></div>
-
   <div class="footer-content">
-    <div class="footer-col footer-col--brand">
-      <div class="footer-brand" routerLink="/">
-        <div class="footer-brand__logo">
-          <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="30" height="30" priority />
-        </div>
-        <span class="footer-brand__name">GestorMedic</span>
-      </div>
-      <p class="footer-brand__desc">
-        Infraestructura digital para la gestión clínica integral en Bolivia. Soberanía técnica y
-        precisión documental al servicio del profesional.
-      </p>
-      <div class="footer-social">
+    <section class="footer-col">
+      <h4>Social</h4>
+      <div class="social-list">
         @for (link of socialLinks(); track link.label) {
-          <a [href]="link.url" class="social-btn" [attr.aria-label]="link.label">
-            <i class="bx" [class]="link.icon"></i>
-          </a>
+          <a [href]="link.url" [attr.aria-label]="link.label"><i class="bx" [class]="link.icon"></i></a>
         }
       </div>
-    </div>
+    </section>
 
-    <div class="footer-col">
-      <h4 class="footer-col__title">Jurisdicción</h4>
-      <ul class="footer-col__list">
-        <li><a routerLink="/features" class="footer-link">Funcionalidades</a></li>
-        <li><a routerLink="/plans" class="footer-link">Planes y Precios</a></li>
-        <li><a routerLink="/security" class="footer-link">Seguridad Cloud</a></li>
-      </ul>
-    </div>
+    <section class="footer-col">
+      <h4>Producto</h4>
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/especialidades">Especialidades</a>
+      <a routerLink="/directorio">Directorio medico</a>
+      <a routerLink="/videollamada">Videollamada</a>
+      <a routerLink="/recetas">Recetas digitales</a>
+    </section>
 
-    <div class="footer-col">
-      <h4 class="footer-col__title">Recursos</h4>
-      <ul class="footer-col__list">
-        <li><a href="#" class="footer-link">Centro de Ayuda</a></li>
-        <li><a href="#" class="footer-link">Guía para Médicos</a></li>
-      </ul>
-    </div>
+    <section class="footer-col">
+      <h4>Nosotros</h4>
+      <a routerLink="/nosotros">Sobre GestorMedic</a>
+      <a href="#">Politica de privacidad</a>
+      <a href="#">Terminos y condiciones</a>
+    </section>
 
-    <div class="footer-col footer-col--trust">
-      <h4 class="footer-col__title">Integridad</h4>
-      <div class="trust-badges">
-        <div class="trust-badge">
-          <div class="trust-badge__icon"><i class="bx bx-shield-quarter"></i></div>
-          <div class="trust-badge__copy">
-            <span class="trust-badge__label">Datos Cifrados</span>
-            <span class="trust-badge__sub">Protección AES-256</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <section class="footer-col">
+      <h4>Recursos</h4>
+      <a href="#">Blog de salud digital</a>
+      <a href="#">Documentacion clinica</a>
+      <a href="#">Notas de version</a>
+    </section>
+
+    <section class="footer-col">
+      <h4>Soporte</h4>
+      <a routerLink="/acceso">Acceso</a>
+      <a href="#">Contacto</a>
+      <a href="#">Mesa de ayuda</a>
+    </section>
   </div>
 
   <div class="footer-bottom">
-    <div class="footer-bottom__inner">
-      <span class="footer-bottom__copy"> © {{ currentYear() }} GestorMedic. Bolivia. </span>
-      <div class="footer-bottom__legal">
-        <a href="#" class="footer-bottom__link">Privacidad</a>
-        <span>•</span>
-        <a href="#" class="footer-bottom__link">Términos</a>
-      </div>
+    <p>© {{ currentYear() }} GestorMedic. Todos los derechos reservados</p>
+    <div class="footer-bottom__center">
+      <span>A Product by</span>
+      <strong>GestorMedic</strong>
     </div>
+    <a class="footer-badge" href="#">Made in Bolivia</a>
   </div>
 </footer>
