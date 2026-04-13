@@ -57,17 +57,15 @@
   animation: fadeInDown $animation-normal $ease-out;
   
   .brand-logo {
-    display: inline-flex;
-    background: $color-bg-secondary;
-    padding: $spacing-sm;
-    border-radius: $border-radius-lg;
-    border: 1px solid $color-border-default;
+    display: block;
     margin-bottom: $spacing-lg;
     
     img {
       display: block;
-      width: auto;
-      height: auto;
+      margin: 0 auto;
+      width: 4rem;
+      height: 4rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
     }
   }
   

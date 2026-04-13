@@ -2,8 +2,8 @@
   <div class="onboarding-container">
     <!-- Header -->
     <header class="onboarding-header">
-      <div class="brand-logo">
-        <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="40" height="40" priority />
+      <div class="brand-logo" style="background: transparent; border: none; box-shadow: none;">
+        <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="64" height="64" priority />
       </div>
       <h1 class="title">Registro de Profesional Médico</h1>
       <p class="subtitle">
@@ -213,10 +213,12 @@
             <div class="textarea-container">
               <i class="bx bx-message-square-detail"></i>
               <textarea
+                pInputTextarea
                 id="bio"
                 formControlName="bio"
                 placeholder="Cuéntenos sobre su experiencia, especialización, y lo que hace usted diferente..."
                 rows="5"
+                [autoResize]="true"
               ></textarea>
             </div>
             @let bioControl = registerForm.get('bio');
@@ -254,9 +256,16 @@
     </form>
 
     <!-- Footer -->
-    <footer class="onboarding-footer">
-      <p>¿Ya tiene una cuenta? <a routerLink="/auth/login">Iniciar sesión</a></p>
-      <p class="footer-note">
+    <footer class="onboarding-footer" style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; margin-top: 1.5rem;">
+      <p style="margin: 0;">¿Ya tiene una cuenta? <a routerLink="/auth/login" style="color: var(--p-primary-color);">Iniciar sesión</a></p>
+      <div class="auth-links" style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+        <a routerLink="/auth/forgot-password" style="color: var(--p-text-muted-color);">¿Olvidó su contraseña?</a>
+        <span style="color: #cbd5e1;">|</span>
+        <a routerLink="/auth/register" style="color: var(--p-primary-color); display: flex; align-items: center; gap: 0.25rem;">
+          <i class="bx bx-arrow-back"></i> Volver a selección
+        </a>
+      </div>
+      <p class="footer-note" style="margin-top: 1rem;">
         Al registrarse, acepta nuestros <a href="#">términos de servicio</a> y
         <a href="#">política de privacidad</a>
       </p>

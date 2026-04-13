@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { TextareaModule } from 'primeng/textarea';
 import { AuthStore } from '@features/auth/stores/auth.store';
 import { Auth } from '@core/services/auth';
 import { NotificationService } from '@core/services/notification';
@@ -18,6 +19,7 @@ import { NgOptimizedImage } from '@angular/common';
     ReactiveFormsModule,
     InputTextModule,
     PasswordModule,
+    TextareaModule,
     RoundedButton,
     RouterLink,
     NgOptimizedImage,

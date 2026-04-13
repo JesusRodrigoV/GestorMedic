@@ -61,9 +61,10 @@
   
   img {
     display: block;
-    margin-bottom: $spacing-md;
-    width: auto;
-    height: auto;
+    margin: 0 auto $spacing-md;
+    width: 4rem;
+    height: 4rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
   }
   
   .yale-title {
