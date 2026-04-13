@@ -1,201 +1,348 @@
+// ============================================================================
+// REGISTER GATE COMPONENT STYLES
+// ============================================================================
+// Role selection screen refactored with design system: refined cards,
+// better shadows, hover/focus animations, and visual hierarchy
+
+@import '../../../shared/styles/design-tokens.scss';
+@import '../../../shared/styles/card-system.scss';
+
+// ============================================================================
+// MAIN CONTAINER
+// ============================================================================
 .gm-register-gate {
   width: 100%;
   height: 100dvh;
-  min-height: 700px; 
-  background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+  min-height: 700px;
+  
+  background: radial-gradient(circle at center, #ffffff 0%, $color-bg-secondary 100%);
+  
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  
+  padding: $spacing-lg;
   box-sizing: border-box;
-  overflow-y: auto; 
+  overflow-y: auto;
+}
 
-  .gate-header {
-    text-align: center;
-    margin-bottom: 2.5rem; 
-    animation: fadeInDown 0.6s ease-out;
-
-    .logo-wrapper {
-      background: white;
-      padding: 12px;
-      border-radius: 16px;
-      display: inline-flex;
-      box-shadow: 0 10px 25px rgba(0, 53, 102, 0.08);
-      margin-bottom: 1rem;
-      border: 1px solid rgba(226, 232, 240, 0.5);
+// ============================================================================
+// HEADER SECTION
+// ============================================================================
+.gate-header {
+  text-align: center;
+  margin-bottom: $spacing-2xl;
+  animation: fadeInDown $animation-normal $ease-out;
+  
+  .logo-wrapper {
+    background: $color-bg-primary;
+    padding: $spacing-sm;
+    border-radius: $border-radius-xl;
+    
+    display: inline-flex;
+    box-shadow: $shadow-light;
+    margin-bottom: $spacing-md;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    
+    img {
+      display: block;
+      width: auto;
+      height: auto;
     }
-
-    .gate-title {
-      font-size: clamp(1.75rem, 4vw, 2.25rem);
-      color: #001d3d;
-      font-weight: 800;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.03em;
-    }
-
-    .gate-subtitle {
-      color: #64748b;
-      font-size: 1.05rem;
-      max-width: 500px;
-      margin: 0 auto;
-    }
+  }
+  
+  .gate-title {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    color: $color-secondary;
+    font-weight: $font-weight-heavy;
+    margin: 0 0 $spacing-sm 0;
+    letter-spacing: -0.03em;
+    line-height: $line-height-tight;
+  }
+  
+  .gate-subtitle {
+    color: $color-text-secondary;
+    font-size: $font-size-lg;
+    max-width: 32rem;
+    margin: 0 auto;
+    line-height: $line-height-normal;
+    font-weight: $font-weight-normal;
   }
 }
 
+// ============================================================================
+// ROLE GRID LAYOUT
+// ============================================================================
 .role-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: $card-gap;
   max-width: 1100px;
   width: 100%;
-  animation: fadeInUp 0.8s ease-out;
-
+  
+  animation: fadeInUp $animation-entrance $ease-out;
+  
   @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
     max-width: 700px;
   }
-
+  
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
-    max-width: 350px;
+    max-width: 20rem;
   }
 }
 
+// ============================================================================
+// ROLE CARD
+// ============================================================================
 .role-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 1);
-  border-radius: 20px;
-  padding: 2rem;
-  position: relative;
-  cursor: pointer;
+  @include card-glass($padding: $card-padding-md);
+  @include card-interactive();
+  
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-
+  gap: $spacing-md;
+  
+  position: relative;
+  overflow: hidden;
+  
+  // Enhanced border and shadow for clarity
+  border: 1px solid rgba(226, 232, 240, 1);
+  box-shadow: $shadow-light;
+  
+  // Transition for interactions
+  transition: all $transition-base $ease-in-out;
+  
+  // Focus state for keyboard navigation
+  &:focus-visible {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: $shadow-focus-primary, $shadow-elevated;
+    transform: translateY(-6px) scale(1.01);
+  }
+  
+  // Hover state enhancements
   &:hover {
-    transform: translateY(-8px);
-    background: #ffffff;
-    border-color: #00a8e8;
-    box-shadow: 0 20px 40px rgba(0, 53, 102, 0.12);
-
+    transform: translateY(-8px) scale(1.02);
+    background: $color-bg-primary;
+    border-color: $color-primary;
+    box-shadow: $shadow-elevated;
+    
     .role-icon {
-      background: #003566;
-      color: #ffffff;
+      background: $color-secondary;
+      color: $color-bg-primary;
+      transform: scale(1.1);
+      box-shadow: $shadow-medium;
     }
-
+    
     .role-action {
-      color: #003566;
+      color: $color-secondary;
+      
       i {
         transform: translateX(4px);
+        transition: transform $transition-base $ease-in-out;
       }
     }
   }
-
-  .role-tag {
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #94a3b8;
-    letter-spacing: 0.1em;
-    margin-bottom: 1.25rem;
-  }
-
-  .role-icon {
-    width: 50px;
-    height: 50px;
-    background: #f1f5f9;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #003566;
-    margin-bottom: 1.5rem;
-    transition: all 0.3s ease;
-  }
-
-  .role-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .role-desc {
-    font-size: 0.9rem;
-    color: #64748b;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-    flex-grow: 1;
-  }
-
-  .role-card__footer {
-    padding-top: 1.25rem;
-    border-top: 1px solid #f1f5f9;
-
-    .role-action {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-    }
+  
+  // Active/pressed state
+  &:active {
+    transform: translateY(-4px) scale(0.99);
   }
 }
 
-.gate-footer {
-  margin-top: 2.5rem;
-  text-align: center;
-  animation: fadeIn 1s ease-in;
+// ============================================================================
+// CARD HEADER
+// ============================================================================
+.role-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-md;
+}
 
-  p {
-    color: #64748b;
-    font-size: 0.95rem;
+// ============================================================================
+// ROLE TAG
+// ============================================================================
+.role-tag {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-heavy;
+  text-transform: uppercase;
+  color: $color-text-tertiary;
+  letter-spacing: 0.1em;
+  
+  background-color: $color-bg-secondary;
+  padding: 0.25rem $spacing-sm;
+  border-radius: $border-radius-sm;
+  
+  display: inline-block;
+}
+
+// ============================================================================
+// ROLE ICON
+// ============================================================================
+.role-icon {
+  width: 3rem;
+  height: 3rem;
+  background: $color-bg-secondary;
+  border-radius: $border-radius-lg;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: $font-size-2xl;
+  color: $color-secondary;
+  
+  box-shadow: $shadow-subtle;
+  transition: all $transition-base $ease-in-out;
+  flex-shrink: 0;
+}
+
+// ============================================================================
+// CARD BODY
+// ============================================================================
+.role-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  flex-grow: 1;
+}
+
+// ============================================================================
+// ROLE TITLE
+// ============================================================================
+.role-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+  line-height: $line-height-snug;
+}
+
+// ============================================================================
+// ROLE DESCRIPTION
+// ============================================================================
+.role-desc {
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  margin: 0;
+  flex-grow: 1;
+  font-weight: $font-weight-normal;
+}
+
+// ============================================================================
+// CARD FOOTER
+// ============================================================================
+.role-card__footer {
+  padding-top: $spacing-md;
+  margin-top: $spacing-sm;
+  border-top: 1px solid $color-border-default;
+  
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+// ============================================================================
+// ROLE ACTION (CTA)
+// ============================================================================
+.role-action {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  
+  transition: all $transition-base $ease-in-out;
+  
+  i {
+    font-size: $font-size-base;
+    transform: translateX(0);
+    transition: transform $transition-base $ease-in-out;
   }
+  
+  &:hover {
+    color: $color-primary;
+  }
+}
 
+// ============================================================================
+// FOOTER SECTION
+// ============================================================================
+.gate-footer {
+  margin-top: $spacing-2xl;
+  text-align: center;
+  animation: fadeIn $animation-emphasis $ease-in;
+  
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    margin: 0;
+    font-weight: $font-weight-normal;
+  }
+  
   .login-link {
-    color: #00a8e8;
-    font-weight: 700;
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
     text-decoration: none;
     margin-left: 0.25rem;
+    
+    transition: all $transition-base $ease-in-out;
+    cursor: pointer;
+    
     &:hover {
+      color: $color-primary-hover;
       text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+    
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+      border-radius: $border-radius-sm;
     }
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+// ============================================================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================================================
+@media (max-width: 768px) {
+  .gm-register-gate {
+    padding: $spacing-md;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .gate-header {
+    margin-bottom: $spacing-xl;
+    
+    .gate-title {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    .gate-subtitle {
+      font-size: $font-size-base;
+    }
   }
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 640px) {
+  .role-card {
+    padding: $card-padding-md;
+    
+    &:hover {
+      transform: translateY(-6px) scale(1.01);
+    }
+    
+    &:active {
+      transform: translateY(-2px) scale(0.98);
+    }
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}

@@ -1,0 +1,384 @@
+// ============================================================================
+// FORM SYSTEM - Reusable form component mixins
+// ============================================================================
+// This file contains mixins for form elements: inputs, containers, sections,
+// labels, error messages. Use these instead of duplicating form styling across
+// login, register-doctor, register-patient, register-clinic.
+// ============================================================================
+
+@import './design-tokens.scss';
+
+// ============================================================================
+// MIXIN: form-input-base
+// ============================================================================
+// Base styling for all form inputs (text, email, password, etc.)
+// Includes default state, focus, hover, error states with consistent animations
+//
+// Usage:
+//   .input-field {
+//     @include form-input-base();
+//   }
+//
+// Parameters:
+//   $height: (optional) custom input height, default $input-height-md
+//   $error: (optional) boolean to show error state, default false
+@mixin form-input-base($height: $input-height-md, $error: false) {
+  width: 100%;
+  height: $height;
+  padding: $form-input-padding-v $form-input-padding-h;
+  
+  background-color: rgba(var(--p-slate-50-rgb), 0.5);
+  border: 1.5px solid $color-border-default;
+  border-radius: $border-radius-md;
+  
+  font-family: inherit;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+  
+  transition: all $transition-slow $ease-in-out;
+  
+  &::placeholder {
+    color: $color-text-tertiary;
+    font-weight: $font-weight-normal;
+  }
+  
+  // Hover state (not focused)
+  &:hover:not(:focus) {
+    border-color: var(--p-slate-300);
+    box-shadow: $shadow-light;
+  }
+  
+  // Focus state (primary interaction)
+  &:focus {
+    outline: none;
+    border-color: $color-border-focus;
+    box-shadow: $shadow-focus-primary, $shadow-medium;
+    background-color: #ffffff;
+  }
+  
+  // Disabled state
+  &:disabled {
+    background-color: var(--p-slate-100);
+    border-color: $color-border-default;
+    color: $color-text-muted;
+    cursor: not-allowed;
+    
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+  
+  // Error state (invalid input)
+  @if $error {
+    border-color: $color-border-error;
+    
+    &:focus {
+      border-color: $color-border-error;
+      box-shadow: $shadow-focus-error, $shadow-medium;
+    }
+  }
+}
+
+// ============================================================================
+// MIXIN: form-input-with-icon
+// ============================================================================
+// Wrapper container for input with left-aligned icon.
+// Positions icon absolutely and adjusts input padding.
+//
+// Usage:
+//   <div class="input-wrapper">
+//     <i class="icon"></i>
+//     <input class="input-field">
+//   </div>
+//
+//   .input-wrapper {
+//     @include form-input-with-icon();
+//   }
+//   .input-field {
+//     @include form-input-base();
+//   }
+//   .icon {
+//     @include form-input-icon();
+//   }
+@mixin form-input-with-icon() {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+// ============================================================================
+// MIXIN: form-input-icon
+// ============================================================================
+// Icon styling for icon-prefixed inputs
+// Positions absolutely and styles the icon
+//
+// Usage:
+//   .icon {
+//     @include form-input-icon();
+//   }
+@mixin form-input-icon() {
+  position: absolute;
+  left: $form-input-padding-h;
+  z-index: 2;
+  
+  width: $input-icon-size;
+  height: $input-icon-size;
+  
+  color: $color-text-tertiary;
+  font-size: $input-icon-size;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: color $transition-base $ease-in-out;
+  pointer-events: none;
+  
+  // Icon color on focus (parent input is focused)
+  &:focus-within {
+    color: $color-primary;
+  }
+}
+
+// ============================================================================
+// MIXIN: form-input-with-icon-padding
+// ============================================================================
+// Adjusts input padding when used with icon prefix
+// This should be applied to the input element when inside icon wrapper
+//
+// Usage:
+//   .input-field {
+//     @include form-input-base();
+//     @include form-input-with-icon-padding();
+//   }
+@mixin form-input-with-icon-padding($icon-size: $input-icon-size, $icon-offset: $input-icon-offset) {
+  padding-left: $icon-offset + $icon-size + 0.5rem;
+}
+
+// ============================================================================
+// MIXIN: form-label
+// ============================================================================
+// Styling for form labels
+// Includes color, weight, and spacing
+//
+// Usage:
+//   label.form-label {
+//     @include form-label();
+//   }
+@mixin form-label() {
+  display: block;
+  margin-bottom: $form-field-gap;
+  
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  
+  letter-spacing: 0.3px;
+}
+
+// ============================================================================
+// MIXIN: form-section-layout
+// ============================================================================
+// Layout mixin for form sections (group of fields with optional legend)
+// Handles spacing between sections and visual hierarchy
+//
+// Usage:
+//   .form-section {
+//     @include form-section-layout();
+//   }
+//
+// Parameters:
+//   $gap: (optional) gap between elements, default $form-section-gap
+@mixin form-section-layout($gap: $form-section-gap) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+  
+  &:not(:first-child) {
+    margin-top: $gap;
+    padding-top: $gap;
+    border-top: 1px solid var(--p-slate-200);
+  }
+}
+
+// ============================================================================
+// MIXIN: form-section-legend
+// ============================================================================
+// Styling for section legends/titles
+// Includes icon support and typography
+//
+// Usage:
+//   legend.form-section-legend {
+//     @include form-section-legend();
+//   }
+@mixin form-section-legend() {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-secondary;
+  
+  margin-bottom: $form-field-gap;
+  padding: 0;
+  border: none;
+  
+  // Icon styling (usually <i> tag before legend text)
+  i, [class*="icon"] {
+    font-size: $font-size-xl;
+    color: $color-primary;
+  }
+}
+
+// ============================================================================
+// MIXIN: form-field-row
+// ============================================================================
+// Layout for horizontal field rows (multiple fields side-by-side)
+// Handles flex layout and responsive stacking
+//
+// Usage:
+//   .field-row {
+//     @include form-field-row();
+//   }
+//
+// Parameters:
+//   $columns: (optional) number of columns, default 2
+//   $gap: (optional) gap between columns, default $form-row-gap
+@mixin form-field-row($gap: $form-row-gap) {
+  display: flex;
+  gap: $gap;
+  flex-wrap: wrap;
+  
+  // Stack on mobile
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: $form-field-gap;
+    
+    .field-group {
+      flex: 1 !important;
+    }
+  }
+}
+
+// ============================================================================
+// MIXIN: form-field-group
+// ============================================================================
+// Wrapper for individual form fields (label + input + error)
+// Handles flex layout and responsive sizing
+//
+// Usage:
+//   .field-group {
+//     @include form-field-group();
+//   }
+@mixin form-field-group() {
+  display: flex;
+  flex-direction: column;
+  gap: $form-field-gap;
+  flex: 1;
+  min-width: 0; // Allows flex shrinking
+}
+
+// ============================================================================
+// MIXIN: form-error-message
+// ============================================================================
+// Error message styling
+// Includes red color, small font, and optional animation
+//
+// Usage:
+//   .error-message {
+//     @include form-error-message();
+//   }
+//
+// Parameters:
+//   $animate: (optional) whether to animate on appear, default true
+@mixin form-error-message($animate: true) {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-error;
+  
+  margin-top: -$form-field-gap; // Compensate for gap in field-group
+  
+  @if $animate {
+    animation: slideDown $animation-subtle $ease-out;
+  }
+}
+
+// ============================================================================
+// MIXIN: form-container
+// ============================================================================
+// Main form container with consistent padding and spacing
+//
+// Usage:
+//   .form-container {
+//     @include form-container();
+//   }
+//
+// Parameters:
+//   $padding: (optional) container padding, default $card-padding-md
+@mixin form-container($padding: $card-padding-md) {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  padding: $padding;
+}
+
+// ============================================================================
+// ANIMATION: slideDown
+// ============================================================================
+// Slide and fade in animation for error messages
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// ANIMATION: fadeIn
+// ============================================================================
+// Simple fade in animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// ============================================================================
+// ANIMATION: fadeInUp
+// ============================================================================
+// Fade and slide up animation for page entrance
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// ANIMATION: fadeInDown
+// ============================================================================
+// Fade and slide down animation for page entrance
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

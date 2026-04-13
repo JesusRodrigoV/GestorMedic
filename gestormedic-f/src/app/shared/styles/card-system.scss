@@ -1,0 +1,406 @@
+// ============================================================================
+// CARD SYSTEM - Reusable card and container component mixins
+// ============================================================================
+// This file contains mixins for card styling: glass-morphism cards,
+// elevated cards, and hover effects. Use these for consistent container
+// styling across the application.
+// ============================================================================
+
+@import './design-tokens.scss';
+
+// ============================================================================
+// MIXIN: card-glass
+// ============================================================================
+// Glass-morphism card styling (frosted glass effect)
+// Used for login, register gate, and modal overlays
+//
+// Usage:
+//   .card-glass {
+//     @include card-glass();
+//   }
+//
+// Parameters:
+//   $padding: (optional) card padding, default $card-padding-md
+//   $border-color: (optional) border color, default $color-glass-border
+@mixin card-glass($padding: $card-padding-md, $border-color: $color-glass-border) {
+  background-color: $color-glass-overlay;
+  backdrop-filter: blur($glass-blur) saturate($glass-saturate);
+  border: 1px solid $border-color;
+  border-radius: $border-radius-2xl;
+  
+  padding: $padding;
+  
+  box-shadow: $shadow-light;
+  
+  transition: all $transition-base $ease-in-out;
+}
+
+// ============================================================================
+// MIXIN: card-elevated
+// ============================================================================
+// Elevated card styling with shadow (standard card)
+// Used for content cards, form sections, etc.
+//
+// Usage:
+//   .card-elevated {
+//     @include card-elevated();
+//   }
+//
+// Parameters:
+//   $padding: (optional) card padding, default $card-padding-md
+//   $border-radius: (optional) border radius, default $border-radius-lg
+@mixin card-elevated($padding: $card-padding-md, $border-radius: $border-radius-lg) {
+  background-color: $color-bg-primary;
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius;
+  
+  padding: $padding;
+  
+  box-shadow: $shadow-light;
+  
+  transition: all $transition-base $ease-in-out;
+}
+
+// ============================================================================
+// MIXIN: card-minimal
+// ============================================================================
+// Minimal card styling (subtle border only, no shadow)
+// Used for lightweight, minimal design
+//
+// Usage:
+//   .card-minimal {
+//     @include card-minimal();
+//   }
+//
+// Parameters:
+//   $padding: (optional) card padding, default $card-padding-md
+//   $border-radius: (optional) border radius, default $border-radius-lg
+@mixin card-minimal($padding: $card-padding-md, $border-radius: $border-radius-lg) {
+  background-color: $color-bg-primary;
+  border: 1.5px solid $color-border-default;
+  border-radius: $border-radius;
+  
+  padding: $padding;
+  
+  transition: all $transition-base $ease-in-out;
+}
+
+// ============================================================================
+// MIXIN: card-hover-lift
+// ============================================================================
+// Hover effect: card lifts with increased shadow and subtle scale
+// Pair with any card mixin for enhanced interactivity
+//
+// Usage:
+//   .card {
+//     @include card-elevated();
+//     @include card-hover-lift();
+//   }
+//
+// Parameters:
+//   $scale: (optional) scale factor on hover, default 1.02
+//   $shadow-level: (optional) shadow on hover, default $shadow-elevated
+@mixin card-hover-lift($scale: 1.02, $shadow-level: $shadow-elevated) {
+  &:hover {
+    transform: translateY(-4px) scale($scale);
+    box-shadow: $shadow-level;
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: $shadow-focus-primary, $shadow-level;
+    transform: translateY(-4px) scale($scale);
+  }
+}
+
+// ============================================================================
+// MIXIN: card-interactive
+// ============================================================================
+// Interactive card with clickable/focusable states
+// Combines hover lift with focus states for buttons and links
+//
+// Usage:
+//   .card-interactive {
+//     @include card-interactive();
+//   }
+@mixin card-interactive() {
+  cursor: pointer;
+  
+  @include card-hover-lift();
+  
+  &:active {
+    transform: translateY(-2px) scale(0.99);
+    box-shadow: $shadow-medium;
+  }
+}
+
+// ============================================================================
+// MIXIN: card-flat
+// ============================================================================
+// Flat card styling (no shadow, subtle border)
+// Used for lightweight layout sections
+//
+// Usage:
+//   .card-flat {
+//     @include card-flat();
+//   }
+//
+// Parameters:
+//   $padding: (optional) card padding, default $card-padding-md
+//   $background: (optional) background color, default $color-bg-secondary
+@mixin card-flat($padding: $card-padding-md, $background: $color-bg-secondary) {
+  background-color: $background;
+  border: none;
+  border-radius: $border-radius-lg;
+  
+  padding: $padding;
+  
+  transition: all $transition-base $ease-in-out;
+}
+
+// ============================================================================
+// MIXIN: card-header
+// ============================================================================
+// Card header styling (typically title section of a card)
+// Includes padding, typography, and optional icon support
+//
+// Usage:
+//   .card-header {
+//     @include card-header();
+//   }
+//
+// Parameters:
+//   $padding: (optional) header padding, default $card-padding-md
+@mixin card-header($padding: $card-padding-md) {
+  padding: $padding;
+  padding-bottom: 0;
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin: 0;
+  }
+  
+  // Icon in header
+  [class*="icon"], i {
+    font-size: $font-size-2xl;
+    color: $color-primary;
+  }
+}
+
+// ============================================================================
+// MIXIN: card-body
+// ============================================================================
+// Card body styling (content section of a card)
+// Handles padding and text styling
+//
+// Usage:
+//   .card-body {
+//     @include card-body();
+//   }
+//
+// Parameters:
+//   $padding: (optional) body padding, default $card-padding-md
+@mixin card-body($padding: $card-padding-md) {
+  padding: $padding;
+  
+  > :first-child {
+    margin-top: 0;
+  }
+  
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ============================================================================
+// MIXIN: card-footer
+// ============================================================================
+// Card footer styling (actions section of a card)
+// Handles button layout and spacing
+//
+// Usage:
+//   .card-footer {
+//     @include card-footer();
+//   }
+//
+// Parameters:
+//   $padding: (optional) footer padding, default $card-padding-md
+@mixin card-footer($padding: $card-padding-md) {
+  padding: $padding;
+  padding-top: 0;
+  
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  justify-content: flex-end;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+    justify-content: stretch;
+    
+    button, a {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================================================
+// MIXIN: card-divider
+// ============================================================================
+// Visual divider between card sections
+// Optional left/right padding
+//
+// Usage:
+//   .card-divider {
+//     @include card-divider();
+//   }
+@mixin card-divider() {
+  height: 1px;
+  background-color: $color-border-default;
+  margin: $spacing-md 0;
+}
+
+// ============================================================================
+// MIXIN: container-max-width
+// ============================================================================
+// Max-width container for centering content
+// Used for form containers and page sections
+//
+// Usage:
+//   .container {
+//     @include container-max-width();
+//   }
+//
+// Parameters:
+//   $max-width: (optional) max width, default 28rem (448px)
+@mixin container-max-width($max-width: 28rem) {
+  width: 100%;
+  max-width: $max-width;
+  margin-left: auto;
+  margin-right: auto;
+  
+  padding-left: $spacing-md;
+  padding-right: $spacing-md;
+}
+
+// ============================================================================
+// MIXIN: container-responsive
+// ============================================================================
+// Responsive container grid layout
+// Adjusts columns based on viewport width
+//
+// Usage:
+//   .grid {
+//     @include container-responsive();
+//   }
+//
+// Parameters:
+//   $gap: (optional) grid gap, default $card-gap
+//   $min: (optional) minimum column width, default 15rem
+@mixin container-responsive($gap: $card-gap, $min: 15rem) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat(auto-fit, minmax($min, 1fr));
+}
+
+// ============================================================================
+// MIXIN: overlay-backdrop
+// ============================================================================
+// Semi-transparent backdrop overlay
+// Used behind modals, dropdowns, etc.
+//
+// Usage:
+//   .backdrop {
+//     @include overlay-backdrop();
+//   }
+@mixin overlay-backdrop($opacity: 0.5, $color: #000000) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  background-color: rgba($color, $opacity);
+  
+  z-index: $z-index-modal-backdrop;
+  
+  backdrop-filter: blur(2px);
+}
+
+// ============================================================================
+// MIXIN: card-shadow-hover
+// ============================================================================
+// Enhanced shadow on hover (used in combination with card mixins)
+// Creates depth and visual feedback
+//
+// Usage:
+//   .card {
+//     @include card-elevated();
+//     @include card-shadow-hover();
+//   }
+@mixin card-shadow-hover() {
+  &:hover {
+    box-shadow: $shadow-elevated;
+  }
+  
+  &:focus-visible {
+    box-shadow: $shadow-focus-primary, $shadow-elevated;
+  }
+}
+
+// ============================================================================
+// ANIMATION: cardSlideIn
+// ============================================================================
+// Slide and fade in animation for cards
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// UTILITY CLASSES
+// ============================================================================
+// These utility classes can be applied directly to HTML elements
+// for quick styling without creating additional SCSS classes
+
+.card-glass-container {
+  @include card-glass();
+}
+
+.card-elevated-container {
+  @include card-elevated();
+}
+
+.card-minimal-container {
+  @include card-minimal();
+}
+
+.card-flat-container {
+  @include card-flat();
+}
+
+.card-interactive-container {
+  @include card-interactive();
+  @include card-elevated();
+}
+
+.container-max {
+  @include container-max-width();
+}
+
+.container-grid {
+  @include container-responsive();
+}
