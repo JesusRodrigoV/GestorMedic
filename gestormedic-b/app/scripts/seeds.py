@@ -12,8 +12,10 @@ def init_db():
             {"id": 1, "name": "SUPERADMIN"},
             {"id": 2, "name": "ADMIN_CLINICA"},
             {"id": 3, "name": "MEDICO"},
-            {"id": 4, "name": "PERSONAL"},
-            {"id": 5, "name": "PACIENTE"}
+            {"id": 4, "name": "RECEPCIONISTA"},
+            {"id": 5, "name": "PACIENTE"},
+            {"id": 6, "name": "ASEGURADORA"},
+            {"id": 7, "name": "VISITANTE"}
         ]
 
         for rol in roles_basicos:

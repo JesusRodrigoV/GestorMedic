@@ -14,10 +14,17 @@ from app.api.v1 import (
 from app.api.v1 import (
     patients_profile, doctor_profile, staff_profile, insurance
 )
+from app.core.redis_service import redis_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Iniciando MedSaaS API...")
+    try:
+        print("Conectando a Redis...")
+        await redis_service.init_redis()
+        print("Conexión a Redis exitosa")
+    except Exception as e:
+        print(f"Error al conectar con Redis: {e}")
 
     print("Verificando datos semilla (Roles)")
     await run_in_threadpool(init_db)

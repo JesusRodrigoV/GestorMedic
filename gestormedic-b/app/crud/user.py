@@ -70,14 +70,16 @@ def get_users_query(
         
     return stmt.order_by(User.id)
 
-def create_public_user(db: Session, user_in: UserCreate) -> User:
+def create_public_user(db: Session, user_in: UserCreate, role_name: str = "paciente") -> User:
     if not user_in.password:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La contraseña es obligatoria."
-        )
+        raise HTTPException(status_code=400, detail="La contraseña es obligatoria.")
 
-    role_id = _get_visitante_role_id(db)
+    stmt = select(Role.id).where(Role.name == role_name)
+    role_id = db.execute(stmt).scalar_one_or_none()
+
+    if not role_id:
+        role_id = _get_visitante_role_id(db)
+        
     user = User(
         email=user_in.email.strip().lower(),
         username=user_in.username,
@@ -94,10 +96,7 @@ def create_public_user(db: Session, user_in: UserCreate) -> User:
         db.refresh(user)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="El email o nombre de usuario ya están registrados."
-        )
+        raise HTTPException(status_code=409, detail="El email o usuario ya existen.")
     return user
 
 def create_user_by_google(

@@ -67,9 +67,14 @@ class UserOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    is_totp_enabled: bool = False
+    locked_until: Optional[datetime] = None
     @computed_field
     @property
     def full_name(self) -> str:
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.first_name or self.username
+    
+class UserSettingsUpdate(BaseModel):
+    is_totp_enabled: bool

@@ -2,7 +2,7 @@ from enum import Enum
 
 class UserRole(str, Enum):
     SUPERADMIN = "superadmin"
-    ADMINISTRADORC = "administradorc"
+    ADMIN_CLINICA = "ADMIN_CLINICA"
     MEDICO = "medico"
     RECEPCIONISTA = "recepcionista"
     PACIENTE = "paciente"
@@ -22,3 +22,4 @@ class UserStatus(str, Enum):
 class AuditEvent(str, Enum):
     LOGIN = "LOGIN"
     LOGOUT = "LOGOUT"
+    REGISTER = "REGISTER"

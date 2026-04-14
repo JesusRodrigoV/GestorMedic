@@ -1,6 +1,8 @@
+from datetime import datetime
 import re
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
+from zxcvbn import zxcvbn
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -24,12 +26,9 @@ class ResetPasswordRequest(BaseModel):
     @field_validator('new_password')
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("La contraseña debe tener al menos 8 caracteres")
-        if not re.search(r"[A-Z]", v):
-            raise ValueError("La contraseña debe contener al menos una mayúscula")
-        if not re.search(r"[0-9]", v):
-            raise ValueError("La contraseña debe contener al menos un número")
+        result = zxcvbn(v)
+        if result['score'] < 3:
+            raise ValueError("La contraseña es muy debil. Intenta usar mas variedad de caracteres.")
         return v
 
 class LoginStep2Response(BaseModel):
@@ -41,3 +40,19 @@ TOTPCodem = Annotated[str, Field(strip_whitespace=True, min_length=6, max_length
 class TOTPLoginRequest(BaseModel):
     session_token: str
     code: TOTPCodem
+
+class ActiveSessionOut(BaseModel):
+    jti: str
+    device_info: Optional[str] = "Desconocido"
+    created_at: datetime
+    expires_at: datetime
+    is_current: bool = False 
+
+class TOTPSetupOut(BaseModel):
+    secret: str
+    qr_code_uri: str
+    backup_codes: List[str]
+
+class TOTPConfirmRequest(BaseModel):
+    code: str
+    secret: str

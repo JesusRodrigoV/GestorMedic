@@ -11,7 +11,7 @@ from app.schemas.specialty import SpecialtyOut
 from app.core.dependencies import (
     get_current_active_user, 
     require_doctor, 
-    require_clinic_admin,
+    require_admin_clinica,
     verify_tenant_access
 )
 from app.models.user import User
@@ -78,7 +78,7 @@ def remove_specialty_from_my_profile(
 def get_doctor_profile_by_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_clinic_admin)
+    current_user: User = Depends(require_admin_clinica)
 ):
 
     target_user = crud_user.get_user(db=db, user_id=user_id)
@@ -99,7 +99,7 @@ def update_doctor_profile_by_admin(
     user_id: int,
     profile_in: DoctorProfileUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_clinic_admin)
+    current_user: User = Depends(require_admin_clinica)
 ):
 
     target_user = crud_user.get_user(db=db, user_id=user_id)

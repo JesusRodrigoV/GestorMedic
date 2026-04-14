@@ -13,10 +13,10 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     DEFAULT_ADMIN_EMAIL: str
     DEFAULT_ADMIN_PASSWORD: str
-    
+    API_V1_STR: str = "/api/v1"
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
-    
+    REDIS_URL: str = "redis://localhost:6379/0"
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str

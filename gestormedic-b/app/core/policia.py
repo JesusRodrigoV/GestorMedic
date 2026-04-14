@@ -1,103 +1,39 @@
-from sqlalchemy.orm import Session
-from redis.asyncio import Redis
 from datetime import datetime, timedelta, timezone
-
-from app.db.session import SessionLocal
+from sqlalchemy.orm import Session
+from app.db.redis import redis_service
 from app.models.user import User
-from app.db.cache import get_cache_client
-from fastapi import Depends
-
-
+from app.core.redis_service import redis_service
+# Configuración
 MAX_FAILED_ATTEMPTS = 5
-# tiempo bloqueo
 LOCKOUT_DURATION_MINUTES = 30 
-# Cuanto va recordar redis el tiempo de bloqueo
-FAILED_ATTEMPTS_TTL_SECONDS = 3600
-
-FAILED_LOGIN_PREFIX = "failed_login:"
-
+FAILED_ATTEMPTS_TTL = 3600
 
 def _get_redis_key(email: str) -> str:
-    """Generar clave redis"""
-    return f"{FAILED_LOGIN_PREFIX}{email.lower().strip()}"
+    return f"failed_login:{email.lower().strip()}"
 
-
-async def increment_login_failure(
-    email: str,
-    cache: Redis = Depends(get_cache_client)
-):
-    """
-    Incrementa el contador de fallos en Redis para un email
-    """
-    if not cache:
-        print("Advertencia: Cliente Redis no disponible Omitiendo incremento de fallos")
-        return
-
+async def increment_login_failure(email: str):
+    """Incrementa fallos y devuelve el total actual"""
     key = _get_redis_key(email)
-    
-    async with cache.pipeline() as pipe:
-        await pipe.incr(key)
-        await pipe.expire(key, FAILED_ATTEMPTS_TTL_SECONDS)
-        await pipe.execute()
+    count = await redis_service.redis.incr(key)
+    await redis_service.redis.expire(key, FAILED_ATTEMPTS_TTL)
+    return count
 
-
-async def get_login_failures(
-    email: str,
-    cache: Redis = Depends(get_cache_client)
-) -> int:
-    """
-    Obtiene el numero de fallos que llevamos
-    """
-    if not cache:
-        print("Advertencia: Cliente Redis no disponible asumo 0 fallos🙌")
-        return 0
-
+async def get_login_failures(email: str) -> int:
     key = _get_redis_key(email)
-    failures = await cache.get(key)
-    
+    failures = await redis_service.redis.get(key)
     return int(failures) if failures else 0
 
+async def clear_login_failures(email: str):
+    await redis_service.delete(f"login_failures:{email}")
 
-async def clear_login_failures(
-    email: str,
-    cache: Redis = Depends(get_cache_client)
-):
-    """
-    Limpia el contador de fallos de Redis
-    """
-    if not cache:
-        print("Advertencia: Cliente Redis no disponible Omitiendo limpieza de fallos🙌")
-        return
-        
-    key = _get_redis_key(email)
-    await cache.delete(key)
-
-
-def lock_account(user_id: int) -> None:
-    """
-    Escribe el bloqueo oficial
-    """
-    db: Session = SessionLocal()
-    try:
-        user = db.query(User).get(user_id)
-        if user:
-            lock_until_time = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
-            
-            user.locked_until = lock_until_time
-            db.add(user)
-            db.commit()
-    except Exception as e:
-        print(f"ERROR EN BACKGROUND TASK (lock_account): {e}")
-        db.rollback()
-    finally:
-        db.close()
-
+def lock_account(db: Session, user: User):
+    """Bloquea físicamente la cuenta en la DB"""
+    lock_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+    user.locked_until = lock_until
+    db.commit()
 
 def is_account_locked(user: User) -> bool:
-    """
-    Verifica si la cuenta esta blqoeuada
-    """
+    """Verifica si el tiempo de bloqueo sigue vigente"""
     if not user.locked_until:
         return False
-
-    return user.locked_until > datetime.now(timezone.utc)
+    return user.locked_until.replace(tzinfo=timezone.utc) > datetime.now(timezone.utc)

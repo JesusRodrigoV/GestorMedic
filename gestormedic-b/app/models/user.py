@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import Column, String, Boolean, DateTime, func, Enum as SQLEnum, ForeignKey, select
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Enum as SQLEnum, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utils import EncryptedType
@@ -41,6 +42,8 @@ class User(Base):
 
     status: Mapped[UserStatus] = mapped_column(SQLEnum(UserStatus), default=UserStatus.PENDING)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    locked_until: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    login_attempts: Mapped[int] = mapped_column(Integer, default=0)
     email_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
     
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -53,6 +56,14 @@ class User(Base):
     doctor_profile: Mapped[Optional["DoctorProfile"]] = relationship("DoctorProfile", back_populates="user", uselist=False)
     patient_profile: Mapped[Optional["PatientProfile"]] = relationship("PatientProfile", back_populates="user", uselist=False)
     backup_codes: Mapped[List["TwoFactorCodes"]] = relationship("TwoFactorCodes", back_populates="user", cascade="all, delete-orphan")
+
+    #
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        "RefreshToken", 
+        back_populates="user", 
+        cascade="all, delete-orphan"
+    )
+    
 #HYBRYD PROPERTIES
     @hybrid_property
     def full_name(self) -> str:

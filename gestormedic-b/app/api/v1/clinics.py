@@ -9,7 +9,7 @@ from app.crud import clinic as crud_clinic
 from app.schemas.clinic import ClinicOut, ClinicCreate, ClinicUpdate
 from app.core.dependencies import (
     require_superadmin,
-    require_clinic_admin,
+    require_admin_clinica,
     verify_tenant_access,
     get_current_active_user
 )
@@ -30,7 +30,7 @@ def list_clinics(
 def get_clinic(
     clinic_id: int, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_clinic_admin)
+    current_user: User = Depends(require_admin_clinica)
 ):
     verify_tenant_access(clinic_id=clinic_id, current_user=current_user)
 
@@ -54,7 +54,7 @@ def update_clinic(
     clinic_id: int, 
     clinic_in: ClinicUpdate, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_clinic_admin)
+    current_user: User = Depends(require_admin_clinica)
 ):
     verify_tenant_access(clinic_id=clinic_id, current_user=current_user)
 

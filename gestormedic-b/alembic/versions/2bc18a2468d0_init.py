@@ -1,19 +1,19 @@
-"""Initial migration2.0
+"""init
 
-Revision ID: 39c93cea8c89
-Revises: 02e2f73b49a5
-Create Date: 2026-04-07 14:57:16.217281
+Revision ID: 2bc18a2468d0
+Revises: 
+Create Date: 2026-04-14 12:23:18.879908
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+import sqlalchemy_utils
 
 # revision identifiers, used by Alembic.
-revision: str = '39c93cea8c89'
-down_revision: Union[str, Sequence[str], None] = '02e2f73b49a5'
+revision: str = '2bc18a2468d0'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -24,13 +24,13 @@ def upgrade() -> None:
     op.create_table('clinics',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=200), nullable=False),
-    sa.Column('nit_ruc', sa.String(length=50), nullable=False),
+    sa.Column('nit_ruc', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=False),
+    sa.Column('phone', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
     sa.Column('address', sa.String(length=500), nullable=True),
-    sa.Column('phone', sa.String(length=50), nullable=True),
     sa.Column('logo_url', sa.String(length=2048), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('plan', sa.Enum('FREE', 'PREMIUM', 'PRO', name='plantype'), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('plan', sa.Enum('FREE', 'PREMIUM', 'PRO', name='plantype'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('nit_ruc')
     )
@@ -38,7 +38,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_clinics_name'), 'clinics', ['name'], unique=False)
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.Enum('SUPERADMIN', 'ADMINISTRADORC', 'MEDICO', 'RECEPCIONISTA', 'PACIENTE', 'ASEGURADORA', name='userrole'), nullable=False),
+    sa.Column('name', sa.Enum('SUPERADMIN', 'ADMIN_CLINICA', 'MEDICO', 'RECEPCIONISTA', 'PACIENTE', 'ASEGURADORA', 'VISITANTE', name='userrole'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -62,7 +62,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('clinic_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['clinic_id'], ['clinics.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -72,22 +72,22 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=200), nullable=False),
     sa.Column('username', sa.String(length=100), nullable=False),
-    sa.Column('first_name', sa.String(length=100), nullable=True),
-    sa.Column('last_name', sa.String(length=100), nullable=True),
-    sa.Column('status', sa.Enum('PENDING', 'COMPLETED', 'INACTIVE', name='userstatus'), nullable=True),
-    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('first_name', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('last_name', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('photo_url', sa.String(length=2048), nullable=True),
     sa.Column('hashed_password', sa.String(length=200), nullable=True),
     sa.Column('google_id', sa.String(length=255), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=False),
-    sa.Column('photo_url', sa.String(length=2048), nullable=True),
-    sa.Column('role_id', sa.Integer(), nullable=False),
     sa.Column('is_totp_enabled', sa.Boolean(), nullable=False),
-    sa.Column('totp_secret', sa.String(length=255), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('clinic_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['clinic_id'], ['clinics.id'], ),
+    sa.Column('totp_secret', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('status', sa.Enum('PENDING', 'COMPLETED', 'INACTIVE', name='userstatus'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('locked_until', sa.DateTime(), nullable=True),
+    sa.Column('login_attempts', sa.Integer(), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('role_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
@@ -116,7 +116,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('license_number', sa.String(length=50), nullable=False),
     sa.Column('bio', sa.Text(), nullable=True),
-    sa.Column('experience_years', sa.Integer(), nullable=True),
+    sa.Column('experience_years', sa.Integer(), nullable=False),
     sa.Column('signature_url', sa.String(length=2048), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -139,17 +139,17 @@ def upgrade() -> None:
     sa.UniqueConstraint('user_id')
     )
     op.create_index(op.f('ix_insurance_profiles_id'), 'insurance_profiles', ['id'], unique=False)
-    op.create_table('password_reset_tokens',
+    op.create_table('password_reset_token',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('token', sa.String(length=100), nullable=False),
-    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('token', sa.String(length=255), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_password_reset_tokens_id'), 'password_reset_tokens', ['id'], unique=False)
-    op.create_index(op.f('ix_password_reset_tokens_token'), 'password_reset_tokens', ['token'], unique=True)
+    op.create_index(op.f('ix_password_reset_token_id'), 'password_reset_token', ['id'], unique=False)
+    op.create_index(op.f('ix_password_reset_token_token'), 'password_reset_token', ['token'], unique=True)
     op.create_table('patient_profiles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -157,29 +157,30 @@ def upgrade() -> None:
     sa.Column('gender', sa.String(length=20), nullable=True),
     sa.Column('blood_type', sa.String(length=5), nullable=True),
     sa.Column('allergies', sa.Text(), nullable=True),
-    sa.Column('ci_number', sa.String(length=20), nullable=False),
+    sa.Column('ci_number', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=False),
     sa.Column('occupation', sa.String(length=100), nullable=True),
-    sa.Column('emergency_contact_name', sa.String(length=100), nullable=True),
-    sa.Column('emergency_contact_phone', sa.String(length=20), nullable=True),
+    sa.Column('emergency_contact_name', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('emergency_contact_phone', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id')
     )
     op.create_index(op.f('ix_patient_profiles_ci_number'), 'patient_profiles', ['ci_number'], unique=True)
     op.create_index(op.f('ix_patient_profiles_id'), 'patient_profiles', ['id'], unique=False)
-    op.create_table('refresh_tokens',
+    op.create_table('refresh_token',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('jti', sa.String(length=255), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('jti', sa.String(length=128), nullable=False),
-    sa.Column('revoked', sa.Boolean(), nullable=False),
-    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('device_info', sa.String(length=300), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.Column('device_info', sa.String(length=255), nullable=True),
+    sa.Column('ip_address', sa.String(length=45), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('expires_at', sa.DateTime(), nullable=False),
+    sa.Column('is_revoked', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_refresh_tokens_id'), 'refresh_tokens', ['id'], unique=False)
-    op.create_index(op.f('ix_refresh_tokens_jti'), 'refresh_tokens', ['jti'], unique=True)
+    op.create_index(op.f('ix_refresh_token_id'), 'refresh_token', ['id'], unique=False)
+    op.create_index(op.f('ix_refresh_token_jti'), 'refresh_token', ['jti'], unique=True)
     op.create_table('staff_profiles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -204,6 +205,7 @@ def upgrade() -> None:
     op.create_table('clinic_doctors',
     sa.Column('clinic_id', sa.Integer(), nullable=False),
     sa.Column('doctor_id', sa.Integer(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['clinic_id'], ['clinics.id'], ),
     sa.ForeignKeyConstraint(['doctor_id'], ['doctor_profiles.id'], ),
     sa.PrimaryKeyConstraint('clinic_id', 'doctor_id')
@@ -227,15 +229,15 @@ def downgrade() -> None:
     op.drop_table('two_factor_codes')
     op.drop_index(op.f('ix_staff_profiles_id'), table_name='staff_profiles')
     op.drop_table('staff_profiles')
-    op.drop_index(op.f('ix_refresh_tokens_jti'), table_name='refresh_tokens')
-    op.drop_index(op.f('ix_refresh_tokens_id'), table_name='refresh_tokens')
-    op.drop_table('refresh_tokens')
+    op.drop_index(op.f('ix_refresh_token_jti'), table_name='refresh_token')
+    op.drop_index(op.f('ix_refresh_token_id'), table_name='refresh_token')
+    op.drop_table('refresh_token')
     op.drop_index(op.f('ix_patient_profiles_id'), table_name='patient_profiles')
     op.drop_index(op.f('ix_patient_profiles_ci_number'), table_name='patient_profiles')
     op.drop_table('patient_profiles')
-    op.drop_index(op.f('ix_password_reset_tokens_token'), table_name='password_reset_tokens')
-    op.drop_index(op.f('ix_password_reset_tokens_id'), table_name='password_reset_tokens')
-    op.drop_table('password_reset_tokens')
+    op.drop_index(op.f('ix_password_reset_token_token'), table_name='password_reset_token')
+    op.drop_index(op.f('ix_password_reset_token_id'), table_name='password_reset_token')
+    op.drop_table('password_reset_token')
     op.drop_index(op.f('ix_insurance_profiles_id'), table_name='insurance_profiles')
     op.drop_table('insurance_profiles')
     op.drop_index(op.f('ix_doctor_profiles_id'), table_name='doctor_profiles')

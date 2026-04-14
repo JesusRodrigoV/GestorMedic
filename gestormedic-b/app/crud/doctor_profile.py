@@ -1,4 +1,4 @@
-from sqlalchemy import select, in_
+from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
