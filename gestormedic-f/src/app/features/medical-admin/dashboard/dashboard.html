@@ -38,13 +38,7 @@
   </div>
 
   <div class="main-content-row">
-    <div class="chart-section" style="flex: 2;">
-      <p-card header="Tendencia de Citas">
-        <p-chart type="line" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
-      </p-card>
-    </div>
-    
-    <div class="timeline-section" style="flex: 1;">
+    <div class="timeline-section">
       <p-card header="Agenda de Hoy">
         <p-timeline [value]="upcomingAppointments()">
             <ng-template pTemplate="content" let-appt>

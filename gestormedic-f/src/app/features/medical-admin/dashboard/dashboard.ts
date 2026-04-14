@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
-import { ChartModule } from 'primeng/chart';
 import { TimelineModule } from 'primeng/timeline';
 import { BadgeModule } from 'primeng/badge';
 
@@ -22,7 +21,7 @@ export interface UpcomingAppointment {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, CardModule, ChartModule, TimelineModule, BadgeModule],
+  imports: [CommonModule, CardModule, TimelineModule, BadgeModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,12 +29,9 @@ export interface UpcomingAppointment {
 export default class Dashboard implements OnInit {
   metrics = signal<DashboardMetrics | null>(null);
   upcomingAppointments = signal<UpcomingAppointment[]>([]);
-  chartData: any;
-  chartOptions: any;
 
   ngOnInit() {
     this.getDashboardMetrics();
-    this.initChartOptions();
   }
 
   getDashboardMetrics() {
@@ -56,19 +52,6 @@ export default class Dashboard implements OnInit {
     };
     
     this.metrics.set(mockMetrics);
-    
-    this.chartData = {
-      labels: mockMetrics.appointmentsTrend.map(t => t.date),
-      datasets: [
-        {
-          label: 'Citas',
-          data: mockMetrics.appointmentsTrend.map(t => t.count),
-          fill: false,
-          borderColor: '#4f46e5',
-          tension: 0.4
-        }
-      ]
-    };
 
     const mockAppointments: UpcomingAppointment[] = [
       { appointmentId: '1', patientId: 'p1', patientFullName: 'Juan Pérez', scheduledTime: '09:00', status: 'COMPLETED' },
@@ -78,16 +61,6 @@ export default class Dashboard implements OnInit {
       { appointmentId: '5', patientId: 'p5', patientFullName: 'Luis Sánchez', scheduledTime: '15:30', status: 'SCHEDULED' }
     ];
     this.upcomingAppointments.set(mockAppointments);
-  }
-
-  initChartOptions() {
-    this.chartOptions = {
-      plugins: {
-        legend: { display: false }
-      },
-      responsive: true,
-      maintainAspectRatio: false
-    };
   }
 
   getSeverity(status: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
@@ -102,11 +75,11 @@ export default class Dashboard implements OnInit {
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'COMPLETED': return 'Completadas';
-      case 'IN_PROGRESS': return 'En curso';
-      case 'ARRIVED': return 'Espera';
+      case 'COMPLETED': return 'Completada';
+      case 'IN_PROGRESS': return 'En Progreso';
+      case 'ARRIVED': return 'Llegó';
       case 'SCHEDULED': return 'Programada';
-      default: return status;
+      default: return 'Desconocido';
     }
   }
 }

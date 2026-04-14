@@ -1,101 +1,14 @@
 <div class="gm-settings-layout">
   <p-toast></p-toast>
-  <main class="gm-settings-panel w-full">
-    <div class="settings-header text-center mb-6 pt-4">
-      <h2 class="text-2xl font-bold text-gray-800">Ajustes del Sistema</h2>
-      <p class="text-gray-500">Administra la configuración de tu cuenta y clínica.</p>
-    </div>
-
-    <div class="accordion-container max-w-4xl mx-auto">
-      <p-accordion value="0">
-        <!-- 1. USER PROFILE -->
-        <p-accordion-panel value="0">
-          <p-accordion-header>
-            <div class="flex items-center gap-2">
-              <i class="bx bx-user-circle"></i> Perfil Profesional
-            </div>
-          </p-accordion-header>
-          <p-accordion-content>
-            <div class="form-grid">
-              <div class="field">
-                <label for="firstName">Nombre</label>
-                <input id="firstName" type="text" pInputText [(ngModel)]="doctorProfile().firstName" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="lastName">Apellidos</label>
-                <input id="lastName" type="text" pInputText [(ngModel)]="doctorProfile().lastName" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="email">Correo Electrónico</label>
-                <input id="email" type="email" pInputText [(ngModel)]="doctorProfile().contactEmail" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="license">Número de Licencia</label>
-                <input id="license" type="text" pInputText [(ngModel)]="doctorProfile().medicalLicenseNumber" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="specialty">Especialidad</label>
-                <p-dropdown id="specialty" [options]="specialtyOptions" [(ngModel)]="doctorProfile().specialtyId" placeholder="Selecciona" styleClass="w-full"></p-dropdown>
-              </div>
-            </div>
-            <div class="action-row mt-4">
-              <p-button label="Guardar Perfil" icon="bx bx-save" (onClick)="saveProfile()"></p-button>
-            </div>
-          </p-accordion-content>
-        </p-accordion-panel>
-
-        <!-- 2. CLINIC SETTINGS -->
-        <p-accordion-panel value="1">
-          <p-accordion-header>
-            <div class="flex items-center gap-2">
-              <i class="bx bx-building"></i> Configuración de Clínica
-            </div>
-          </p-accordion-header>
-          <p-accordion-content>
-            <div class="form-grid">
-              <div class="field col-span-2">
-                <label for="clinicName">Nombre de la Clínica</label>
-                <input id="clinicName" type="text" pInputText [(ngModel)]="clinicSettings().clinicName" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="supportEmail">Correo de Soporte</label>
-                <input id="supportEmail" type="email" pInputText [(ngModel)]="clinicSettings().supportEmail" class="w-full" />
-              </div>
-              <div class="field">
-                <label for="timezone">Zona Horaria</label>
-                <p-dropdown id="timezone" [options]="timeZoneOptions" [(ngModel)]="clinicSettings().timeZone" styleClass="w-full"></p-dropdown>
-              </div>
-            </div>
-            <div class="action-row mt-4">
-              <p-button label="Guardar Clínica" icon="bx bx-save" (onClick)="saveClinicSettings()" severity="secondary"></p-button>
-            </div>
-          </p-accordion-content>
-        </p-accordion-panel>
-
-        <!-- 3. PREFERENCES -->
-        <p-accordion-panel value="2">
-          <p-accordion-header>
-            <div class="flex items-center gap-2">
-              <i class="bx bx-slider"></i> Preferencias
-            </div>
-          </p-accordion-header>
-          <p-accordion-content>
-            <div class="form-grid">
-              <div class="field switch-field">
-                <div class="switch-text">
-                  <label for="reminders">Recordatorios Automáticos</label>
-                  <span class="sub-label">Los pacientes recibirán un SMS/Email 24h antes de su cita.</span>
-                </div>
-                <p-inputswitch id="reminders" [(ngModel)]="clinicSettings().bookingRemindersEnabled"></p-inputswitch>
-              </div>
-            </div>
-            <div class="action-row mt-4">
-              <p-button label="Guardar Preferencias" icon="bx bx-save" (onClick)="savePreferences()" severity="secondary"></p-button>
-            </div>
-          </p-accordion-content>
-        </p-accordion-panel>
-
-      </p-accordion>
-    </div>
+  <nav class="nav-menu">
+    @for (option of menuOptions(); track option.route) {
+      <a class="nav-link" [routerLink]="option.route" routerLinkActive="nav-link--active">
+        <i [class]="option.icon"></i>
+        <span>{{ option.label }}</span>
+      </a>
+    }
+  </nav>
+  <main class="gm-settings-panel">
+    <router-outlet></router-outlet>
   </main>
 </div>

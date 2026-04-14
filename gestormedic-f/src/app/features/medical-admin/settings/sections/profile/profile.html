@@ -1,93 +1,27 @@
-<section class="gm-profile-container">
-  <header class="profile-header">
-    <div class="header-text">
-      <h3>Identidad del Profesional</h3>
-      <p>Datos registrados bajo la jurisdicción de GestorMedic.</p>
-    </div>
+<p-toast></p-toast>
+<div class="settings-header text-center mb-6 pt-4">
+  <h2 class="text-2xl font-bold text-gray-800">Perfil Profesional</h2>
+  <p class="text-gray-500">Administra tu información personal y profesional.</p>
+</div>
 
-    <div class="header-actions">
-      @if (!isEditing()) {
-        <gm-rounded-button
-          label="Editar Perfil"
-          icon="bx bx-edit-alt"
-          (click)="toggleEdit()"
-          severity="secondary"
-        />
-      } @else {
-        <div class="edit-buttons">
-          <gm-rounded-button
-            label="Cancelar"
-            [text]="true"
-            (click)="toggleEdit()"
-            severity="danger"
-          />
-          <gm-rounded-button
-            label="Guardar Cambios"
-            (click)="saveChanges()"
-            [disabled]="profileForm.invalid"
-            severity="primary"
-          />
-        </div>
-      }
-    </div>
-  </header>
-
-  <form [formGroup]="profileForm" class="gm-bento-grid">
-    <div class="bento-card photo-card" [class.is-editing]="isEditing()">
-      <div class="avatar-wrapper">
-        <p-avatar [image]="selectedPhoto()" size="xlarge" shape="circle" />
-
-        @if (isEditing()) {
-          <button
-            type="button"
-            class="change-photo-btn"
-            (click)="showPhotoPicker.set(!showPhotoPicker())"
-          >
-            <i class="bx bx-camera"></i>
-          </button>
-        }
-      </div>
-
-      @if (showPhotoPicker() && isEditing()) {
-        <div class="photo-selector">
-          @for (photo of availablePhotos; track photo) {
-            <img
-              [src]="photo"
-              (click)="selectPhoto(photo)"
-              [class.active]="selectedPhoto() === photo"
-              alt="Avatar option"
-            />
-          }
-        </div>
-      }
-    </div>
-
-    <div class="bento-card fields-card">
-      <div class="field-row">
-        <div class="field-group">
-          <label for="first_name">Nombre(s)</label>
-          <div class="input-container">
-            <i class="bx bx-user"></i>
-            <input pInputText id="first_name" formControlName="first_name" />
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label for="last_name">Apellidos</label>
-          <div class="input-container">
-            <i class="bx bx-id-card"></i>
-            <input pInputText id="last_name" formControlName="last_name" />
-          </div>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label for="username">Nombre de Usuario</label>
-        <div class="input-container">
-          <i class="bx bx-at"></i>
-          <input pInputText id="username" formControlName="username" />
-        </div>
-      </div>
-    </div>
-  </form>
-</section>
+<div class="form-grid">
+  <div class="field">
+    <label for="firstName">Nombre</label>
+    <input id="firstName" type="text" pInputText [(ngModel)]="doctorProfile().firstName" class="w-full" />
+  </div>
+  <div class="field">
+    <label for="lastName">Apellidos</label>
+    <input id="lastName" type="text" pInputText [(ngModel)]="doctorProfile().lastName" class="w-full" />
+  </div>
+  <div class="field">
+    <label for="email">Correo Electrónico</label>
+    <input id="email" type="email" pInputText [(ngModel)]="doctorProfile().contactEmail" class="w-full" />
+  </div>
+  <div class="field">
+    <label for="license">Número de Licencia</label>
+    <input id="license" type="text" pInputText [(ngModel)]="doctorProfile().medicalLicenseNumber" class="w-full" />
+  </div>
+</div>
+<div class="action-row mt-4">
+  <p-button label="Guardar Perfil" icon="bx bx-save" (onClick)="saveProfile()"></p-button>
+</div>

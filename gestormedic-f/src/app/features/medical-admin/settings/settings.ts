@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { InputSwitchModule } from 'primeng/inputswitch';
-import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+
+export interface SettingsOption {
+  label: string;
+  icon: string;
+  route: string;
+}
 
 export interface DoctorProfile {
   id: string;
@@ -28,13 +33,31 @@ export interface ClinicSettings {
 
 @Component({
   selector: 'gm-settings',
-  imports: [CommonModule, AccordionModule, InputTextModule, ButtonModule, InputSwitchModule, DropdownModule, FormsModule, ToastModule],
+  imports: [CommonModule, RouterModule, AccordionModule, InputTextModule, ButtonModule, FormsModule, ToastModule],
   providers: [MessageService],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Settings implements OnInit {
+  menuOptions = signal<SettingsOption[]>([
+    {
+      label: 'Perfil Profesional',
+      icon: 'bx bx-user-circle',
+      route: 'profile',
+    },
+    {
+      label: 'Notificaciones',
+      icon: 'bx bx-bell',
+      route: 'notifications',
+    },
+    {
+      label: 'Apariencia',
+      icon: 'bx bx-palette',
+      route: 'appearance',
+    },
+  ]);
+
   doctorProfile = signal<DoctorProfile>({
     id: '', firstName: '', lastName: '', specialtyId: '', medicalLicenseNumber: '', contactEmail: ''
   });
