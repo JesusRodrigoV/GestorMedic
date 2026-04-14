@@ -1,14 +1,7 @@
-FROM node:24-slim AS build
+FROM oven/bun:1.2-slim 
 WORKDIR /app
-RUN npm install -g bun
 COPY package.json bun.lock ./
-RUN bun install 
-COPY . .
-RUN npm run build
-FROM oven/bun:1.2-slim AS runtime
+RUN bun install
+COPY . . 
 EXPOSE 4200
-WORKDIR /app
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package.json ./
-USER bun
-CMD ["bun","run", "dist/gestormedic-f/browser/index.html"]
+CMD ["bun", "run", "start", "--host", "0.0.0.0"]

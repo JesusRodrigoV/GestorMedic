@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
-    REDIS_URL: str = "redis://localhost:6379/0"
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
@@ -39,6 +38,10 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_PASSWORD: Optional[str] = None
+    NOTIFICATIONS_SERVICE_URL: str
+    INTERNAL_AUTH_SECRET: str
+    AUTH_ALGORITHM: str = "HS256"
+    SECRET_KEY: str
     
     @property
     def REDIS_URL(self) -> str:
