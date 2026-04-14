@@ -1,0 +1,12 @@
+<section class="gm-featured-clinics">
+  <h3>Clínicas y centros destacados</h3>
+  <div class="clinics-list">
+    @for (c of clinics(); track c.id) {
+      <article class="clinic-card">
+        <h4 class="clinic-name">{{ c.name }}</h4>
+        <div class="clinic-meta">{{ c.city }} · {{ c.services }} servicios</div>
+        <a class="clinic-cta" routerLink="/directorio">Ver perfiles</a>
+      </article>
+    }
+  </div>
+</section>

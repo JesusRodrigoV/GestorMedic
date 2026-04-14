@@ -10,6 +10,36 @@ export const routes: Routes = [
         loadComponent: () => import('./features/public/home/home'),
       },
       {
+        path: 'especialidades',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'especialidades' },
+      },
+      {
+        path: 'directorio',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'directorio' },
+      },
+      {
+        path: 'videollamada',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'videollamada' },
+      },
+      {
+        path: 'recetas',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'recetas' },
+      },
+      {
+        path: 'nosotros',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'nosotros' },
+      },
+      {
+        path: 'acceso',
+        loadComponent: () => import('./features/public/sections-page/sections-page'),
+        data: { page: 'acceso' },
+      },
+      {
         path: 'search',
         loadComponent: () => import('./features/public/search/search'),
       },
@@ -94,12 +124,49 @@ export const routes: Routes = [
   },
   {
     path: 'portal',
-    loadComponent: () => import('./core/layouts/admin-layout/admin-layout'),
+    loadComponent: () => import('./core/layouts/patient-portal-layout/patient-portal-layout'),
     children: [
       {
-        path: 'appointments',
+        path: '',
+        redirectTo: 'resumen',
+        pathMatch: 'full',
+      },
+      {
+        path: 'resumen',
+        loadComponent: () => import('./features/patient-portal/dashboard/dashboard'),
+      },
+      {
+        path: 'citas',
         loadComponent: () =>
           import('./features/patient-portal/appointment-history/appointment-history'),
+      },
+      {
+        path: 'historial',
+        loadComponent: () => import('./features/patient-portal/medical-history/medical-history'),
+      },
+      {
+        path: 'documentos',
+        loadComponent: () => import('./features/patient-portal/document-center/document-center'),
+      },
+      {
+        path: 'recetas',
+        loadComponent: () => import('./features/patient-portal/prescriptions/prescriptions'),
+      },
+      {
+        path: 'facturacion',
+        loadComponent: () => import('./features/patient-portal/billing/billing'),
+      },
+      {
+        path: 'aseguradoras',
+        loadComponent: () => import('./features/patient-portal/insurance/insurance'),
+      },
+      {
+        path: 'recordatorios',
+        loadComponent: () => import('./features/patient-portal/reminders/reminders'),
+      },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./features/patient-portal/profile/profile'),
       },
     ],
   },

@@ -1,0 +1,64 @@
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #d5deea;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  padding: 1rem;
+}
+
+.intro p {
+  margin: 0.35rem 0 0;
+  color: #51657d;
+}
+
+.plans {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.7rem;
+
+  article {
+    border: 1px solid #dce6f2;
+    border-radius: 12px;
+    padding: 0.8rem;
+  }
+
+  h4 {
+    margin: 0;
+    color: #0f172a;
+  }
+
+  p {
+    margin: 0.35rem 0;
+    color: #334155;
+  }
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  span {
+    color: #0f4a5b;
+    font-weight: 700;
+  }
+
+  strong {
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.84rem;
+  }
+
+  .pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+}

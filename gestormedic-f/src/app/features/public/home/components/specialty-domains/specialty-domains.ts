@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'gm-specialty-domains',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './specialty-domains.html',
   styleUrl: './specialty-domains.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,5 +49,20 @@ export class SpecialtyDomains {
         'Motor de búsqueda público para pacientes con sincronización en tiempo real de la disponibilidad del galeno.',
       icon: 'bx-search-alt',
     },
+  ]);
+
+  activeFilter = signal('destacadas');
+
+  areas = signal([
+    { id: 'materno', title: 'Materno-Infantil', count: 6, icon: 'bx-heart' },
+    { id: 'quirurgicas', title: 'Quirúrgicas', count: 8, icon: 'bx-bandage' },
+    { id: 'diagnostico', title: 'Diagnóstico e Imagen', count: 4, icon: 'bx-scan' },
+    { id: 'atencion', title: 'Atención Primaria', count: 10, icon: 'bx-user' },
+  ]);
+
+  services = signal([
+    { id: 'telemedicina', title: 'Telemedicina', description: 'Conexión remota segura entre paciente y especialista', icon: 'bx-wifi' },
+    { id: 'integracion', title: 'Integración con aseguradoras', description: 'Flujos automáticos de facturación y autorización', icon: 'bx-wallet' },
+    { id: 'agenda', title: 'Agenda inteligente', description: 'Sincronización y búsquedas avanzadas por disponibilidad', icon: 'bx-calendar' },
   ]);
 }

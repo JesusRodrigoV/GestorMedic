@@ -1,0 +1,128 @@
+.sections-page {
+  min-height: calc(100vh - 72px);
+  background: radial-gradient(circle at 20% 0%, #f1f8f5 0%, #f8fafc 52%, #edf2f7 100%);
+  padding: 1.3rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.hero,
+.card {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  border: 1px solid #dbe3ea;
+  border-radius: 22px;
+  background: #f8fafc;
+}
+
+.hero {
+  padding: 1.3rem;
+
+  span {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0f766e;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0.75rem 0;
+    color: #0f172a;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: #475569;
+    max-width: 65ch;
+    line-height: 1.6;
+  }
+}
+
+/* Styling specific for Videollamada page sections to reduce 'whiteness' */
+.sections-page .gm-videocall-features-host,
+.sections-page .gm-videocall-security-host,
+.sections-page .gm-videocall-steps-host {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  background: transparent;
+}
+
+.sections-page .gm-videocall-features-host { padding: 1rem 0; }
+.sections-page .gm-videocall-security-host { padding: 0.75rem 0; }
+.sections-page .gm-videocall-steps-host { padding: 0.75rem 0 2rem 0; }
+
+/* add a subtle page accent strip for videollamada */
+.sections-page[data-page='videollamada'],
+.sections-page .video-accent {
+  background: radial-gradient(circle at 10% 20%, rgba(0,168,232,0.02), transparent 20%), radial-gradient(circle at 90% 80%, rgba(0,53,102,0.01), transparent 30%);
+}
+
+/* Recetas page accents */
+.sections-page[data-page='recetas'],
+.sections-page .prescriptions-accent {
+  background: radial-gradient(circle at 20% 10%, rgba(3,166,154,0.02), transparent 18%), radial-gradient(circle at 80% 85%, rgba(0,120,140,0.01), transparent 30%);
+}
+
+.gm-prescriptions-features-host,
+.gm-prescriptions-security-host,
+.gm-prescriptions-samples-host,
+.gm-prescriptions-cta-host {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.gm-prescriptions-cta-host { padding: 1.5rem 0 2rem 0; }
+
+.hero-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+
+  a {
+    text-decoration: none;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #ffffff;
+    padding: 0.6rem 0.95rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  .secondary {
+    background: transparent;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+  }
+}
+
+.grid {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.9rem;
+}
+
+.card {
+  padding: 1rem;
+  background: #ffffff;
+
+  h2 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #0f172a;
+  }
+
+  ul {
+    margin: 0.75rem 0 0;
+    padding-left: 1.1rem;
+    color: #334155;
+    display: grid;
+    gap: 0.45rem;
+  }
+}

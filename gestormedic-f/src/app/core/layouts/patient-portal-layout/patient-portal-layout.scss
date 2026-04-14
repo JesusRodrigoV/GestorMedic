@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  height: 100dvh;
+  overflow: hidden;
+  background: linear-gradient(165deg, #f3f8ff 0%, #f8fafc 45%, #eefaf5 100%);
+}
+
+.portal-shell {
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  overflow: hidden;
+}
+
+.portal-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.2rem;
+  border-right: 1px solid #d8e2f0;
+  background: linear-gradient(170deg, #132540, #0f2f45 60%, #0f4a5b 100%);
+  color: #e2f7ff;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  .badge {
+    display: inline-flex;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #8ae7ff;
+  }
+
+  h1 {
+    margin: 0.55rem 0 0.25rem;
+    font-size: 1.45rem;
+    color: #ffffff;
+  }
+
+  p {
+    margin: 0;
+    color: #b7d5e6;
+    line-height: 1.35;
+  }
+}
+
+.portal-nav {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.nav-link {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  color: #d4e8f5;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.66rem 0.7rem;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background: rgba(181, 224, 246, 0.14);
+    color: #ffffff;
+  }
+
+  &.is-active {
+    background: rgba(96, 224, 255, 0.25);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(131, 239, 255, 0.2);
+  }
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(173, 215, 235, 0.28);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 0.85rem;
+
+  p {
+    margin: 0;
+    color: #e8fbff;
+    font-size: 0.9rem;
+  }
+
+  a {
+    display: inline-flex;
+    margin-top: 0.65rem;
+    color: #8cf0ff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+}
+
+.portal-main {
+  overflow: hidden;
+}
+
+.portal-main-scroll {
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 1.4rem;
+}
+
+.portal-main-scroll::-webkit-scrollbar,
+.portal-sidebar::-webkit-scrollbar {
+  width: 9px;
+}
+
+.portal-main-scroll::-webkit-scrollbar-thumb,
+.portal-sidebar::-webkit-scrollbar-thumb {
+  background: #9db1c8;
+  border-radius: 999px;
+}
+
+@media (max-width: 960px) {
+  .portal-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-sidebar {
+    position: relative;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid #d8e2f0;
+    max-height: 42dvh;
+  }
+
+  .portal-main-scroll {
+    height: auto;
+    min-height: 58dvh;
+  }
+}

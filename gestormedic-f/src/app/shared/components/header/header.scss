@@ -99,12 +99,13 @@
 
 .public-nav {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   a {
     color: var(--h-nav-link);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 600;
+    white-space: nowrap;
     transition: all 0.3s ease;
     &:hover {
       color: var(--p-energy-500);
@@ -241,4 +242,43 @@
   height: 32px;
   border-radius: 50%;
   background: var(--h-search-bg);
+}
+
+@media (max-width: 1240px) {
+  .brand-text__tagline {
+    display: none;
+  }
+
+  .gm-header-container {
+    padding: 0 1rem;
+  }
+
+  .public-nav {
+    overflow-x: auto;
+    max-width: 46vw;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 980px) {
+  .gm-header-wrapper {
+    height: auto;
+    min-height: 72px;
+  }
+
+  .gm-header-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.6rem;
+  }
+
+  .guest-group {
+    width: 100%;
+    justify-content: center;
+  }
 }

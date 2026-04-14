@@ -1,0 +1,22 @@
+<main class="page">
+  <section class="top card">
+    <h2>Recetas digitales</h2>
+    <p>Visualiza tus recetas activas, renovaciones y estado de dispensacion.</p>
+  </section>
+
+  <section class="card">
+    <h3>Recetas activas</h3>
+    <div class="rx-list">
+      @for (rx of activePrescriptions(); track rx.medication) {
+        <article>
+          <h4>{{ rx.medication }}</h4>
+          <p>{{ rx.dosage }}</p>
+          <div>
+            <span>Duracion: {{ rx.duration }}</span>
+            <strong>Renovar: {{ rx.renewal }}</strong>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</main>

@@ -1,0 +1,22 @@
+<main class="page">
+  <section class="card intro">
+    <h2>Aseguradoras y coberturas</h2>
+    <p>Revisa tus planes, porcentaje de cobertura y estado de autorizaciones.</p>
+  </section>
+
+  <section class="card">
+    <h3>Mis planes</h3>
+    <div class="plans">
+      @for (plan of plans(); track plan.provider) {
+        <article>
+          <h4>{{ plan.provider }}</h4>
+          <p>{{ plan.plan }}</p>
+          <div>
+            <span>Cobertura: {{ plan.coverage }}</span>
+            <strong [class.pending]="plan.status === 'En revision'">{{ plan.status }}</strong>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</main>

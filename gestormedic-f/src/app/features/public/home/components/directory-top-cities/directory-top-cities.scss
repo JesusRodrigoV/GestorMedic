@@ -1,0 +1,36 @@
+.gm-top-cities {
+	margin: 2rem 0;
+
+	h3 {
+		color: #0f172a;
+		margin: 0 0 0.75rem 0;
+		font-size: 1.25rem;
+		font-weight: 800;
+	}
+
+	.cities-grid {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.city-card {
+		background: #fff;
+		border: 1px solid #e8f0f5;
+		border-radius: 12px;
+		padding: 1rem 1.25rem;
+		min-width: 180px;
+		box-shadow: 0 6px 18px rgba(3, 10, 21, 0.03);
+
+		.city-name {
+			display: block;
+			font-weight: 800;
+			color: #0f172a;
+		}
+
+		.city-count {
+			color: #64748b;
+			font-size: 0.9rem;
+		}
+	}
+}

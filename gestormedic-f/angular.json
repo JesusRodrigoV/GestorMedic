@@ -3,7 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "bun",
-    "analytics": "579a3f32-5b2b-4d76-8b5e-eea683c1e7a1"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -34,8 +34,13 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss", "node_modules/driver.js/dist/driver.css"],
-            "polyfills": ["@angular/localize/init"]
+            "styles": [
+              "src/styles.scss",
+              "node_modules/driver.js/dist/driver.css"
+            ],
+            "polyfills": [
+              "@angular/localize/init"
+            ]
           },
           "configurations": {
             "production": {
