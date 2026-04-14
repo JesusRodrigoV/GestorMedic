@@ -33,7 +33,7 @@ def list_users(
     skip: int = 0,
     limit: int = 50,
     search: str = Query(None),
-    current_user: User = Depends(require_admin_clinica)
+    current_user: User = Depends(require_superadmin)
 ):
 
     stmt = select(User)
