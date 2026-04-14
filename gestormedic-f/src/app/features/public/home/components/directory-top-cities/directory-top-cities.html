@@ -1,0 +1,11 @@
+<section class="gm-top-cities">
+  <h3>Ciudades con más especialistas</h3>
+  <div class="cities-grid">
+    @for (c of cities(); track c.id) {
+      <article class="city-card">
+        <strong class="city-name">{{ c.name }}</strong>
+        <span class="city-count">{{ c.doctors }} especialistas</span>
+      </article>
+    }
+  </div>
+</section>

@@ -1,0 +1,11 @@
+<section class="gm-prescriptions-features">
+  <h3>Funciones destacadas de Recetas Digitales</h3>
+  <div class="features-grid">
+    @for (f of features(); track f.id) {
+      <article class="pf-card">
+        <strong>{{ f.title }}</strong>
+        <p>{{ f.desc }}</p>
+      </article>
+    }
+  </div>
+</section>

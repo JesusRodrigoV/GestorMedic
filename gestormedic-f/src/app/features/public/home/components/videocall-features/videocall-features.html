@@ -1,0 +1,11 @@
+<section class="gm-videocall-features">
+  <h3>Características clave de la consulta virtual</h3>
+  <div class="features-grid">
+    @for (f of features(); track f.id) {
+      <article class="feature">
+        <strong>{{ f.title }}</strong>
+        <p>{{ f.desc }}</p>
+      </article>
+    }
+  </div>
+</section>

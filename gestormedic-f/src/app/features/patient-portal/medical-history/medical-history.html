@@ -1,0 +1,30 @@
+<main class="page">
+  <section class="header card">
+    <h2>Historial clinico</h2>
+    <p>Consulta tus atenciones por especialidad, diagnosticos y observaciones medicas.</p>
+  </section>
+
+  <section class="card">
+    <h3>Linea de atenciones</h3>
+    <div class="events">
+      @for (episode of episodes(); track episode.date) {
+        <article>
+          <span>{{ episode.date }}</span>
+          <div>
+            <h4>{{ episode.specialty }} · {{ episode.doctor }}</h4>
+            <p>{{ episode.diagnosis }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Alergias registradas</h3>
+    <div class="chips">
+      @for (item of allergies(); track item) {
+        <span>{{ item }}</span>
+      }
+    </div>
+  </section>
+</main>

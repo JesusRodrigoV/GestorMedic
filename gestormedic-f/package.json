@@ -33,6 +33,7 @@
     "@ngrx/signals": "^21.1.0",
     "@primeuix/themes": "^2.0.3",
     "driver.js": "^1.4.0",
+    "gsap": "^3.14.2",
     "primeng": "^21.1.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

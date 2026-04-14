@@ -1,0 +1,51 @@
+.gm-about-team {
+  margin: 2rem 0;
+
+  h3 {
+    color: #0f172a;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .team-grid {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    padding: 1rem 0;
+  }
+
+  .member-card {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    padding: 1rem;
+    border-radius: 12px;
+    min-width: 200px;
+    flex: 0 0 200px;
+    text-align: center;
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #003566;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .name { color: #0f172a; display: block; font-weight: 800 }
+    .role { color: #64748b; font-size: 0.9rem }
+  }
+}

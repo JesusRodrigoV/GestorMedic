@@ -4,7 +4,7 @@ import Aura from "@primeuix/themes/aura";
 const GMPreset = definePreset(Aura, {
     primitive: {
         yale: {
-            50: '#ecf2f7',
+            50: '#021422',
             100: '#d1e0ed',
             200: '#a3c1db',
             300: '#75a1c9',

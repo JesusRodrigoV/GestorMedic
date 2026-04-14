@@ -1,0 +1,66 @@
+<main class="sections-page">
+  <section class="hero">
+    <span>{{ config().badge }}</span>
+    <h1>{{ config().title }}</h1>
+    <p>{{ config().subtitle }}</p>
+    <div class="hero-actions">
+      <a routerLink="/home">Volver al inicio</a>
+      <a routerLink="/acceso" class="secondary">Comenzar ahora</a>
+    </div>
+  </section>
+
+  <section *ngIf="pageKey() === 'especialidades'">
+    <gm-specialty-domains></gm-specialty-domains>
+  </section>
+
+  <section *ngIf="pageKey() === 'directorio'">
+    <gm-search></gm-search>
+    <gm-directory-map-preview></gm-directory-map-preview>
+    <gm-directory-top-cities></gm-directory-top-cities>
+    <gm-directory-featured-clinics></gm-directory-featured-clinics>
+  </section>
+
+  <section *ngIf="pageKey() === 'acceso'">
+    <gm-access-cards></gm-access-cards>
+  </section>
+
+  <section *ngIf="pageKey() === 'videollamada'">
+    <gm-videocall-features></gm-videocall-features>
+    <gm-videocall-security></gm-videocall-security>
+    <gm-videocall-steps></gm-videocall-steps>
+    <gm-subscription-plans></gm-subscription-plans>
+  </section>
+
+  <section *ngIf="pageKey() === 'recetas'">
+    <gm-prescriptions-features></gm-prescriptions-features>
+    <gm-prescriptions-security></gm-prescriptions-security>
+    <gm-prescriptions-samples></gm-prescriptions-samples>
+    <gm-prescriptions-cta></gm-prescriptions-cta>
+  </section>
+
+  <section *ngIf="pageKey() === 'nosotros'">
+    <gm-about-hero></gm-about-hero>
+    <gm-about-team></gm-about-team>
+    <gm-about-values></gm-about-values>
+    <gm-about-stats></gm-about-stats>
+    <gm-about-cta></gm-about-cta>
+  </section>
+
+  <section class="grid">
+    @for (section of config().sections; track section.heading) {
+      <article class="card">
+        <h2>{{ section.heading }}</h2>
+        <ul>
+          @for (point of section.points; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </section>
+
+  <section *ngIf="pageKey() === 'especialidades'">
+    <gm-subscription-plans></gm-subscription-plans>
+    <gm-trust-bar></gm-trust-bar>
+  </section>
+</main>

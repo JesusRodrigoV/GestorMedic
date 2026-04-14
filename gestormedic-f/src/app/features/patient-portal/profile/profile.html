@@ -1,0 +1,36 @@
+<main class="page">
+  <section class="card intro">
+    <h2>Mi perfil</h2>
+    <p>Actualiza tus datos personales y de contacto para una mejor atencion.</p>
+  </section>
+
+  <section class="card data-card">
+    <h3>Datos principales</h3>
+    <dl>
+      <div>
+        <dt>Nombre completo</dt>
+        <dd>{{ profile().fullName }}</dd>
+      </div>
+      <div>
+        <dt>Documento</dt>
+        <dd>{{ profile().ci }}</dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd>{{ profile().email }}</dd>
+      </div>
+      <div>
+        <dt>Telefono</dt>
+        <dd>{{ profile().phone }}</dd>
+      </div>
+      <div>
+        <dt>Contacto de emergencia</dt>
+        <dd>{{ profile().emergencyContact }}</dd>
+      </div>
+      <div>
+        <dt>Grupo sanguineo</dt>
+        <dd>{{ profile().bloodType }}</dd>
+      </div>
+    </dl>
+  </section>
+</main>

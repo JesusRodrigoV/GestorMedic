@@ -1,0 +1,15 @@
+<section class="gm-prescriptions-samples">
+  <h3>Modelos de receta</h3>
+  <div class="samples-grid">
+    @for (s of samples(); track s.id) {
+      <article class="sample-card">
+        <strong>{{ s.title }}</strong>
+        <ul>
+          @for (it of s.items; track it) {
+            <li>{{ it }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
+</section>

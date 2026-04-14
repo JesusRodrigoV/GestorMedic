@@ -6,7 +6,13 @@
     </h2>
   </header>
 
-  <div class="gm-domains-grid">
+  <nav class="gm-domains-filters" aria-label="Filtros de especialidades">
+    <button (click)="activeFilter.set('destacadas')" [class.active]="activeFilter() === 'destacadas'">Destacadas</button>
+    <button (click)="activeFilter.set('areas')" [class.active]="activeFilter() === 'areas'">Por área</button>
+    <button (click)="activeFilter.set('servicios')" [class.active]="activeFilter() === 'servicios'">Servicios</button>
+  </nav>
+
+  <div class="gm-domains-grid" *ngIf="activeFilter() === 'destacadas'">
     @for (domain of domains(); track domain.id) {
       <article class="domain-card">
         <div class="domain-card__glow" aria-hidden="true"></div>
@@ -30,5 +36,39 @@
         </footer>
       </article>
     }
+  </div>
+
+  <div class="gm-domains-areas" *ngIf="activeFilter() === 'areas'">
+    <h3 class="areas-title">Áreas funcionales</h3>
+    <div class="areas-list">
+      @for (area of areas(); track area.id) {
+        <div class="area-chip" role="button">
+          <i class="bx" [class]="area.icon" aria-hidden="true"></i>
+          <div class="area-info">
+            <strong>{{ area.title }}</strong>
+            <small>{{ area.count }} especialidades</small>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="gm-domains-services" *ngIf="activeFilter() === 'servicios'">
+    <h3 class="services-title">Servicios y beneficios</h3>
+    <ul class="services-list">
+      @for (svc of services(); track svc.id) {
+        <li class="service-item">
+          <i class="bx" [class]="svc.icon" aria-hidden="true"></i>
+          <div>
+            <strong>{{ svc.title }}</strong>
+            <p class="svc-desc">{{ svc.description }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <div class="gm-domains-cta">
+    <a class="gm-btn-primary" href="/planes">Ver planes y suscripciones</a>
   </div>
 </section>

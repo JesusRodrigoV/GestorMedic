@@ -1,0 +1,34 @@
+<div class="portal-shell">
+  <aside class="portal-sidebar">
+    <header class="sidebar-brand">
+      <span class="badge">Patient Portal</span>
+      <h1>GestorMedic</h1>
+      <p>Tu salud, tus citas y tus documentos en un solo panel.</p>
+    </header>
+
+    <nav class="portal-nav">
+      @for (item of navItems(); track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+          class="nav-link"
+        >
+          <i class="bx" [class]="'bx ' + item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <footer class="sidebar-footer">
+      <p>Atencion 24/7 para pacientes y clinicas.</p>
+      <a routerLink="/home">Volver al sitio publico</a>
+    </footer>
+  </aside>
+
+  <section class="portal-main">
+    <div class="portal-main-scroll">
+      <router-outlet />
+    </div>
+  </section>
+</div>

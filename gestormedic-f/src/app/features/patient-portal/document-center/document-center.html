@@ -1,0 +1,30 @@
+<main class="page">
+  <section class="top card">
+    <h2>Centro de documentos</h2>
+    <p>Organiza tus archivos medicos en carpetas y accesalos desde cualquier dispositivo.</p>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h3>Carpetas</h3>
+      <div class="folder-list">
+        @for (folder of folders(); track folder.name) {
+          <div class="folder-item">
+            <h4>{{ folder.name }}</h4>
+            <p>{{ folder.files }} archivos</p>
+            <small>Actualizado: {{ folder.updated }}</small>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Recientes</h3>
+      <ul>
+        @for (file of recentFiles(); track file) {
+          <li>{{ file }}</li>
+        }
+      </ul>
+    </article>
+  </section>
+</main>

@@ -1,0 +1,14 @@
+<section class="gm-about-team">
+  <div class="container">
+    <h3>Nuestro equipo</h3>
+    <div class="team-grid">
+      @for (m of team(); track m.id) {
+        <article class="member-card">
+          <div class="avatar">{{ m.name.charAt(0) }}</div>
+          <strong class="name">{{ m.name }}</strong>
+          <span class="role">{{ m.role }}</span>
+        </article>
+      }
+    </div>
+  </div>
+</section>

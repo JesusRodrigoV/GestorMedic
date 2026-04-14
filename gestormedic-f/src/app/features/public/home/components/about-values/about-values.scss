@@ -1,0 +1,54 @@
+.gm-about-values {
+  margin: 2rem 0;
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  h3 {
+    color: #0f172a;
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .value-card {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    padding: 1rem;
+    border-radius: 12px;
+    height: 100%;
+
+    strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+      color: #475569;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .values-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .values-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

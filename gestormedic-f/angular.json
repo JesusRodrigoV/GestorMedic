@@ -3,7 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "bun",
-    "analytics": "579a3f32-5b2b-4d76-8b5e-eea683c1e7a1"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
