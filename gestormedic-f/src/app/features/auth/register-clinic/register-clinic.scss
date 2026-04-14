@@ -1,196 +1,363 @@
+// ============================================================================
+// REGISTER CLINIC COMPONENT STYLES
+// ============================================================================
+// Refactored with design system: enhanced form layout, consistent spacing,
+// improved inputs, refined error states, and smooth animations
+
+@import '../../../shared/styles/design-tokens.scss';
+@import '../../../shared/styles/form-system.scss';
+@import '../../../shared/styles/card-system.scss';
+@import '../../../shared/styles/button-system.scss';
+
+// ============================================================================
+// MAIN LAYOUT CONTAINER
+// ============================================================================
 .gm-onboarding-layout {
   min-height: 100dvh;
-  background: radial-gradient(circle at top, #f8fafc 0%, #e2e8f0 100%);
+  background: radial-gradient(circle at top, $color-bg-secondary 0%, #e2e8f0 100%);
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
-  font-family: 'Inter', sans-serif;
+  
+  padding: $spacing-xl $spacing-lg;
+  font-family: inherit;
 }
 
+// ============================================================================
+// CONTAINER
+// ============================================================================
 .onboarding-container {
   width: 100%;
-  max-width: 800px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 53, 102, 0.1);
-  padding: 3.5rem;
-  border: 1px solid #f1f5f9;
-
+  max-width: 50rem;
+  
+  @include card-elevated($padding: 3.5rem, $border-radius: $border-radius-2xl);
+  
+  // Enhanced border and shadow
+  border: 1px solid $color-border-default;
+  box-shadow: $shadow-elevated;
+  
+  animation: cardSlideIn $animation-normal $ease-out;
+  
   @media (max-width: 768px) {
-    padding: 2rem;
+    padding: $spacing-xl;
+  }
+  
+  @media (max-width: 640px) {
+    padding: $spacing-lg;
   }
 }
 
+// ============================================================================
+// HEADER SECTION
+// ============================================================================
 .onboarding-header {
   text-align: center;
-  margin-bottom: 3rem;
-
+  margin-bottom: $spacing-3xl;
+  animation: fadeInDown $animation-normal $ease-out;
+  
   .brand-logo {
-    display: inline-flex;
-    background: #f8fafc;
-    padding: 12px;
-    border-radius: 14px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 1.5rem;
+    display: block;
+    margin-bottom: $spacing-lg;
+    
+    img {
+      display: block;
+      margin: 0 auto;
+      width: 4rem;
+      height: 4rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+    }
   }
-
+  
   .title {
-    font-size: 2rem;
-    color: #001d3d;
-    font-weight: 800;
-    margin: 0 0 0.5rem 0;
+    font-size: $font-size-3xl;
+    color: $color-secondary;
+    font-weight: $font-weight-heavy;
+    margin: 0 0 $spacing-sm 0;
+    line-height: $line-height-tight;
+    
+    @media (max-width: 640px) {
+      font-size: $font-size-2xl;
+    }
   }
-
+  
   .subtitle {
-    color: #64748b;
-    font-size: 1rem;
+    color: $color-text-secondary;
+    font-size: $font-size-lg;
     margin: 0;
+    line-height: $line-height-normal;
+    font-weight: $font-weight-normal;
   }
 }
 
+// ============================================================================
+// FORM
+// ============================================================================
 .onboarding-form {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-
+  gap: $spacing-2xl;
+  
+  animation: fadeInUp $animation-normal $ease-out 0.2s both;
+  
+  // ========================================================================
+  // FORM SECTIONS
+  // ========================================================================
   .form-section {
+    @include form-section-layout($gap: $spacing-lg);
+    
     border: none;
     padding: 0;
     margin: 0;
-
+    
     legend {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #003566;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      @include form-section-legend();
+      
+      // Remove default styling
+      border: none;
       width: 100%;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 0.75rem;
-
+      padding-bottom: $spacing-md;
+      margin-bottom: $spacing-lg;
+      
+      // Visual divider
+      border-bottom: 2px solid $color-border-default;
+      
       i {
-        color: #00a8e8;
-        font-size: 1.3rem;
+        font-size: $font-size-xl;
       }
     }
   }
-
+  
+  // ========================================================================
+  // FIELD ROWS & GROUPS
+  // ========================================================================
   .field-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.25rem;
-
-    @media (max-width: 640px) {
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
+    @include form-field-row();
+    
     .field-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-
+      @include form-field-group();
+      
       label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #475569;
+        @include form-label();
       }
-
+      
+      // Input container styling
       .input-container {
-        position: relative;
-        display: flex;
-        align-items: center;
-
+        @include form-input-with-icon();
+        
         i.bx {
-          position: absolute;
-          left: 1rem;
-          color: #94a3b8;
-          font-size: 1.2rem;
-          z-index: 2;
+          @include form-input-icon();
         }
-
+        
         input {
-          width: 100%;
-          padding: 0.85rem 1rem 0.85rem 2.8rem;
-          border-radius: 12px;
-          border: 1px solid #cbd5e1;
-          color: #1e293b;
-          font-size: 0.95rem;
-          transition: border-color 0.3s ease;
-
-          &:focus {
-            border-color: #00a8e8;
-            box-shadow: 0 0 0 2px rgba(0, 168, 232, 0.1);
-            outline: none;
-          }
+          @include form-input-base();
+          @include form-input-with-icon-padding();
+          
+          // Error state
           &.ng-invalid.ng-touched {
-            border-color: #ef4444;
+            border-color: $color-border-error;
+            
+            &:focus {
+              border-color: $color-border-error;
+              box-shadow: $shadow-focus-error, $shadow-medium;
+            }
           }
         }
-
+        
         // PrimeNG Password Override
         ::ng-deep .gm-password-full {
           width: 100%;
+          
           .p-password-input {
-            width: 100%;
-            padding: 0.85rem 2.5rem 0.85rem 2.8rem;
-            border-radius: 12px;
-            border: 1px solid #cbd5e1;
-            font-family: inherit;
+            @include form-input-base();
+            @include form-input-with-icon-padding($icon-size: $input-icon-size, $icon-offset: 2rem);
+            
+            &.ng-invalid.ng-touched {
+              border-color: $color-border-error;
+              
+              &:focus {
+                border-color: $color-border-error;
+                box-shadow: $shadow-focus-error, $shadow-medium;
+              }
+            }
           }
+          
           .p-icon-wrapper {
-            right: 1rem;
-            color: #94a3b8;
+            right: $spacing-md;
+            color: $color-text-tertiary;
+            cursor: pointer;
+            transition: color $transition-base $ease-in-out;
+            
+            &:hover {
+              color: $color-text-secondary;
+            }
+            
+            &:focus-visible {
+              outline: 2px solid $color-primary;
+              outline-offset: 2px;
+            }
           }
         }
       }
     }
   }
-
+  
+  // ========================================================================
+  // FORM ACTIONS
+  // ========================================================================
   .form-actions {
-    margin-top: 1rem;
-    text-align: center;
-
-    ::ng-deep gm-rounded-button button {
-      padding: 1.25rem;
-      font-size: 1.1rem;
-      border-radius: 14px;
+    margin-top: $spacing-xl;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    animation: fadeInUp $animation-normal $ease-out 0.4s both;
+    
+    gm-rounded-button {
+      width: 100%;
+      
+      ::ng-deep .p-button {
+        width: 100%;
+        height: $button-height-md;
+        
+        &.p-button-primary {
+          background-color: $color-primary;
+          border-color: $color-primary;
+          box-shadow: $shadow-medium;
+          
+          transition: all $transition-base $ease-in-out;
+          
+          &:hover:not(:disabled) {
+            background-color: $color-primary-hover;
+            border-color: $color-primary-hover;
+            box-shadow: $shadow-elevated;
+            transform: translateY(-1px);
+          }
+          
+          &:focus-visible {
+            outline: none;
+            box-shadow: $shadow-focus-primary, $shadow-elevated;
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: $shadow-medium;
+          }
+          
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
     }
-
+    
     .terms-text {
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
-      color: #64748b;
-
+      margin-top: $spacing-md;
+      font-size: $font-size-xs;
+      color: $color-text-secondary;
+      text-align: center;
+      line-height: $line-height-normal;
+      
       a {
-        color: #00a8e8;
+        color: $color-primary;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: $font-weight-semibold;
+        
+        transition: all $transition-base $ease-in-out;
+        
+        &:hover {
+          color: $color-primary-hover;
+          text-decoration: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 2px;
+        }
+        
+        &:focus-visible {
+          outline: 2px solid $color-primary;
+          outline-offset: 2px;
+          border-radius: $border-radius-sm;
+        }
       }
     }
   }
 }
 
+// ============================================================================
+// BACK LINK
+// ============================================================================
 .back-link {
   text-align: center;
-  margin-top: 2rem;
-
+  margin-top: $spacing-xl;
+  animation: fadeInUp $animation-normal $ease-out 0.8s both;
+  
   a {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: #64748b;
-    font-size: 0.9rem;
-    font-weight: 600;
+    justify-content: center;
+    gap: $spacing-sm;
+    
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
     text-decoration: none;
-    transition: color 0.2s ease;
-
+    
+    transition: all $transition-base $ease-in-out;
+    
     &:hover {
-      color: #003566;
+      color: $color-secondary;
+      gap: $spacing-md;
+    }
+    
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+      border-radius: $border-radius-sm;
     }
   }
 }
+
+// ============================================================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================================================
+@media (max-width: 768px) {
+  .onboarding-container {
+    padding: $spacing-xl;
+  }
+  
+  .onboarding-header {
+    margin-bottom: $spacing-2xl;
+    
+    .title {
+      font-size: $font-size-2xl;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .gm-onboarding-layout {
+    padding: $spacing-md;
+  }
+  
+  .onboarding-container {
+    padding: $spacing-lg;
+  }
+  
+  .onboarding-header {
+    margin-bottom: $spacing-xl;
+    
+    .subtitle {
+      font-size: $font-size-base;
+    }
+  }
+  
+  .onboarding-form {
+    gap: $spacing-xl;
+    
+    .field-row {
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+  }
+}
+

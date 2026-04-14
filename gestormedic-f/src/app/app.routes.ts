@@ -59,6 +59,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/login/login'),
       },
       {
+        path: 'forgot-password',
+        loadComponent: () => import('./features/auth/forgot-password/forgot-password'),
+      },
+      {
         path: 'register',
         loadComponent: () => import('./features/auth/register/register'),
       },
@@ -70,6 +74,10 @@ export const routes: Routes = [
       {
         path: 'register/patient',
         loadComponent: () => import('./features/auth/register-patient/register-patient'),
+      },
+      {
+        path: 'register/doctor',
+        loadComponent: () => import('./features/auth/register-doctor/register-doctor'),
       },
     ],
   },
