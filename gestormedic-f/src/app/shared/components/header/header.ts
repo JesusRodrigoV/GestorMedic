@@ -44,7 +44,9 @@ export class Header {
     { label: 'Videollamada', route: '/videollamada' },
     { label: 'Recetas', route: '/recetas' },
     { label: 'Nosotros', route: '/nosotros' },
-    { label: 'Acceso', route: '/acceso' },
+    { label: 'App', route: '/app/dashboard' },
+    { label: 'Control', route: '/control/management' },
+    { label: 'Portal', route: '/portal/appointments' },
   ]);
 
   onLogout(): void {
