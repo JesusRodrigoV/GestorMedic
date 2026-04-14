@@ -25,6 +25,8 @@ from app.models.user import User
 
 router = APIRouter()
 
+
+
 def _issue_tokens(db: Session, user: User, response: Response, request: Request):
     extra_claims = {"role": user.role.name}
     access_token = create_access_token(subject=user.email, extra_claims=extra_claims)
@@ -60,6 +62,10 @@ async def register(payload: UserCreate, db: Session = Depends(get_db)):
         user_in=payload, 
         role_name=UserRole.PACIENTE.value 
     )
+
+@router.get("/me", response_model=UserOut)
+def read_user_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
 
 @router.post("/login", response_model=Union[TokenResponse, LoginStep2Response])
 async def login(
