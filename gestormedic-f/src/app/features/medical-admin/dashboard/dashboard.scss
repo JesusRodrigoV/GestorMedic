@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  padding: 1rem;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.metric-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-size: 1.5rem;
+}
+
+.main-content-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.chart-section {
+  min-width: 300px;
+}
+
+.timeline-section {
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .main-content-row {
+    flex-direction: column;
+  }
+}
+
+.timeline-event-content {
+  padding-bottom: 1.5rem;
+  font-size: 0.9rem;
+  
+  strong {
+    color: #1e293b;
+  }
+  
+  .time-text {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin: 0.25rem 0;
+    display: inline-block;
+  }
+}
