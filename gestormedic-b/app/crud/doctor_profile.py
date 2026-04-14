@@ -1,50 +1,60 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException
-from starlette import status
-from typing import Optional
+from fastapi import HTTPException, status
+from typing import Optional, List
 
 from app.models.doctor_profile import DoctorProfile
 from app.models.specialty import Specialty
 from app.schemas.doctor_profile import DoctorProfileCreate, DoctorProfileUpdate
 
 def get_doctor(db: Session, profile_id: int) -> Optional[DoctorProfile]:
-    return db.query(DoctorProfile).options(
-        joinedload(DoctorProfile.specialties)
-    ).filter(DoctorProfile.id == profile_id).first()
+    stmt = (
+        select(DoctorProfile)
+        .options(joinedload(DoctorProfile.specialties))
+        .where(DoctorProfile.id == profile_id)
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
 def get_doctor_by_user_id(db: Session, user_id: int) -> Optional[DoctorProfile]:
-    return db.query(DoctorProfile).options(
-        joinedload(DoctorProfile.specialties)
-    ).filter(DoctorProfile.user_id == user_id).first()
+    stmt = (
+        select(DoctorProfile)
+        .options(joinedload(DoctorProfile.specialties))
+        .where(DoctorProfile.user_id == user_id)
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
 def create_doctor(db: Session, profile_in: DoctorProfileCreate) -> DoctorProfile:
-    db_profile = DoctorProfile(
-        user_id=profile_in.user_id,
-        license_number=profile_in.license_number,
-        bio=profile_in.bio,
-        experience_years=profile_in.experience_years,
-        signature_url=profile_in.signature_url,
-        base_consultation_price=profile_in.base_consultation_price,
-        is_telemedicine_enabled=profile_in.is_telemedicine_enabled
-    )
+    if get_doctor_by_user_id(db, profile_in.user_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El usuario ya tiene un perfil médico creado"
+        )
+
+    obj_in_data = profile_in.model_dump(exclude={"specialty_ids"})
+    db_profile = DoctorProfile(**obj_in_data)
     
     if profile_in.specialty_ids:
-        specialties = db.query(Specialty).filter(Specialty.id.in_(profile_in.specialty_ids)).all()
+        spec_stmt = select(Specialty).where(Specialty.id.in_(profile_in.specialty_ids))
+        specialties = db.execute(spec_stmt).scalars().all()
+        
         if len(specialties) != len(profile_in.specialty_ids):
-            raise HTTPException(status_code=400, detail="Una o más especialidades no existen en el catálogo.")
-        db_profile.specialties = specialties
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="Una o más especialidades no son válidas."
+            )
+        db_profile.specialties = list(specialties)
 
     db.add(db_profile)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_profile)
+    except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Error al crear perfil de médico (Matrícula o Usuario duplicado): {e.orig}"
+            detail="La matrícula profesional ya está registrada por otro médico."
         )
-    db.refresh(db_profile)
     return db_profile
 
 def update_doctor(db: Session, db_profile: DoctorProfile, profile_in: DoctorProfileUpdate) -> DoctorProfile:
@@ -54,19 +64,22 @@ def update_doctor(db: Session, db_profile: DoctorProfile, profile_in: DoctorProf
         setattr(db_profile, field, value)
 
     if profile_in.specialty_ids is not None:
-        specialties = db.query(Specialty).filter(Specialty.id.in_(profile_in.specialty_ids)).all()
-        if len(specialties) != len(profile_in.specialty_ids):
-            raise HTTPException(status_code=400, detail="Una o más especialidades no existen en el catálogo.")
-        db_profile.specialties = specialties
+        spec_stmt = select(Specialty).where(Specialty.id.in_(profile_in.specialty_ids))
+        specialties = db.execute(spec_stmt).scalars().all()
+        db_profile.specialties = list(specialties)
 
-    db.add(db_profile)
     try:
         db.commit()
-    except IntegrityError as e:
+        db.refresh(db_profile)
+    except IntegrityError:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Conflicto al actualizar médico: {e.orig}"
-        )
-    db.refresh(db_profile)
+        raise HTTPException(status_code=409, detail="Conflicto de integridad en la actualización.")
     return db_profile
+
+def delete_doctor(db: Session, profile_id: int) -> bool:
+    db_profile = get_doctor(db, profile_id)
+    if not db_profile:
+        return False
+    db.delete(db_profile)
+    db.commit()
+    return True

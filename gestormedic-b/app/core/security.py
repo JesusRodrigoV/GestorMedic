@@ -3,7 +3,7 @@ from jose import jwt
 from passlib.context import CryptContext
 import uuid
 from app.core.config import settings
-
+from jose import jwt, JWTError
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
@@ -42,14 +42,40 @@ def create_refresh_token(subject: str, expires_days: int | None = None, device_i
 #implementacion de hibrido: Access Tokens Stateless y Refresh Tokens Stateful.
 
 #token 5 minutitos 2fa
-def create_2fa_session_token(subject: str) -> str:
+def create_2fa_token(subject: str) -> str:
     now = datetime.now(timezone.utc)
-    expires = now + timedelta(minutes=5) 
-    
     payload = {
         "sub": str(subject),
         "iat": now,
-        "exp": expires,
-        "type": "pre_2fa"
+        "exp": now + timedelta(minutes=5),
+        "type": "2fa_pending" 
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+from datetime import datetime, timedelta
+from typing import Any, Union
+from jose import jwt, JWTError # Necesitas instalar python-jose[cryptography]
+from app.core.config import settings
+
+# ... tus funciones de create_access_token y verify_password ...
+
+def decode_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.ALGORITHM]
+        )
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="El token ha expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No se pudo validar el token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

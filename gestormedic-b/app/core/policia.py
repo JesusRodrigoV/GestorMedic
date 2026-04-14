@@ -1,48 +1,39 @@
-from sqlalchemy.orm import Session
-from redis.asyncio import Redis
 from datetime import datetime, timedelta, timezone
-from app.db.session import SessionLocal
+from sqlalchemy.orm import Session
+from app.db.redis import redis_service
 from app.models.user import User
-
+from app.core.redis_service import redis_service
+# Configuración
 MAX_FAILED_ATTEMPTS = 5
 LOCKOUT_DURATION_MINUTES = 30 
-FAILED_ATTEMPTS_TTL_SECONDS = 3600
+FAILED_ATTEMPTS_TTL = 3600
 
-FAILED_LOGIN_PREFIX = "failed_login:"
-ACCOUNT_LOCK_PREFIX = "account_locked:"
+def _get_redis_key(email: str) -> str:
+    return f"failed_login:{email.lower().strip()}"
 
-def _get_failed_key(email: str) -> str:
-    return f"{FAILED_LOGIN_PREFIX}{email.lower().strip()}"
+async def increment_login_failure(email: str):
+    """Incrementa fallos y devuelve el total actual"""
+    key = _get_redis_key(email)
+    count = await redis_service.redis.incr(key)
+    await redis_service.redis.expire(key, FAILED_ATTEMPTS_TTL)
+    return count
 
-def _get_lock_key(email: str) -> str:
-    return f"{ACCOUNT_LOCK_PREFIX}{email.lower().strip()}"
-
-async def increment_login_failure(email: str, cache: Redis):
-    if not cache: return
-    key = _get_failed_key(email)
-    async with cache.pipeline() as pipe:
-        await pipe.incr(key)
-        await pipe.expire(key, FAILED_ATTEMPTS_TTL_SECONDS)
-        await pipe.execute()
-
-async def get_login_failures(email: str, cache: Redis) -> int:
-    if not cache: return 0
-    key = _get_failed_key(email)
-    failures = await cache.get(key)
+async def get_login_failures(email: str) -> int:
+    key = _get_redis_key(email)
+    failures = await redis_service.redis.get(key)
     return int(failures) if failures else 0
 
-async def clear_login_failures(email: str, cache: Redis):
-    if not cache: return
-    await cache.delete(_get_failed_key(email))
-    await cache.delete(_get_lock_key(email))
+async def clear_login_failures(email: str):
+    await redis_service.delete(f"login_failures:{email}")
 
-async def lock_account(email: str, cache: Redis):
-    if not cache: return
-    lock_key = _get_lock_key(email)
-    await cache.set(lock_key, "locked", ex=LOCKOUT_DURATION_MINUTES * 60)
+def lock_account(db: Session, user: User):
+    """Bloquea físicamente la cuenta en la DB"""
+    lock_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+    user.locked_until = lock_until
+    db.commit()
 
-async def is_account_locked(email: str, cache: Redis) -> bool:
-    if not cache: return False
-    lock_key = _get_lock_key(email)
-    is_locked = await cache.get(lock_key)
-    return is_locked is not None
+def is_account_locked(user: User) -> bool:
+    """Verifica si el tiempo de bloqueo sigue vigente"""
+    if not user.locked_until:
+        return False
+    return user.locked_until.replace(tzinfo=timezone.utc) > datetime.now(timezone.utc)

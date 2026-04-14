@@ -1,87 +1,89 @@
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta, timezone
-from typing import Optional
-from app.models.refresh_token import RefreshToken
-#reset token
-from app.models.password_reset_token import PasswordResetToken
-from app.core.config import settings
-from app.models.user import User
+from sqlalchemy import select, delete
+from datetime import datetime, timedelta
 import secrets
 
+from app.models.token import RefreshToken, PasswordResetToken
+from app.models.user import User
+
+
 def create_refresh_token_record(
-    db: Session,
-    user_id: int,
-    jti: str,
-    expires_at: datetime,
-    device_info: Optional[str] = None
-) -> RefreshToken:
-    token = RefreshToken(
+    db: Session, 
+    *, 
+    user_id: int, 
+    jti: str, 
+    expires_at: datetime, 
+    device_info: str = "Desconocido"
+):
+    """Guarda un registro del refresh token para permitir revocación."""
+    db_obj = RefreshToken(
         user_id=user_id,
         jti=jti,
         expires_at=expires_at,
         device_info=device_info,
-        revoked=False,
+        is_revoked=False
     )
-    db.add(token)
+    db.add(db_obj)
     db.commit()
-    db.refresh(token)
-    return token
-
-def revoke_refresh_token_by_jti(db: Session, jti: str) -> Optional[RefreshToken]:
-    token = db.query(RefreshToken).filter(RefreshToken.jti == jti).first()
-    if not token:
-        return None
-    if not token.revoked:
-        token.revoked = True
-        db.add(token)
-        db.commit()
-        db.refresh(token)
-    return token
+    db.refresh(db_obj)
+    return db_obj
 
 def is_refresh_token_valid(db: Session, jti: str) -> bool:
-    token = (
-        db.query(RefreshToken)
-        .filter(RefreshToken.jti == jti, RefreshToken.revoked == False)
-        .first()
+    stmt = select(RefreshToken).where(
+        RefreshToken.jti == jti,
+        RefreshToken.is_revoked == False,
+        RefreshToken.expires_at > datetime.utcnow()
     )
-    if not token:
-        return False
-    return token.expires_at > datetime.now(timezone.utc)
+    result = db.execute(stmt).scalar_one_or_none()
+    return result is not None
 
-#funciones reset token
-def create_password_reset_token(db: Session, user_id: int) -> str:
-    """
-    Crea, guarda y devuelve un nuevo token de reseteo de contraseña
-    """
-    db.query(PasswordResetToken).filter(PasswordResetToken.user_id == user_id).delete()
-    token = secrets.token_urlsafe(32)
-    expires_at = datetime.now(timezone.utc) + timedelta(
-        minutes=settings.PASSWORD_RESET_TOKEN_EXPIRE_MINUTES
+def revoke_refresh_token_by_jti(db: Session, jti: str, user_id: int = None):
+    stmt = select(RefreshToken).where(RefreshToken.jti == jti)
+    if user_id:
+        stmt = stmt.where(RefreshToken.user_id == user_id)
+        
+    db_token = db.execute(stmt).scalar_one_or_none()
+    if db_token:
+        db_token.is_revoked = True
+        db.commit()
+    return True
+
+def revoke_all_sessions_for_user(db: Session, user_id: int):
+    db.execute(
+        delete(RefreshToken).where(RefreshToken.user_id == user_id)
     )
+    db.commit()
+
+def get_active_sessions_for_user(db: Session, user_id: int):
+    stmt = select(RefreshToken).where(
+        RefreshToken.user_id == user_id,
+        RefreshToken.is_revoked == False,
+        RefreshToken.expires_at > datetime.utcnow()
+    )
+    return db.execute(stmt).scalars().all()
+
+def create_password_reset_token(db: Session, *, user_id: int) -> str:
+    token = secrets.token_urlsafe(32)
+    expires = datetime.utcnow() + timedelta(hours=1)
     
-    db_token = PasswordResetToken(
+    db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user_id))
+    
+    db_obj = PasswordResetToken(
         user_id=user_id,
         token=token,
-        expires_at=expires_at
+        expires_at=expires
     )
-    
-    db.add(db_token)
+    db.add(db_obj)
     db.commit()
-    
     return token
 
 def get_user_by_reset_token(db: Session, token: str) -> User | None:
-    db_token = db.query(PasswordResetToken).filter(PasswordResetToken.token == token).first() 
-    if not db_token:
-        return None 
-        
-    if db_token.expires_at < datetime.now(timezone.utc):
-        db.delete(db_token) 
-        db.commit()
-        return None 
-        
-    return db.query(User).get(db_token.user_id)
+    stmt = select(User).join(PasswordResetToken).where(
+        PasswordResetToken.token == token,
+        PasswordResetToken.expires_at > datetime.utcnow()
+    )
+    return db.execute(stmt).scalar_one_or_none()
 
-def delete_reset_token(db: Session, token: str) -> None:
-    db.query(PasswordResetToken).filter(PasswordResetToken.token == token).delete()
+def delete_reset_token(db: Session, token: str):
+    db.execute(delete(PasswordResetToken).where(PasswordResetToken.token == token))
     db.commit()

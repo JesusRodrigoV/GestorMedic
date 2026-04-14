@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, computed_field
 from typing import Optional, List
 from app.schemas.specialty import SpecialtyOut
 
@@ -26,7 +26,12 @@ class DoctorProfileUpdate(BaseModel):
 class DoctorProfileOut(DoctorProfileBase):
     id: int
     user_id: int
-    specialties: List[SpecialtyOut] = []
+    
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    @computed_field
+    @property
+    def specialties(self) -> List[SpecialtyOut]:
+        if hasattr(self, "specialty_associations"):
+            return [assoc.specialty for assoc in self.specialty_associations]
+        return []

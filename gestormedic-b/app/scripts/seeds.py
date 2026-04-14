@@ -10,11 +10,13 @@ def init_db():
         print("1. Verificando Roles Base...")
         
         roles_basicos = [
-            {"id": 1, "name": UserRole.SUPERADMIN.value},
-            {"id": 2, "name": UserRole.ADMIN_CLINICA.value},
-            {"id": 3, "name": UserRole.MEDICO.value},
-            {"id": 4, "name": UserRole.PERSONAL.value},
-            {"id": 5, "name": UserRole.PACIENTE.value}
+            {"id": 1, "name": "SUPERADMIN"},
+            {"id": 2, "name": "ADMIN_CLINICA"},
+            {"id": 3, "name": "MEDICO"},
+            {"id": 4, "name": "RECEPCIONISTA"},
+            {"id": 5, "name": "PACIENTE"},
+            {"id": 6, "name": "ASEGURADORA"},
+            {"id": 7, "name": "VISITANTE"}
         ]
 
         for rol in roles_basicos:

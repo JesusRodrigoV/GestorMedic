@@ -1,7 +1,8 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, ConfigDict, field_validator
 from typing import Optional
 from datetime import datetime
 from app.core.enums import PlanType
+import re
 
 class ClinicBase(BaseModel):
     name: str
@@ -10,6 +11,13 @@ class ClinicBase(BaseModel):
     phone: Optional[str] = None
     logo_url: Optional[str] = None
     plan: PlanType = PlanType.FREE
+
+    @field_validator('nit_ruc')
+    @classmethod
+    def validate_nit(cls, v: str) -> str:
+        if not re.match(r"^\d{7,15}$", v):
+            raise ValueError("El NIT/RUC debe ser numérico y tener entre 7 y 15 dígitos")
+        return v
 
 class ClinicCreate(ClinicBase):
     pass
@@ -27,6 +35,5 @@ class ClinicOut(ClinicBase):
     id: int
     is_active: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
+    
+    model_config = ConfigDict(from_attributes=True)
