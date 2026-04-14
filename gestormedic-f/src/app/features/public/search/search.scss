@@ -83,6 +83,19 @@
       margin-bottom: 1rem;
     }
   }
+
+  .checkbox-list {
+    label {
+      color: #0f172a;
+      font-weight: 700;
+      margin-left: 0.5rem;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+  }
 }
 
 .doctor-card {

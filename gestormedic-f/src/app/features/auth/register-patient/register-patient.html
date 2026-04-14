@@ -1,8 +1,8 @@
 <main class="gm-auth-layout">
   <div class="auth-bento-card glass-morphism">
     <header class="auth-header">
-      <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="56" height="56" priority />
-      <h1 class="yale-title">Crear Cuenta</h1>
+      <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="64" height="64" priority />
+      <h1 class="yale-title">Registro de Paciente</h1>
       <p class="slate-subtitle">Únase a la red de salud para agendar citas y gestionar sus resultados.</p>
     </header>
 
@@ -18,7 +18,7 @@
 
     <div class="auth-divider">
       <p-divider align="center">
-        <span class="divider-text">o regístrese con su correo</span>
+        <span class="divider-text" style="cursor: pointer; color: var(--p-primary-color, #0f62fe); text-decoration: underline;" (click)="emailInput.focus()">regístrese con su correo</span>
       </p-divider>
     </div>
 
@@ -42,6 +42,7 @@
       <div class="field-container">
         <label for="email">Correo Electrónico</label>
         <input 
+          #emailInput
           pInputText 
           id="email" 
           type="email" 
@@ -98,10 +99,14 @@
       </div>
     </form>
 
-    <footer class="auth-footer">
-      <p>¿Ya tiene una cuenta? <a routerLink="/auth/login" class="text-energy">Iniciar sesión</a></p>
-      <div class="auth-links">
-        <a href="#" class="muted-link">¿Olvidó su contraseña?</a>
+    <footer class="auth-footer" style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; margin-top: 1.5rem;">
+      <p style="margin: 0; text-align: center;">¿Ya tiene una cuenta? <a routerLink="/auth/login" class="text-energy">Iniciar sesión</a></p>
+      <div class="auth-links" style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+        <a routerLink="/auth/forgot-password" class="muted-link">¿Olvidó su contraseña?</a>
+        <span style="color: #cbd5e1;">|</span>
+        <a routerLink="/auth/register" class="text-energy" style="display: flex; align-items: center; gap: 0.25rem;">
+          <i class="bx bx-arrow-back"></i> Volver a selección
+        </a>
       </div>
     </footer>
   </div>

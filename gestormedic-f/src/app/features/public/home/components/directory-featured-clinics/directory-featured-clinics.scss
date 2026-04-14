@@ -1,0 +1,44 @@
+.gm-featured-clinics {
+	margin: 2rem 0;
+
+	h3 {
+		color: #0f172a;
+		margin: 0 0 0.75rem 0;
+		font-size: 1.25rem;
+		font-weight: 800;
+	}
+
+	.clinics-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1rem;
+	}
+
+	.clinic-card {
+		padding: 1rem;
+		border-radius: 12px;
+		background: #fff;
+		border: 1px solid #eef6fb;
+		box-shadow: 0 8px 22px rgba(3, 10, 21, 0.03);
+
+		.clinic-name {
+			font-weight: 800;
+			color: #0f172a;
+		}
+
+		.clinic-meta {
+			color: #64748b;
+			margin: 0.5rem 0;
+		}
+
+		.clinic-cta {
+			display: inline-block;
+			padding: 0.5rem 0.75rem;
+			border-radius: 8px;
+			background: linear-gradient(90deg, #003566, #00a8e8);
+			color: #fff;
+			text-decoration: none;
+			font-weight: 700;
+		}
+	}
+}

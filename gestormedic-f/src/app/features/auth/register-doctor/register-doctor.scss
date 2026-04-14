@@ -1,0 +1,460 @@
+// ============================================================================
+// REGISTER DOCTOR COMPONENT STYLES
+// ============================================================================
+// Refactored with design system: enhanced form layout, improved inputs,
+// consistent spacing, refined error states, and smooth animations
+
+@import '../../../shared/styles/design-tokens.scss';
+@import '../../../shared/styles/form-system.scss';
+@import '../../../shared/styles/card-system.scss';
+@import '../../../shared/styles/button-system.scss';
+
+// ============================================================================
+// MAIN LAYOUT CONTAINER
+// ============================================================================
+.gm-onboarding-layout {
+  min-height: 100dvh;
+  background: radial-gradient(circle at top, $color-bg-secondary 0%, #e2e8f0 100%);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  padding: $spacing-xl $spacing-lg;
+  font-family: inherit;
+}
+
+// ============================================================================
+// CONTAINER
+// ============================================================================
+.onboarding-container {
+  width: 100%;
+  max-width: 56rem;
+  
+  @include card-elevated($padding: 3.5rem, $border-radius: $border-radius-2xl);
+  
+  // Enhanced border and shadow
+  border: 1px solid $color-border-default;
+  box-shadow: $shadow-elevated;
+  
+  animation: cardSlideIn $animation-normal $ease-out;
+  
+  @media (max-width: 768px) {
+    padding: $spacing-xl;
+  }
+  
+  @media (max-width: 640px) {
+    padding: $spacing-lg;
+  }
+}
+
+// ============================================================================
+// HEADER SECTION
+// ============================================================================
+.onboarding-header {
+  text-align: center;
+  margin-bottom: $spacing-3xl;
+  animation: fadeInDown $animation-normal $ease-out;
+  
+  .brand-logo {
+    display: block;
+    margin-bottom: $spacing-lg;
+    
+    img {
+      display: block;
+      margin: 0 auto;
+      width: 4rem;
+      height: 4rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+    }
+  }
+  
+  .title {
+    font-size: $font-size-3xl;
+    color: $color-secondary;
+    font-weight: $font-weight-heavy;
+    margin: 0 0 $spacing-sm 0;
+    line-height: $line-height-tight;
+    
+    @media (max-width: 640px) {
+      font-size: $font-size-2xl;
+    }
+  }
+  
+  .subtitle {
+    color: $color-text-secondary;
+    font-size: $font-size-lg;
+    margin: 0;
+    line-height: $line-height-normal;
+    font-weight: $font-weight-normal;
+  }
+}
+
+// ============================================================================
+// FORM
+// ============================================================================
+.onboarding-form {
+  @include form-container($padding: 0);
+  
+  animation: fadeInUp $animation-normal $ease-out 0.2s both;
+}
+
+// ============================================================================
+// FORM SECTIONS
+// ============================================================================
+.form-section {
+  @include form-section-layout($gap: $spacing-xl);
+  
+  border: none;
+  padding: 0;
+  margin: 0;
+  
+  legend {
+    @include form-section-legend();
+    
+    // Remove default styling
+    border: none;
+    width: 100%;
+    padding-bottom: $spacing-md;
+    margin-bottom: $spacing-lg;
+    
+    // Visual divider
+    border-bottom: 2px solid $color-border-default;
+    
+    i {
+      font-size: $font-size-xl;
+    }
+  }
+}
+
+// ============================================================================
+// FIELD ROW & GROUP
+// ============================================================================
+.field-row {
+  @include form-field-row();
+  
+  .field-group {
+    @include form-field-group();
+    
+    &.full-width {
+      flex: 1 1 100%;
+    }
+    
+    label {
+      @include form-label();
+    }
+  }
+}
+
+// ============================================================================
+// INPUT CONTAINERS
+// ============================================================================
+.input-container {
+  @include form-input-with-icon();
+  
+  i.bx {
+    @include form-input-icon();
+  }
+  
+  input {
+    @include form-input-base();
+    @include form-input-with-icon-padding();
+    
+    // Number input spinner removal
+    &[type='number'] {
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+    
+    // Error state specific styling
+    &.ng-invalid.ng-touched {
+      border-color: $color-border-error;
+      
+      &:focus {
+        border-color: $color-border-error;
+        box-shadow: $shadow-focus-error, $shadow-medium;
+      }
+    }
+  }
+  
+  // PrimeNG Password Override
+  ::ng-deep .gm-password-full {
+    width: 100%;
+    
+    .p-password-input {
+      @include form-input-base();
+      @include form-input-with-icon-padding($icon-size: $input-icon-size, $icon-offset: 2rem);
+      
+      &.ng-invalid.ng-touched {
+        border-color: $color-border-error;
+        
+        &:focus {
+          border-color: $color-border-error;
+          box-shadow: $shadow-focus-error, $shadow-medium;
+        }
+      }
+    }
+    
+    .p-icon-wrapper {
+      right: $spacing-md;
+      color: $color-text-tertiary;
+      cursor: pointer;
+      transition: color $transition-base $ease-in-out;
+      
+      &:hover {
+        color: $color-text-secondary;
+      }
+      
+      &:focus-visible {
+        outline: 2px solid $color-primary;
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TEXTAREA CONTAINER
+// ============================================================================
+.textarea-container {
+  @include form-input-with-icon();
+  flex-direction: column;
+  
+  i.bx {
+    position: absolute;
+    top: $spacing-md;
+    left: $spacing-md;
+    z-index: 2;
+    
+    color: $color-text-tertiary;
+    font-size: $input-icon-size;
+    pointer-events: none;
+    transition: color $transition-base $ease-in-out;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: $spacing-md $spacing-md $spacing-md $form-input-padding-h + $input-icon-size + 0.5rem;
+    
+    background-color: rgba(var(--p-slate-50-rgb), 0.5);
+    border: 1.5px solid $color-border-default;
+    border-radius: $border-radius-md;
+    
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    font-family: inherit;
+    
+    resize: vertical;
+    min-height: 8rem;
+    
+    transition: all $transition-slow $ease-in-out;
+    
+    &::placeholder {
+      color: $color-text-tertiary;
+      opacity: 0.7;
+    }
+    
+    // Hover state
+    &:hover:not(:disabled) {
+      border-color: var(--p-slate-300);
+      box-shadow: $shadow-light;
+    }
+    
+    // Focus state
+    &:focus {
+      outline: none;
+      border-color: $color-border-focus;
+      box-shadow: $shadow-focus-primary, $shadow-medium;
+      background-color: #ffffff;
+    }
+    
+    // Disabled state
+    &:disabled {
+      background-color: var(--p-slate-100);
+      border-color: $color-border-default;
+      color: $color-text-muted;
+      cursor: not-allowed;
+      
+      &::placeholder {
+        color: $color-text-muted;
+      }
+    }
+    
+    // Error state
+    &.ng-invalid.ng-touched {
+      border-color: $color-border-error;
+      
+      &:focus {
+        border-color: $color-border-error;
+        box-shadow: $shadow-focus-error, $shadow-medium;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// ERROR MESSAGES
+// ============================================================================
+.field-error {
+  @include form-error-message($animate: true);
+  
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  i {
+    font-size: $font-size-sm;
+  }
+}
+
+// ============================================================================
+// CHARACTER COUNTER
+// ============================================================================
+.char-counter {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  display: block;
+  text-align: right;
+  font-weight: $font-weight-normal;
+}
+
+// ============================================================================
+// FORM ACTIONS
+// ============================================================================
+.form-actions {
+  margin-top: $spacing-xl;
+  display: flex;
+  gap: $spacing-md;
+  animation: fadeInUp $animation-normal $ease-out 0.4s both;
+  
+  gm-rounded-button {
+    width: 100%;
+    
+    ::ng-deep .p-button {
+      width: 100%;
+      height: $button-height-md;
+      
+      &.p-button-primary {
+        background-color: $color-primary;
+        border-color: $color-primary;
+        box-shadow: $shadow-medium;
+        transition: all $transition-base $ease-in-out;
+        
+        &:hover:not(:disabled) {
+          background-color: $color-primary-hover;
+          border-color: $color-primary-hover;
+          box-shadow: $shadow-elevated;
+          transform: translateY(-1px);
+        }
+        
+        &:focus-visible {
+          outline: none;
+          box-shadow: $shadow-focus-primary, $shadow-elevated;
+        }
+        
+        &:active:not(:disabled) {
+          transform: translateY(0);
+          box-shadow: $shadow-medium;
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// FOOTER SECTION
+// ============================================================================
+.onboarding-footer {
+  margin-top: $spacing-2xl;
+  text-align: center;
+  border-top: 1px solid $color-border-default;
+  padding-top: $spacing-xl;
+  
+  animation: fadeInUp $animation-normal $ease-out 0.6s both;
+  
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    margin: $spacing-sm 0;
+    font-weight: $font-weight-normal;
+    
+    a {
+      color: $color-primary;
+      text-decoration: none;
+      font-weight: $font-weight-semibold;
+      
+      transition: all $transition-base $ease-in-out;
+      
+      &:hover {
+        color: $color-primary-hover;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
+      
+      &:focus-visible {
+        outline: 2px solid $color-primary;
+        outline-offset: 2px;
+        border-radius: $border-radius-sm;
+      }
+    }
+  }
+  
+  .footer-note {
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+    margin-top: $spacing-md;
+    font-weight: $font-weight-normal;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================================================
+@media (max-width: 768px) {
+  .onboarding-container {
+    padding: $spacing-xl;
+  }
+  
+  .onboarding-header {
+    margin-bottom: $spacing-2xl;
+    
+    .title {
+      font-size: $font-size-2xl;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .gm-onboarding-layout {
+    padding: $spacing-md;
+  }
+  
+  .onboarding-container {
+    padding: $spacing-lg;
+  }
+  
+  .onboarding-header {
+    margin-bottom: $spacing-xl;
+    
+    .subtitle {
+      font-size: $font-size-base;
+    }
+  }
+  
+  .field-row {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+}
