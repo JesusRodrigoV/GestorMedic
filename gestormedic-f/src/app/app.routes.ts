@@ -117,7 +117,7 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'pacientes',
+        path: 'patients',
         loadComponent: () => import('./features/medical-admin/patient-list/patient-list'),
       },
     ],

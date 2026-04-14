@@ -1,1 +1,57 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="metrics-row">
+    <p-card class="metric-card">
+      <div class="metric-content">
+        <div class="metric-info">
+          <span class="metric-label">Pacientes Activos</span>
+          <span class="metric-value">{{ metrics()?.totalActivePatients }}</span>
+        </div>
+        <div class="metric-icon">
+          <i class="bx bx-user"></i>
+        </div>
+      </div>
+    </p-card>
+    
+    <p-card class="metric-card">
+      <div class="metric-content">
+        <div class="metric-info">
+          <span class="metric-label">Citas Hoy</span>
+          <span class="metric-value">{{ metrics()?.appointmentsToday }}</span>
+        </div>
+        <div class="metric-icon" style="background-color: #e0e7ff; color: #4f46e5;">
+          <i class="bx bx-calendar"></i>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="metric-card">
+      <div class="metric-content">
+        <div class="metric-info">
+          <span class="metric-label">Resultados Pdtes.</span>
+          <span class="metric-value">{{ metrics()?.pendingResults }}</span>
+        </div>
+        <div class="metric-icon" style="background-color: #fef08a; color: #ca8a04;">
+          <i class="bx bx-test-tube"></i>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="main-content-row">
+    <div class="timeline-section">
+      <p-card header="Agenda de Hoy">
+        <p-timeline [value]="upcomingAppointments()">
+            <ng-template pTemplate="content" let-appt>
+                <div class="timeline-event-content">
+                  <strong>{{appt.patientFullName}}</strong>
+                  <br/>
+                  <span class="time-text">{{appt.scheduledTime}}</span>
+                  <br/>
+                  <p-badge [value]="getStatusLabel(appt.status)" [severity]="getSeverity(appt.status)"></p-badge>
+                </div>
+            </ng-template>
+        </p-timeline>
+      </p-card>
+    </div>
+  </div>
+</div>

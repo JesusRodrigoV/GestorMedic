@@ -1,21 +1,14 @@
 <div class="gm-settings-layout">
-  <aside class="gm-settings-nav">
-    <header class="nav-header">
-      <h2 class="nav-header-title">Ajustes</h2>
-      <p class="nav-header-desc">Configuración de cuenta y sistema</p>
-    </header>
-
-    <nav class="nav-menu">
-      @for (option of menuOptions(); track option.route) {
-        <a class="nav-link" [routerLink]="option.route" routerLinkActive="nav-link--active">
-          <i [class]="option.icon"></i>
-          <span>{{ option.label }}</span>
-        </a>
-      }
-    </nav>
-  </aside>
-
+  <p-toast></p-toast>
+  <nav class="nav-menu">
+    @for (option of menuOptions(); track option.route) {
+      <a class="nav-link" [routerLink]="option.route" routerLinkActive="nav-link--active">
+        <i [class]="option.icon"></i>
+        <span>{{ option.label }}</span>
+      </a>
+    }
+  </nav>
   <main class="gm-settings-panel">
-    <router-outlet />
+    <router-outlet></router-outlet>
   </main>
 </div>

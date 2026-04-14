@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Theme } from '@core/services/theme';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 @Component({
@@ -11,10 +10,10 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Appearance {
-  private themeService = inject(Theme);
-  isDarkActive = this.themeService.isDarkMode;
+  isDarkActive = signal(false);
 
   onToggleTheme(): void {
-    this.themeService.toggleTheme();
+    this.isDarkActive.set(!this.isDarkActive());
+    console.log('Theme toggled:', this.isDarkActive());
   }
 }
