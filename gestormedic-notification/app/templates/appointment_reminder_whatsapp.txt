@@ -1,0 +1,7 @@
+*GestorMedic: Recordatorio de Cita*
+
+Hola {{ patient_name }}, tienes una cita de *{{ specialty }}* el día {{ date }} a las {{ time }}.
+Médico: {{ doctor_name }}
+Consultorio: {{ room }}
+
+Para cancelar o reprogramar, llame al {{ clinic_phone }}.

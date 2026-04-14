@@ -1,0 +1,5 @@
+GestorMedic - {{ clinic_name }}
+--------------------------------
+{% block content %}{% endblock %}
+--------------------------------
+Si tiene dudas, contáctenos al {{ clinic_phone }}.
