@@ -11,6 +11,10 @@ export const SETTINGS_ROUTES: Routes = [
         loadComponent: () => import('./sections/profile/profile'),
       },
       {
+        path: 'security',
+        loadComponent: () => import('./sections/security/security'),
+      },
+      {
         path: 'notifications',
         loadComponent: () => import('./sections/notifications/notifications'),
       },

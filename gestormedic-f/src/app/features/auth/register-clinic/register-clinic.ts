@@ -11,6 +11,7 @@ import { NotificationService } from '@core/services/notification';
 import { environment } from '@env/environment';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 import { NgOptimizedImage } from '@angular/common';
+import { StepperModule } from 'primeng/stepper';
 
 @Component({
   selector: 'gm-register-clinic',
@@ -21,6 +22,7 @@ import { NgOptimizedImage } from '@angular/common';
     RoundedButton,
     RouterLink,
     NgOptimizedImage,
+    StepperModule
   ],
   templateUrl: './register-clinic.html',
   styleUrl: './register-clinic.scss',
@@ -47,6 +49,30 @@ export default class RegisterClinic {
     phone: ['', [Validators.required]],
     address: ['', [Validators.required]],
   });
+
+  step = signal(1);
+
+  nextStep(): void {
+    if (this.isStepOneValid()) {
+      this.step.set(2);
+    } else {
+      this.registerForm.get('admin_name')?.markAsTouched();
+      this.registerForm.get('email')?.markAsTouched();
+      this.registerForm.get('password')?.markAsTouched();
+    }
+  }
+
+  prevStep(): void {
+    this.step.set(1);
+  }
+
+  isStepOneValid(): boolean {
+    const adminName = this.registerForm.get('admin_name');
+    const email = this.registerForm.get('email');
+    const password = this.registerForm.get('password');
+
+    return !!(adminName?.valid && email?.valid && password?.valid);
+  }
 
   async executeRegistrationFlow() {
     if (this.registerForm.invalid) return;

@@ -27,6 +27,10 @@ export const routes: Routes = [
       import('./features/super-admin/super-admin.routes').then((m) => m.SUPER_ADMIN_ROUTES),
   },
   {
+    path: 'portal1',
+    loadComponent: () => import('./core/layouts/patient-portal-layout/patient-portal-layout'),
+  },
+  {
     path: '**',
     loadComponent: () => import('./features/public/not-found/not-found'),
   },

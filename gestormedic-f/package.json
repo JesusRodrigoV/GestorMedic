@@ -33,6 +33,7 @@
     "@ngrx/operators": "^21.1.0",
     "@ngrx/signals": "^21.1.0",
     "@primeuix/themes": "^2.0.3",
+    "angularx-qrcode": "^21.0.5",
     "chart.js": "^4.5.1",
     "driver.js": "^1.4.0",
     "gsap": "^3.14.2",
