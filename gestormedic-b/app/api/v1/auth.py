@@ -32,8 +32,6 @@ from app.schemas.user import GoogleAuthRequest
 router = APIRouter()
 
 async def _issue_tokens(db: AsyncSession, user: User, response: Response, request: Request):
-    # Generamos los tokens
-    # Nota: Asegúrate de pasar el rol como string (user.role.name o str(user.role_id))
     access_token = create_access_token(
         subject=user.email, 
         role=user.role.name, 
@@ -42,8 +40,6 @@ async def _issue_tokens(db: AsyncSession, user: User, response: Response, reques
     
     rt_data = create_refresh_token(subject=user.email)
     
-    # El objeto rt_data["expires_at"] ya viene limpio desde security.py
-    # Pero por seguridad extrema, podemos asegurar que sea naive aquí también:
     db_expires = rt_data["expires_at"]
     if db_expires.tzinfo is not None:
         db_expires = db_expires.replace(tzinfo=None)
@@ -57,12 +53,11 @@ async def _issue_tokens(db: AsyncSession, user: User, response: Response, reques
         device_info=request.headers.get("user-agent", "Desconocido"),
     )
     
-    # Configuramos la Cookie
     response.set_cookie(
         key="refresh_token", 
         value=rt_data["token"],
         httponly=True, 
-        secure=True,  # Cambiar a False solo si pruebas en HTTP local sin SSL
+        secure=True, 
         samesite="lax",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
     )
@@ -289,3 +284,7 @@ async def logout(
     
     response.delete_cookie("refresh_token")
     return {"msg": "Sesión cerrada con éxito"}
+
+@router.get("/me", response_model=UserOut)
+async def read_user_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
