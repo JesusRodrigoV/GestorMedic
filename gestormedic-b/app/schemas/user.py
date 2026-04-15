@@ -83,3 +83,13 @@ class UserOut(BaseModel):
     
 class UserSettingsUpdate(BaseModel):
     is_totp_enabled: bool
+
+class UserPaginationMetadata(BaseModel):
+    total: int
+    skip: int
+    limit: int
+    total_pages: int
+
+class UserListResponse(BaseModel):
+    items: List[UserOut]
+    metadata: UserPaginationMetadata

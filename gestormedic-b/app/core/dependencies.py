@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
-
+from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.core.config import settings
 from app.models.user import User
@@ -35,7 +35,7 @@ async def get_current_user(
             
     except (JWTError, AttributeError):
         raise CREDENTIALS_EXCEPTION
-    stmt = select(User).where(User.email == email)
+    stmt = select(User).where(User.email == email).options(selectinload(User.role))
     result = await db.execute(stmt)
     user = result.scalars().first()
     
@@ -58,7 +58,7 @@ def require_role(allowed_roles: List[UserRole]):
     async def role_checker(
         current_user: User = Depends(get_current_active_user)
     ) -> User:
-        user_role_val = current_user.role.value.lower() if current_user.role else ""
+        user_role_val = current_user.role.name.lower() if current_user.role else ""
         
         allowed_values = [r.value.lower() for r in allowed_roles]
         superadmin_value = UserRole.SUPERADMIN.value.lower()

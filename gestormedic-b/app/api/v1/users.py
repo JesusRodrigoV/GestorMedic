@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from app.db.session import get_db
 from app.core.dependencies import get_current_active_user, require_admin_clinica, verify_tenant_access
 from app.core.enums import UserRole
-from app.schemas.user import UserOut, UserUpdateProfile
+from app.schemas.user import UserOut, UserUpdateProfile, UserListResponse
 from app.schemas.admin import UserAdminUpdate, UserAdminOut
 from app.models.user import User
 from app.crud import user as crud_user
@@ -29,7 +29,7 @@ async def update_user_me(
         user_in=payload
     )
 
-@router.get("/", response_model=Dict[str, Any])
+@router.get("/", response_model=UserListResponse)
 async def list_users(
     db: AsyncSession = Depends(get_db),
     skip: int = Query(0, ge=0),
