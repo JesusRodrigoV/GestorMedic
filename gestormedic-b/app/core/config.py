@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str = ""
     MAIL_FROM: str
     MAIL_FROM_NAME: str = "Soporte de ZooConnect"
+    MAIL_SERVER: str
+    MAIL_PORT: int
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
 
     TOTP_ENCRYPTION_KEY: str
 

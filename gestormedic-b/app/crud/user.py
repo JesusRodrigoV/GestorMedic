@@ -10,6 +10,7 @@ from app.models.role import Role
 from app.models.associations import ClinicDoctor
 from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate, UserUpdateProfile
 from app.core.security import get_password_hash
+from app.schemas.admin import UserAdminUpdate
 
 async def get_user(db: AsyncSession, user_id: int) -> Optional[User]:
     stmt = (
@@ -185,3 +186,33 @@ async def update_own_profile(db: AsyncSession, db_user: User, user_in: UserUpdat
         await db.rollback()
         raise HTTPException(status_code=409, detail="Los datos ya están siendo usados.")
     return db_user
+
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
+    stmt = select(User).where(User.id == user_id)
+    result = await db.execute(stmt)
+    return result.scalars().first()
+
+async def admin_update_user(db: AsyncSession, *, db_user: User, user_in: UserAdminUpdate) -> User:
+    update_data = user_in.model_dump(exclude_unset=True)
+    
+    if update_data.get("password"):
+        hashed_password = get_password_hash(update_data["password"])
+        db_user.hashed_password = hashed_password
+        del update_data["password"]
+
+    for field in update_data:
+        setattr(db_user, field, update_data[field])
+
+    db.add(db_user)
+    await db.commit()
+    await db.refresh(db_user)
+    return db_user
+
+async def enable_2fa(db: AsyncSession, *, user: User, secret: str) -> User:
+    user.totp_secret = secret
+    user.is_totp_enabled = True
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

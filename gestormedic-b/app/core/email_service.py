@@ -41,6 +41,6 @@ async def send_password_reset_email(email_to: EmailStr, token: str, username: st
 
     try:
         await fm.send_message(message)
-        print(f"📧 Correo de reseteo enviado con éxito a {email_to}")
+        print(f" Correo de reseteo enviado con éxito a {email_to}")
     except Exception as e:
         print(f"Error crítico al enviar correo: {e}")

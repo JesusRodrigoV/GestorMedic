@@ -55,6 +55,9 @@ class UserUpdateProfile(BaseModel):
     #email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
 
+class GoogleAuthRequest(BaseModel):
+    credential: str
+
 class UserOut(BaseModel):
     id: int
     email: EmailStr

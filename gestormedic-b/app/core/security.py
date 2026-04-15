@@ -27,14 +27,15 @@ def create_access_token(
         "sub": str(subject),
         "iat": now,
         "exp": expires,
-        "role": role,\
-        "clinic_id": clinic_id,\
+        "role": role,
+        "clinic_id": clinic_id,
         "type": "access"
     }
     
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 def create_refresh_token(subject: str, expires_days: int | None = None) -> dict:
+    # 1. Calculamos con UTC para precisión
     now = datetime.now(timezone.utc)
     expires = now + timedelta(days=(expires_days or settings.REFRESH_TOKEN_EXPIRE_DAYS))
     jti = str(uuid.uuid4())
@@ -42,13 +43,19 @@ def create_refresh_token(subject: str, expires_days: int | None = None) -> dict:
     payload = {
         "sub": str(subject),
         "iat": now,
-        "exp": expires,
+        "exp": expires, # El JWT sí debe llevar la zona horaria en el payload
         "jti": jti,
         "type": "refresh"
     }
     
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return {"token": token, "jti": jti, "expires_at": expires}
+    
+    # 2. Devolvemos expires_at como 'naive' (sin tzinfo) para SQLAlchemy/Postgres
+    return {
+        "token": token, 
+        "jti": jti, 
+        "expires_at": expires.replace(tzinfo=None) 
+    }
 
 def create_2fa_token(subject: str) -> str:
     now = datetime.now(timezone.utc)
