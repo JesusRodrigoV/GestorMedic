@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def create_default_admin():
     db: Session = SessionLocal()
     try:
-        admin_role_name = "SUPERADMIN"
+        admin_role_name = UserRole.SUPERADMIN.value
         db_admin_role = db.query(Role).filter(Role.name == admin_role_name).first()
 
         if not db_admin_role:

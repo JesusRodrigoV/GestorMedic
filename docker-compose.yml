@@ -8,10 +8,38 @@ services:
       POSTGRES_DB: notifications_db
     networks:
       - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gestormedic_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   gm-notifications-redis:
     image: redis:8.6-alpine
     container_name: gm-notifications-redis
+    networks:
+      - gm-network
+
+  gm-backend-db:
+    image: postgres:15-alpine
+    container_name: gm-backend-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: gestormedic_db
+    volumes:
+      - gm-backend-data:/var/lib/postgresql/data
+    networks:
+      - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gestormedic_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  gm-backend-redis:
+    image: redis:8.6-alpine
+    container_name: gm-backend-redis
     networks:
       - gm-network
 
@@ -31,8 +59,10 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - gm-notifications-db
-      - gm-notifications-redis
+      gm-notifications-db:
+        condition: service_healthy
+      gm-notifications-redis:
+        condition: service_started
     networks:
       - gm-network
 
@@ -50,8 +80,38 @@ services:
     networks:
       - gm-network
 
+  gm-backend:
+    build:
+      context: ./gestormedic-b
+      dockerfile: Dockerfile
+    env_file:
+      - ./gestormedic-b/.env_do
+    ports:
+      - "8000:8000"  
+    depends_on:
+      gm-backend-db:
+        condition: service_healthy
+      gm-backend-redis:
+        condition: service_started
+    networks:
+      - gm-network
+  gm-frontend:
+    build: 
+      context: ./gestormedic-f 
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "4200:4200"
+    depends_on:
+      - gm-backend
+    networks:
+      - gm-network
+
+
 volumes:
   gm-notifications-data:
+    driver: local
+  gm-backend-data:
     driver: local
 
 networks:

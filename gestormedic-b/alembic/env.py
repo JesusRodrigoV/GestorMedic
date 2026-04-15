@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), ".."
 
 from app.core.config import settings
 from app.db.base import Base  
-
+from app.models import *
 config = context.config
 
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

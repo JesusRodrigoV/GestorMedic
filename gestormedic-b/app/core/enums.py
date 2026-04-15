@@ -1,14 +1,14 @@
 from enum import Enum
 
 class UserRole(str, Enum):
-    SUPERADMIN = "SUPERADMIN"
+    SUPERADMIN = "superadmin"
     ADMIN_CLINICA = "ADMIN_CLINICA"
-    ADMINISTRADORC = "ADMINISTRADORC"
-    MEDICO = "MEDICO"
-    RECEPCIONISTA = "RECEPCIONISTA"
-    PACIENTE = "PACIENTE"
-    ASEGURADORA = "ASEGURADORA"
-    PERSONAL = "PERSONAL"
+    MEDICO = "medico"
+    RECEPCIONISTA = "recepcionista"
+    PACIENTE = "paciente"
+    ASEGURADORA = "aseguradora"
+    VISITANTE = "visitante"
+
 
 class PlanType(str, Enum):
     FREE = "free"
@@ -24,6 +24,6 @@ class AuditEvent(str, Enum):
     LOGIN = "LOGIN"
     LOGIN_SUCCESS = "LOGIN_SUCCESS"
     LOGIN_FAILURE = "LOGIN_FAILURE"
+    UPDATE_PROFILE = "UPDATE_PROFILE"
     LOGOUT = "LOGOUT"
     REGISTER = "REGISTER"
-    UPDATE_PROFILE = "UPDATE_PROFILE"

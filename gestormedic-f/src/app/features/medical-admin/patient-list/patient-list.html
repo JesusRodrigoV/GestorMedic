@@ -1,1 +1,79 @@
-<p>patient-list works!</p>
+<div class="patient-list-container">
+  <p-splitter [style]="{'height': 'calc(100vh - 120px)'}" [panelSizes]="[35, 65]">
+    <ng-template pTemplate>
+        <div class="list-panel">
+            <div class="list-header">
+                <h2>Pacientes</h2>
+                <p-iconfield iconPosition="left">
+                    <p-inputicon styleClass="bx bx-search"></p-inputicon>
+                    <input pInputText type="text" placeholder="Buscar paciente..." class="w-full" />
+                </p-iconfield>
+            </div>
+            
+            <p-table 
+                [value]="patientsData()?.content || []" 
+                selectionMode="single" 
+                [selection]="selectedPatient()"
+                (onRowSelect)="onPatientSelect($event)"
+                dataKey="id"
+                [scrollable]="true" scrollHeight="flex" 
+                styleClass="p-datatable-sm custom-table">
+                <ng-template pTemplate="body" let-patient>
+                    <tr [pSelectableRow]="patient">
+                        <td>
+                            <div class="flex-row">
+                                <p-avatar [label]="patient.firstName.charAt(0) + patient.lastName.charAt(0)" shape="circle" styleClass="mr-2"></p-avatar>
+                                <div class="patient-info">
+                                    <span class="p-name">{{patient.firstName}} {{patient.lastName}}</span>
+                                    <span class="p-id">ID: {{patient.documentNumber}}</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </ng-template>
+    <ng-template pTemplate>
+        <div class="detail-panel" *ngIf="selectedPatient() as patient; else noSelection">
+            <div class="detail-header">
+                <p-avatar [label]="patient.firstName.charAt(0) + patient.lastName.charAt(0)" size="xlarge" shape="circle"></p-avatar>
+                <div class="detail-title">
+                    <h2>{{patient.firstName}} {{patient.lastName}}</h2>
+                    <p-tag [value]="getStatusLabel(patient.status)" [severity]="getSeverity(patient.status)"></p-tag>
+                </div>
+                <div class="header-actions">
+                  <p-button icon="bx bx-edit" label="Editar" outlined="true"></p-button>
+                  <p-button icon="bx bx-calendar-plus" label="Agendar Cita"></p-button>
+                </div>
+            </div>
+
+            <div class="detail-content">
+                <div class="detail-card">
+                    <h3>Información Personal</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Documento</span>
+                            <span class="value">{{patient.documentNumber}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Teléfono</span>
+                            <span class="value">{{patient.contactPhone}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Última Visita</span>
+                            <span class="value">{{patient.lastVisitDate || 'Sin visitas previas'}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #noSelection>
+            <div class="no-selection">
+                <i class="bx bx-user-pin text-4xl mb-4 text-gray-400"></i>
+                <p>Seleccione un paciente para ver sus detalles</p>
+            </div>
+        </ng-template>
+    </ng-template>
+  </p-splitter>
+</div>

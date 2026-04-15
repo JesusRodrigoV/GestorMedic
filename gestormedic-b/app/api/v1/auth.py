@@ -1,354 +1,190 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, BackgroundTasks, Cookie
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
-from typing import Optional, Union
-from redis.asyncio import Redis
+from typing import List, Optional, Union
+import pyotp
 
 from app.db.session import get_db
-from app.db.cache import get_cache_client
-from app.schemas.user import UserCreate, UserOut, UserUpdateProfile
-from app.schemas.auth import (
-    LoginRequest, TokenResponse,
-    LoginStep2Response, TOTPLoginRequest,
-    ForgotPasswordRequest, ResetPasswordRequest
-
+from app.core.config import settings
+from app.core.security import (
+    create_access_token, create_refresh_token, create_2fa_token, 
+    verify_password, get_password_hash, decode_token
 )
+from app.core.audit import audit_event
+from app.core.enums import AuditEvent, UserRole
+from app.core.dependencies import get_current_active_user
+from app.core import policia
 from app.crud import user as crud_user
 from app.crud import token as crud_token
 from app.crud import two_factor as crud_2fa
-from app.crud import audit as crud_audit
-from app.crud.auth import set_refresh_cookie, clear_refresh_cookie
-from app.core.dependencies import get_current_active_user
-from app.core.config import settings
-from app.core.security import (
-    create_access_token, create_refresh_token, create_2fa_session_token, verify_password
+from app.schemas.auth import (
+    LoginRequest, TokenResponse, LoginStep2Response, 
+    TOTPLoginRequest, ActiveSessionOut, TOTPSetupOut, TOTPConfirmRequest
 )
-from app.core.encryption import decrypt_data
-from app.core import email_service
-from app.core import policia
-from app.core.enums import AuditEvent
+from app.schemas.user import UserCreate, UserOut
 from app.models.user import User
-from app.rate_limiting import limiter
-
-from pydantic import BaseModel
-
-class GoogleLoginRequest(BaseModel):
-    email: str
-    username: str
-    google_id: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
 
 router = APIRouter()
 
-def _get_role_claim(user: User) -> str | None:
-    if user.role:
-        return str(user.role.name if hasattr(user.role, 'name') else user.role)
-    return None
 
-def _issue_tokens_for_user(user: User, db: Session):
-    extra_claims = {
-        "role": _get_role_claim(user),
-        "clinic_id": user.clinic_id
-    }
-    
+
+def _issue_tokens(db: Session, user: User, response: Response, request: Request):
+    extra_claims = {"role": user.role.name}
     access_token = create_access_token(subject=user.email, extra_claims=extra_claims)
-    rt = create_refresh_token(subject=user.email)
+    rt_data = create_refresh_token(subject=user.email)
     
     crud_token.create_refresh_token_record(
-        db, user_id=user.id, jti=rt["jti"], expires_at=rt["expires_at"], device_info=rt.get("device_info")
+        db, 
+        user_id=user.id, 
+        jti=rt_data["jti"], 
+        expires_at=rt_data["expires_at"],
+        device_info=request.headers.get("user-agent", "Desconocido"),
+    )
+    
+    response.set_cookie(
+        key="refresh_token", 
+        value=rt_data["token"],
+        httponly=True, 
+        secure=True, 
+        samesite="lax",
+        expires=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+    )
+    return access_token
+
+@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@audit_event(AuditEvent.REGISTER)
+async def register(payload: UserCreate, db: Session = Depends(get_db)):
+    existing_user = crud_user.get_user_by_email(db, payload.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+    
+    return crud_user.create_public_user(
+        db, 
+        user_in=payload, 
+        role_name=UserRole.PACIENTE.value 
     )
 
-    return access_token, rt["token"]
-
-
-@router.post("/register", response_model=UserOut, status_code=201)
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    return crud_user.create_public_user(db=db, user_in=user_in)
+@router.get("/me", response_model=UserOut)
+def read_user_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
 
 @router.post("/login", response_model=Union[TokenResponse, LoginStep2Response])
-@limiter.limit("10/minute")
 async def login(
     request: Request,
-    background_tasks: BackgroundTasks,
+    payload: LoginRequest,
     response: Response,
-    payload: LoginRequest, 
-    db: Session = Depends(get_db),
-    cache: Redis = Depends(get_cache_client)
+    db: Session = Depends(get_db)
 ):
-    ip_address = request.client.host if request.client else None
     user = crud_user.get_user_by_email(db, payload.email)
     
-    if not user:
-        background_tasks.add_task(
-            crud_audit.create_audit_log, 
-            event=AuditEvent.LOGIN_FAILURE, 
-            attempted_email=payload.email,
-            ip_address=ip_address
-        )
-        await policia.increment_login_failure(payload.email, cache)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Credenciales inválidas"
-        )
-   # 
-    #if policia.is_account_locked(user):
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="Cuenta bloqueada temporalmente, intente más tarde"
-    #    )
+    if not user or not verify_password(payload.password, user.hashed_password):
+        await policia.increment_login_failure(payload.email)
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
-    if not verify_password(payload.password, user.hashed_password):
-        background_tasks.add_task(
-            crud_audit.create_audit_log,
-            event=AuditEvent.LOGIN_FAILURE,
-            user_id=user.id,
-            attempted_email=user.email,
-            ip_address=ip_address,
-            clinic_id=user.clinic_id
-        )
-        
-        await policia.increment_login_failure(user.email, cache)
-        failures = await policia.get_login_failures(user.email, cache)
-        
-        if failures >= policia.MAX_FAILED_ATTEMPTS:
-            background_tasks.add_task(policia.lock_account, user_id=user.id)
-            await policia.clear_login_failures(user.email, cache)
-
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales inválidas"
-        )
+    if policia.is_account_locked(user):
+        raise HTTPException(status_code=403, detail="Cuenta bloqueada temporalmente")
 
     if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuario inactivo")
+        raise HTTPException(status_code=403, detail="Cuenta desactivada")
 
-    await policia.clear_login_failures(user.email, cache)
+    await policia.clear_login_failures(user.email)
 
     if user.is_totp_enabled:
-        session_token = create_2fa_session_token(subject=user.email)
+        session_token = create_2fa_token(subject=user.email)
         return LoginStep2Response(session_token=session_token)
 
-    background_tasks.add_task(
-        crud_audit.create_audit_log, 
-        event=AuditEvent.LOGIN_SUCCESS, 
-        user_id=user.id, 
-        attempted_email=user.email,
-        ip_address=ip_address,
-        clinic_id=user.clinic_id
-    )
+    access_token = _issue_tokens(db, user, response, request)
+    return TokenResponse(access_token=access_token, refresh_token="check_cookies", token_type="bearer")
 
-    access_token, refresh_token = _issue_tokens_for_user(user, db)
-    set_refresh_cookie(response, refresh_token)
-    
-    return TokenResponse(access_token=access_token, token_type="bearer")
-
-@router.post("/google", response_model=TokenResponse)
-async def google_login(
+@router.post("/2fa/verify", response_model=TokenResponse)
+async def verify_2fa(
     request: Request,
-    payload: GoogleLoginRequest,
-    response: Response,
-    background_tasks: BackgroundTasks,
+    payload: TOTPLoginRequest, 
+    response: Response, 
     db: Session = Depends(get_db)
 ):
-    ip_address = request.client.host if request.client else None
-    user = crud_user.get_user_by_email(db, payload.email)
-    
-    if not user:
-        user = crud_user.create_user_by_google(
-            db=db,
-            email=payload.email,
-            username=payload.username,
-            google_id=payload.google_id,
-            first_name=payload.first_name,
-            last_name=payload.last_name
-        )
-    else:
-        if not user.is_active:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuario inactivo")
-        
-        if not user.google_id:
-            user.google_id = payload.google_id
-            db.commit()
-
-    background_tasks.add_task(
-        crud_audit.create_audit_log, 
-        event=AuditEvent.LOGIN_SUCCESS, 
-        user_id=user.id, 
-        attempted_email=user.email,
-        ip_address=ip_address,
-        clinic_id=user.clinic_id
-    )
-
-    access_token, refresh_token = _issue_tokens_for_user(user, db)
-    set_refresh_cookie(response, refresh_token)
-    
-    return TokenResponse(access_token=access_token, token_type="bearer")
-
-@router.post("/2fa/verify-login", response_model=TokenResponse)
-async def verify_login_2fa(
-    request: Request,
-    body: TOTPLoginRequest,
-    response: Response,
-    background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
-    cache: Redis = Depends(get_cache_client)
-):
-    ip_address = request.client.host if request.client else None
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Token de sesión 2FA inválido",
-    )
-    
-    try:
-        payload = jwt.decode(body.session_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        if payload.get("type") != "pre_2fa":
-            raise credentials_exception
-        email = payload.get("sub")
-        if not email:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
+    email = decode_token(payload.session_token)
     user = crud_user.get_user_by_email(db, email)
-    if not user or not user.is_active or not user.is_totp_enabled:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Usuario no válido para 2FA")
-
-    is_code_valid = False
-    if len(body.code) == 6:
-        try:
-            secret = decrypt_data(user.totp_secret)
-            is_code_valid = crud_2fa.verify_totp_code(secret, body.code)
-        except Exception:
-            is_code_valid = False
-    else:
-        is_code_valid = crud_2fa.validate_backup_code(db, user, body.code)
-
-    if not is_code_valid:
-        background_tasks.add_task(
-            crud_audit.create_audit_log,
-            event=AuditEvent.LOGIN_FAILURE,
-            user_id=user.id,
-            attempted_email=user.email,
-            ip_address=ip_address,
-            clinic_id=user.clinic_id
-        )
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Código 2FA inválido")
-
-    background_tasks.add_task(
-        crud_audit.create_audit_log,
-        event=AuditEvent.V2P_SUCCESS,
-        user_id=user.id,
-        attempted_email=user.email,
-        ip_address=ip_address,
-        clinic_id=user.clinic_id
-    )
     
-    await policia.clear_login_failures(user.email, cache)
-    
-    access_token, refresh_token = _issue_tokens_for_user(user, db)
-    set_refresh_cookie(response, refresh_token)
-    
-    return TokenResponse(access_token=access_token, token_type="bearer")
+    if not user or not pyotp.TOTP(user.totp_secret).verify(payload.code):
+        raise HTTPException(status_code=401, detail="Código 2FA inválido")
+
+    access_token = _issue_tokens(db, user, response, request)
+    return TokenResponse(access_token=access_token, refresh_token="check_cookies")
+
 
 @router.post("/refresh", response_model=TokenResponse)
-def refresh_token(
+async def refresh_token(
+    request: Request,
     response: Response,
-    refresh_token: Optional[str] = Cookie(None), 
+    refresh_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)
 ):
-    if refresh_token is None:
-        raise HTTPException(status_code=401, detail="No se encontró refresh token en las cookies")
-
-    try:
-        decoded = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        if decoded.get("type") != "refresh":
-            raise HTTPException(status_code=400, detail="Token inválido")
-        jti, sub = decoded.get("jti"), decoded.get("sub")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Refresh token inválido o expirado")
-
-    if not crud_token.is_refresh_token_valid(db, jti):
-        raise HTTPException(status_code=401, detail="Refresh token inválido o revocado")
-
-    crud_token.revoke_refresh_token_by_jti(db, jti)
-    user = crud_user.get_user_by_email(db, sub)
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    new_access_token, new_refresh_token = _issue_tokens_for_user(user, db)
-    set_refresh_cookie(response, new_refresh_token)
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="No hay refresh token")
     
-    return TokenResponse(access_token=new_access_token, token_type="bearer")
+    payload = decode_token(refresh_token)
+    jti = payload.get("jti")
+    
+    if not crud_token.is_refresh_token_valid(db, jti):
+        raise HTTPException(status_code=401, detail="Token revocado o inválido")
+    
+    user = crud_user.get_user_by_email(db, payload.get("sub"))
+    crud_token.revoke_refresh_token_by_jti(db, jti)
+    
+    access_token = _issue_tokens(db, user, response, request)
+    return TokenResponse(access_token=access_token, refresh_token="check_cookies")
+
+
+@router.post("/2fa/setup", response_model=TOTPSetupOut)
+def setup_2fa(current_user: User = Depends(get_current_active_user)):
+    """Genera el secreto para que el usuario escanee el QR."""
+    secret = pyotp.random_base32()
+    otp_uri = pyotp.totp.TOTP(secret).provisioning_uri(
+        name=current_user.email, 
+        issuer_name="GestorMedic"
+    )
+    backup_codes = [pyotp.random_base32()[:8] for _ in range(5)]
+    
+    return TOTPSetupOut(secret=secret, qr_code_uri=otp_uri, backup_codes=backup_codes)
+
+@router.post("/2fa/confirm")
+def confirm_2fa(
+    payload: TOTPConfirmRequest, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    if pyotp.TOTP(payload.secret).verify(payload.code):
+        crud_user.enable_2fa(db, user=current_user, secret=payload.secret)
+        return {"msg": "2FA activado correctamente"}
+    raise HTTPException(status_code=400, detail="Código de verificación incorrecto")
+
+@router.get("/sessions", response_model=List[ActiveSessionOut])
+def get_my_sessions(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    return crud_token.get_active_sessions_for_user(db, user_id=current_user.id)
+
+@router.delete("/sessions/{jti}")
+def revoke_session(
+    jti: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    crud_token.revoke_refresh_token_by_jti(db, jti, user_id=current_user.id)
+    return {"msg": "Sesión cerrada remotamente"}
 
 @router.post("/logout")
+@audit_event(AuditEvent.LOGOUT)
 def logout(
-    response: Response, 
-    db: Session = Depends(get_db), 
-    refresh_token: Optional[str] = Cookie(None), 
+    response: Response,
+    refresh_token: Optional[str] = Cookie(None),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     if refresh_token:
-        try:
-            decoded = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-            jti = decoded.get("jti")
-            if jti:
-                crud_token.revoke_refresh_token_by_jti(db, jti)
-        except JWTError:
-            pass
-            
-    clear_refresh_cookie(response)
-    return {"msg": "Cierre de sesión exitoso"}
-
-@router.get("/me", response_model=UserOut)
-def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
-
-@router.put("/update-profile", response_model=UserOut)
-async def update_users_me(
-    user_in: UserUpdateProfile,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user) 
-):
-    if user_in.email and user_in.email != current_user.email:
-        existing_user_with_new_email = crud_user.get_user_by_email(db, email=user_in.email)
-        if existing_user_with_new_email: 
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Este correo electrónico ya está registrado por otro usuario",
-            )
+        payload = decode_token(refresh_token)
+        crud_token.revoke_refresh_token_by_jti(db, payload.get("jti"))
     
-    updated_user = crud_user.update_own_profile(db=db, db_user_to_update=current_user, user_in=user_in)
-    return updated_user
-
-
-@router.post("/forgot-password", status_code=status.HTTP_200_OK)
-async def forgot_password(
-    body: ForgotPasswordRequest,
-    background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
-):
-    user = crud_user.get_user_by_email(db, email=body.email)
-    if user:
-        token = crud_token.create_password_reset_token(db, user_id=user.id)
-        background_tasks.add_task(
-            email_service.send_password_reset_email,
-            email_to=user.email,
-            token=token,
-            username=user.username
-        )
-    return {"msg": "Si el correo existe, se envió un enlace de recuperación"}
-
-@router.post("/reset-password", status_code=status.HTTP_200_OK)
-def reset_password(body: ResetPasswordRequest, db: Session = Depends(get_db)):
-    user = crud_token.get_user_by_reset_token(db, token=body.token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El token es inválido o ha expirado"
-        )
-
-    crud_user.update_password(db, db_user=user, new_password=body.new_password)
-    crud_token.delete_reset_token(db, token=body.token)
-    
-    return {"msg": "Contraseña actualizada exitosamente"}
+    response.delete_cookie("refresh_token")
+    return {"msg": "Sesión cerrada con éxito"}
