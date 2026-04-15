@@ -3,10 +3,12 @@
     <div class="logo-box">
       <img ngSrc="logos/logo.png" alt="" width="24" height="24" priority />
     </div>
-    <div class="brand-text-wrapper">
-      <span class="brand-name">GestorMedic</span>
-      <span class="brand-tag">SaaS Clínica</span>
-    </div>
+
+    @if (!isCollapsed()) {
+      <div class="brand-text-wrapper" animate.enter="fade-in-node">
+        <span class="brand-name">GestorMedic</span>
+      </div>
+    }
   </div>
 
   <nav class="sidebar-nav">
@@ -19,6 +21,7 @@
             [pTooltip]="isCollapsed() ? item.label : ''"
             tooltipPosition="right"
             class="nav-link"
+            (click)="onItemClick.emit()"
           >
             <div class="active-indicator"></div>
 
@@ -26,15 +29,37 @@
               <i class="bx" [class]="item.icon" aria-hidden="true"></i>
             </div>
 
-            <span class="link-label">{{ item.label }}</span>
+            @if (!isCollapsed()) {
+              <span class="link-label" animate.enter="fade-in-node">{{ item.label }}</span>
+            }
           </a>
         </li>
       }
     </ul>
   </nav>
 
-  <div class="sidebar-footer">
-    <gm-rounded-button label="Regresar" variant="text" severity="info" routerLink="/"/>
-    <gm-rounded-button label="Cerrar Sesion" variant="outlined" severity="warn" />
-  </div>
+  @if (!isCollapsed()) {
+    <div class="sidebar-footer" animate.enter="fade-in-node">
+      <gm-rounded-button label="Regresar" variant="text" severity="info" routerLink="/" />
+      <gm-rounded-button label="Cerrar Sesion" variant="outlined" severity="warn" />
+    </div>
+  } @else {
+    <div class="sidebar-footer footer-collapsed" animate.enter="fade-in-node">
+      <gm-rounded-button
+        icon="bx bx-arrow-back"
+        variant="text"
+        severity="info"
+        routerLink="/"
+        pTooltip="Regresar"
+        tooltipPosition="right"
+      />
+      <gm-rounded-button
+        icon="bx bx-log-out"
+        variant="outlined"
+        severity="warn"
+        pTooltip="Cerrar Sesión"
+        tooltipPosition="right"
+      />
+    </div>
+  }
 </aside>

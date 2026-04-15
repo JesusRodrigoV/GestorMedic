@@ -1,0 +1,23 @@
+<div class="gm-settings-layout">
+  <nav class="gm-settings-sidebar">
+    <ul class="nav-list">
+      @for (option of menuOptions(); track option.route) {
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="option.route" routerLinkActive="active-link">
+            <div class="active-indicator"></div>
+
+            <div class="icon-wrapper">
+              <i [class]="option.icon"></i>
+            </div>
+
+            <span class="link-label">{{ option.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <main class="gm-settings-panel">
+    <router-outlet />
+  </main>
+</div>

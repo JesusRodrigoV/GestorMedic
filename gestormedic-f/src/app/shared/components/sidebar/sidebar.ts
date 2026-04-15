@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { MenuItem } from '@shared/models/menu-item';
@@ -17,8 +17,10 @@ import { RoundedButton } from '@shared/ui/rounded-button';
   },
 })
 export class Sidebar {
-  readonly isCollapsed = input<boolean>(false);
+  isCollapsed = input<boolean>(false);
   readonly items = input<MenuItem[]>([]);
 
-  protected readonly showLogoText = computed(() => !this.isCollapsed());
+  onItemClick = output<void>();
+
+  showLogoText = computed(() => !this.isCollapsed());
 }

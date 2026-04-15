@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { UpdatePatientProfileData } from '@core/models/profile.model';
+import { UpdatePatientProfilePayload } from '@core/models/patient-profile.model';
 import { environment } from '@env/environment';
 import PatientProfile from '@features/patient-portal/profile/profile';
 import { Observable } from 'rxjs';
@@ -20,7 +20,7 @@ export class ProfileService {
     return this.http.get<PatientProfile>(`${this.apiUrl}/patients/me`, this.httpOptions);
   }
 
-  updatePatientProfile(data: UpdatePatientProfileData): Observable<PatientProfile> {
+  updatePatientProfile(data: UpdatePatientProfilePayload): Observable<PatientProfile> {
     return this.http.put<PatientProfile>(`${this.apiUrl}/patients/me`, data, this.httpOptions);
   }
 }

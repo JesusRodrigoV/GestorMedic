@@ -1,0 +1,105 @@
+:host {
+  display: block;
+}
+
+.patient-profile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.auth-context-card {
+  padding: 1.5rem;
+  background: var(--p-surface-50);
+  border-radius: 12px;
+  border: 1px solid var(--p-surface-200);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--p-surface-900);
+  }
+}
+
+.medical-context-card {
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--p-surface-900);
+  }
+}
+
+.context-description {
+  color: var(--p-text-muted-color);
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.medical-description {
+  margin-bottom: 1.5rem;
+}
+
+.data-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.data-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.data-label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--p-slate-500);
+}
+
+.data-value {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--p-surface-900);
+}
+
+.loading-skeleton {
+  padding: 2rem;
+  text-align: center;
+  color: var(--p-text-muted-color);
+  background: var(--p-surface-100);
+  border-radius: 8px;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    color: var(--p-slate-700);
+    font-size: 0.9rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}

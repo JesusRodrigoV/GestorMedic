@@ -6,7 +6,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 
 export interface SettingsOption {
   label: string;
@@ -33,7 +32,14 @@ export interface ClinicSettings {
 
 @Component({
   selector: 'gm-settings',
-  imports: [CommonModule, RouterModule, AccordionModule, InputTextModule, ButtonModule, FormsModule, ToastModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    AccordionModule,
+    InputTextModule,
+    ButtonModule,
+    FormsModule,
+  ],
   providers: [MessageService],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
@@ -59,11 +65,20 @@ export default class Settings implements OnInit {
   ]);
 
   doctorProfile = signal<DoctorProfile>({
-    id: '', firstName: '', lastName: '', specialtyId: '', medicalLicenseNumber: '', contactEmail: ''
+    id: '',
+    firstName: '',
+    lastName: '',
+    specialtyId: '',
+    medicalLicenseNumber: '',
+    contactEmail: '',
   });
 
   clinicSettings = signal<ClinicSettings>({
-    tenantId: '', clinicName: '', supportEmail: '', bookingRemindersEnabled: false, timeZone: ''
+    tenantId: '',
+    clinicName: '',
+    supportEmail: '',
+    bookingRemindersEnabled: false,
+    timeZone: '',
   });
 
   timeZoneOptions = [
@@ -92,7 +107,7 @@ export default class Settings implements OnInit {
       lastName: 'Jallaza',
       specialtyId: 'med_gen',
       medicalLicenseNumber: 'CM-90812',
-      contactEmail: 'natalia@gestormedic.com'
+      contactEmail: 'natalia@gestormedic.com',
     });
 
     this.clinicSettings.set({
@@ -100,21 +115,33 @@ export default class Settings implements OnInit {
       clinicName: 'Clínica Salud Integral',
       supportEmail: 'soporte@saludintegral.com',
       bookingRemindersEnabled: true,
-      timeZone: 'America/La_Paz'
+      timeZone: 'America/La_Paz',
     });
   }
 
   saveProfile() {
     console.log('Profile saved:', this.doctorProfile());
-    this.messageService.add({severity:'success', summary: 'Éxito', detail: 'Perfil actualizado correctamente'});
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Perfil actualizado correctamente',
+    });
   }
 
   saveClinicSettings() {
     console.log('Clinic settings saved:', this.clinicSettings());
-    this.messageService.add({severity:'success', summary: 'Éxito', detail: 'Ajustes de clínica guardados'});
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Ajustes de clínica guardados',
+    });
   }
 
   savePreferences() {
-    this.messageService.add({severity:'success', summary: 'Éxito', detail: 'Preferencias guardadas'});
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Preferencias guardadas',
+    });
   }
 }
