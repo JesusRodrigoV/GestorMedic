@@ -23,10 +23,9 @@ import { AuthStore } from '../stores/auth.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Login {
-  private readonly _fb = inject(FormBuilder);
-  private readonly _router = inject(Router);
-  private readonly _notification = inject(NotificationService);
-  protected readonly authStore = inject(AuthStore);
+  _fb = inject(FormBuilder);
+  _notification = inject(NotificationService);
+  authStore = inject(AuthStore);
 
   protected readonly loginForm = this._fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,16 +43,6 @@ export default class Login {
     }
 
     const credentials = this.loginForm.getRawValue();
-
-    this.authStore.login(credentials).subscribe({
-      error: (err) => {
-        this._notification
-          .builder()
-          .error()
-          .summary('Fallo en la autenticación')
-          .detail('Las credenciales proporcionadas son incorrectas.')
-          .show();
-      },
-    });
+    this.authStore.login(credentials);
   }
 }

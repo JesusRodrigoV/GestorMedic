@@ -1,0 +1,9 @@
+export enum UserRole {
+  SUPERADMIN = 1,
+  ADMIN_CLINICA = 2,
+  MEDICO = 3,
+  RECEPCIONISTA = 4,
+  PACIENTE = 5,
+  ASEGURADORA = 6,
+  VISITANTE = 7,
+}

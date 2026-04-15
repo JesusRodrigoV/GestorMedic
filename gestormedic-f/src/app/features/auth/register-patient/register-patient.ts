@@ -8,6 +8,8 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { NgOptimizedImage } from '@angular/common';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
+import { NotificationService } from '@core/services/notification';
+import { AuthStore } from '../stores/auth.store';
 
 @Component({
   selector: 'gm-register-patient',
@@ -27,16 +29,17 @@ import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RegisterPatient {
-  private fb = inject(FormBuilder);
+  fb = inject(FormBuilder);
+  notification = inject(NotificationService);
+  authStore = inject(AuthStore);
 
-  isProcessing = signal(false);
   formSubmitted = signal(false);
 
-  // Expresión regular: Al menos 1 mayúscula, 1 número y 1 carácter especial
   strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
 
   registerForm = this.fb.nonNullable.group({
-    fullName: ['', [Validators.required]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: [
       '',
@@ -54,24 +57,33 @@ export default class RegisterPatient {
     return !!(control?.hasError(errorCode) && (control.touched || this.formSubmitted()));
   }
 
-  async onRegister() {
+  onRegister(): void {
     this.formSubmitted.set(true);
 
     if (this.registerForm.invalid) {
+      this.notification
+        .builder()
+        .warn()
+        .summary('Formulario incompleto')
+        .detail('Revise los campos marcados en rojo antes de continuar.')
+        .show();
       return;
     }
 
-    this.isProcessing.set(true);
+    const { firstName, lastName, email, password } = this.registerForm.getRawValue();
 
-    // Aquí iría la lógica de AuthStore para crear el paciente
-    console.log('Registrando paciente:', this.registerForm.getRawValue());
+    const generatedUsername = email.split('@')[0];
 
-    setTimeout(() => {
-      this.isProcessing.set(false);
-    }, 1500); // Simulación
+    this.authStore.register({
+      email: email,
+      username: generatedUsername,
+      first_name: firstName,
+      last_name: lastName,
+      password: password,
+    });
   }
 
-  onGoogleRegister() {
+  onGoogleRegister(): void {
     console.log('Redirigiendo a Google OAuth...');
   }
 }

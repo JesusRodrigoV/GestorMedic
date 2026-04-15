@@ -41,16 +41,18 @@
           type="submit"
           [loading]="authStore.isLoading()"
           severity="primary"
-          routerLink="/control/management"
+          (onClick)="onLogin()"
         />
-          <!--(onClick)="onLogin()"-->
       </div>
     </form>
 
     <footer class="login-footer">
       <a routerLink="/auth/forgot-password" class="forgot-link">¿Olvidó su contraseña?</a>
       <div class="divider"></div>
-      <p>¿No tiene una cuenta? <span class="text-energy" routerLink="/auth/register">Registrarse gratis</span></p>
+      <p>
+        ¿No tiene una cuenta?
+        <span class="text-energy" routerLink="/auth/register">Registrarse gratis</span>
+      </p>
     </footer>
   </div>
 </main>

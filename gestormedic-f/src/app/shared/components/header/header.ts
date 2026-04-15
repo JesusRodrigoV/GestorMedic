@@ -6,6 +6,7 @@ import { OverlayBadge } from 'primeng/overlaybadge';
 import { AuthStore } from '@features/auth/stores/auth.store';
 import { NotificationService } from '@core/services/notification';
 import { RoundedButton } from '@shared/ui/rounded-button';
+import { UserRole } from '@core/models/role.model';
 
 @Component({
   selector: 'gm-header',
@@ -23,18 +24,39 @@ export class Header {
 
   user = this.authStore.user;
   isLoggedIn = this.authStore.isAuthenticated;
+  isLoading = this.authStore.isLoading;
 
   isPro = computed(() => this.user()?.is_admin ?? false);
+
   userName = computed(() => {
     const data = this.user();
     return data ? `${data.first_name} ${data.last_name}` : 'Invitado';
   });
 
-  userAvatar = computed(
-    () =>
-      this.user()?.photo_url ||
-      'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png',
-  );
+  // NUEVA SEÑAL: Traducción de ID a Texto
+  userRoleName = computed(() => {
+    const roleId = this.user()?.role_id;
+
+    switch (roleId) {
+      case UserRole.SUPERADMIN:
+        return 'Super Admin';
+      case UserRole.ADMIN_CLINICA:
+        return 'Administrador';
+      case UserRole.MEDICO:
+        return 'Médico Especialista';
+      case UserRole.RECEPCIONISTA:
+        return 'Recepción';
+      case UserRole.PACIENTE:
+        return 'Paciente';
+      case UserRole.ASEGURADORA:
+        return 'Aseguradora';
+      default:
+        return 'Usuario';
+    }
+  });
+
+  userAvatar = computed(() => this.user()?.photo_url || 'profile/1.webp');
+
   unreadNotifications = signal(3);
 
   navLinks = signal([
@@ -44,9 +66,6 @@ export class Header {
     { label: 'Videollamada', route: '/videollamada' },
     { label: 'Recetas', route: '/recetas' },
     { label: 'Nosotros', route: '/nosotros' },
-    { label: 'App', route: '/app/dashboard' },
-    { label: 'Control', route: '/control/management' },
-    { label: 'Portal', route: '/portal/appointments' },
   ]);
 
   onLogout(): void {

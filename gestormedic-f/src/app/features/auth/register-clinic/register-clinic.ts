@@ -36,14 +36,12 @@ export default class RegisterClinic {
 
   isProcessing = signal(false);
 
-  // Un solo formulario que agrupa ambas dimensiones
   registerForm = this.fb.nonNullable.group({
-    // Datos del Representante (User)
-    admin_name: ['', [Validators.required]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
 
-    // Datos de la Institución (Clinic)
     clinic_name: ['', [Validators.required]],
     nit_ruc: ['', [Validators.required]],
     phone: ['', [Validators.required]],
@@ -57,29 +55,25 @@ export default class RegisterClinic {
     const formValues = this.registerForm.getRawValue();
 
     try {
-      // PASO 1: Crear la Identidad del Administrador
       const userPayload = {
         email: formValues.email,
-        username: formValues.email.split('@')[0], // Generamos un username base
+        username: formValues.email.split('@')[0],
         password: formValues.password,
-        first_name: formValues.admin_name,
-        role_id: 2, // Asumiendo que 2 es ADMIN_CLINICA según tu BD previa
+        first_name: formValues.firstName,
+        last_name: formValues.lastName,
       };
 
       await firstValueFrom(this.authService.register(userPayload));
 
-      // PASO 2: Autenticación Táctica (Obtener Token)
-      // Login devuelve el token y el AuthStore lo guarda en localStorage
       const loginRes = await firstValueFrom(
         this.authService.login({
-          username: userPayload.email, // FastAPI usa username para el login form
+          username: userPayload.email,
           password: userPayload.password,
         }),
       );
 
       localStorage.setItem('gm_token', loginRes.access_token);
 
-      // PASO 3: Registrar la Clínica (Ahora sí tenemos autorización)
       const clinicPayload = {
         name: formValues.clinic_name,
         nit_ruc: formValues.nit_ruc,
@@ -91,14 +85,12 @@ export default class RegisterClinic {
 
       await firstValueFrom(this.http.post(`${environment.apiUrl}/clinics/`, clinicPayload));
 
-      // PASO FINAL: Hidratar el Store y redirigir
       this.notification
         .builder()
         .success()
         .summary('Infraestructura inicializada con éxito.')
         .show();
       this.authStore.fetchUser();
-      // fetchUser ya incluye la redirección al dashboard en tu AuthStore
     } catch (error: any) {
       console.error('Fallo en la cadena de registro:', error);
       this.notification.builder().error().summary('Error en el protocolo de registro.').show();

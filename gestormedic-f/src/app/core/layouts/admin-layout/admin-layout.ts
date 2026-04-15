@@ -3,11 +3,10 @@ import { AdminHeader } from './components/admin-header';
 import { Sidebar } from '@shared/components/sidebar';
 import { MenuItem } from '@shared/models/menu-item';
 import { RouterOutlet } from '@angular/router';
-import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [AdminHeader, Sidebar, RouterOutlet, Toast],
+  imports: [AdminHeader, Sidebar, RouterOutlet],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

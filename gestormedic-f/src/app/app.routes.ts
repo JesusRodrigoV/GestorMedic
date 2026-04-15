@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '@core/guards/auth-guard';
+import { roleGuard } from '@core/guards/role-guard';
+import { UserRole } from '@core/models/role.model';
 
 export const routes: Routes = [
   {
@@ -53,6 +56,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadComponent: () => import('./core/layouts/auth-layout/auth-layout'),
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'login',
@@ -125,6 +129,10 @@ export const routes: Routes = [
   {
     path: 'portal',
     loadComponent: () => import('./core/layouts/patient-portal-layout/patient-portal-layout'),
+    canActivate: [roleGuard],
+    data: {
+      allowedRoles: [UserRole.PACIENTE],
+    },
     children: [
       {
         path: '',

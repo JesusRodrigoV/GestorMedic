@@ -31,7 +31,6 @@ export class Auth {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, this.httpOptions);
   }
 
-  // --- Endpoints de 2FA ---
   setup2FA(): Observable<TwoFAInfo> {
     return this.http.post<TwoFAInfo>(`${this.apiUrl}/2fa/setup`, {}, this.httpOptions);
   }
@@ -74,4 +73,5 @@ export class Auth {
   resetPassword(data: ResetPasswordData): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, data);
   }
+
 }

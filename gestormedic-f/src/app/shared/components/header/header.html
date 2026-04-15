@@ -13,7 +13,19 @@
     </div>
 
     <div class="gm-header__section gm-header__main">
-      @if (isLoggedIn()) {
+      @if (isLoading()) {
+        <div
+          class="header-loader"
+          style="
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #0f62fe;
+            animation: spin 1s linear infinite;
+          "
+        ></div>
+      } @else if (isLoggedIn()) {
         <div class="search-bar">
           <i class="bx bx-search"></i>
           <input
@@ -43,7 +55,9 @@
     </div>
 
     <div class="gm-header__section gm-header__actions">
-      @if (isLoggedIn()) {
+      @if (isLoading()) {
+        <div style="width: 200px"></div>
+      } @else if (isLoggedIn()) {
         <div class="action-group">
           <div class="plan-badge" [class.plan-badge--pro]="isPro()">
             @if (isPro()) {
@@ -63,7 +77,7 @@
           <div class="user-capsule">
             <div class="user-info">
               <span class="user-name">{{ userName() }}</span>
-              <span class="user-role">{{ isPro() ? 'Administrador' : 'Médico' }}</span>
+              <span class="user-role">{{ userRoleName() }}</span>
             </div>
             <p-avatar [image]="userAvatar()" shape="circle" size="normal" />
             <button class="logout-btn" (click)="onLogout()">
