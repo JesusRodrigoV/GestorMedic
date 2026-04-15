@@ -18,6 +18,8 @@ router = APIRouter()
 def read_user_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
+
+
 @router.put("/me", response_model=UserOut)
 def update_user_me(
     payload: UserUpdateProfile,

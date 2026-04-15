@@ -17,13 +17,13 @@ from app.models.user import User
 
 router = APIRouter()
 
-@router.get("/", response_model=Page[ClinicOut], dependencies=[Depends(require_superadmin)])
+@router.get("/", response_model=Page[ClinicOut])
 def list_clinics(
     is_active: Optional[bool] = Query(None, description="Filtrar por estado activo/inactivo"),
-    search: Optional[str] = Query(None, description="Buscar por nombre o dominio"),
+    #search: Optional[str] = Query(None, description="Buscar por nombre o dominio"),
     db: Session = Depends(get_db)
 ):
-    return paginate(crud_clinic.get_clinics_query(db=db, is_active=is_active, search=search))
+    return paginate(crud_clinic.get_clinics(db=db, is_active=is_active,))
 
 
 @router.get("/{clinic_id}", response_model=ClinicOut)
@@ -40,9 +40,9 @@ def get_clinic(
     return clinic
 
 
-@router.post("/", response_model=ClinicOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_superadmin)])
+@router.post("/", response_model=ClinicOut, status_code=status.HTTP_201_CREATED)
 def create_clinic(clinic_in: ClinicCreate, db: Session = Depends(get_db)):
-    existing_clinic = crud_clinic.get_clinic_by_domain(db=db, domain=clinic_in.domain)
+    existing_clinic = crud_clinic.get_clinic_by_nit(db=db, nit_ruc=clinic_in.nit_ruc)
     if existing_clinic:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El subdominio ya está en uso")
     

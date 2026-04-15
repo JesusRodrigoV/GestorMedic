@@ -25,7 +25,7 @@ def get_clinics(db: Session, skip: int = 0, limit: int = 100, is_active: Optiona
 
 def create_clinic(db: Session, clinic_in: ClinicCreate) -> Clinic:
     obj_in_data = clinic_in.model_dump()
-    obj_in_data["is_active"] = True
+    obj_in_data["is_active"] = True 
     db_clinic = Clinic(**obj_in_data)
     
     db.add(db_clinic)
