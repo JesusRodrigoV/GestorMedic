@@ -35,7 +35,9 @@ def create_default_admin():
 
         admin_user = User(
             email=settings.DEFAULT_ADMIN_EMAIL,
-            username="superadmin",
+            username="Ingeniero IV",
+            first_name="Ramiro",
+            last_name="Delgadillo",
             hashed_password=hashed_password,
             is_active=True,
             role_id=db_admin_role.id 
