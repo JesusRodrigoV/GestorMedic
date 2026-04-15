@@ -1,18 +1,19 @@
 """init
 
-Revision ID: 934dd69e5d1c
+Revision ID: 34a06fe05708
 Revises: 
-Create Date: 2026-04-14 20:07:39.182569
+Create Date: 2026-04-15 11:34:22.563629
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 import sqlalchemy_utils
 
 # revision identifiers, used by Alembic.
-revision: str = '934dd69e5d1c'
+revision: str = '34a06fe05708'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -38,7 +39,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_clinics_name'), 'clinics', ['name'], unique=False)
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.Enum('SUPERADMIN', 'ADMIN_CLINICA', 'MEDICO', 'RECEPCIONISTA', 'PACIENTE', 'ASEGURADORA', 'VISITANTE', name='userrole'), nullable=False),
+    sa.Column('name', sa.Enum('SUPERADMIN', 'ADMIN_CLINICA', 'MEDICO', 'RECEPCIONISTA', 'PACIENTE', 'ASEGURADORA', name='userrole'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -74,11 +75,13 @@ def upgrade() -> None:
     sa.Column('username', sa.String(length=100), nullable=False),
     sa.Column('first_name', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
     sa.Column('last_name', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('clinic_id', sa.Integer(), nullable=True),
     sa.Column('photo_url', sa.String(length=2048), nullable=True),
     sa.Column('hashed_password', sa.String(length=200), nullable=True),
     sa.Column('google_id', sa.String(length=255), nullable=True),
     sa.Column('is_totp_enabled', sa.Boolean(), nullable=False),
     sa.Column('totp_secret', sqlalchemy_utils.types.encrypted.encrypted_type.EncryptedType(), nullable=True),
+    sa.Column('backup_codes', postgresql.ARRAY(sa.String()), server_default='{}', nullable=False),
     sa.Column('status', sa.Enum('PENDING', 'COMPLETED', 'INACTIVE', name='userstatus'), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('locked_until', sa.DateTime(), nullable=True),
@@ -88,6 +91,7 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['clinic_id'], ['clinics.id'], ),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
@@ -101,8 +105,10 @@ def upgrade() -> None:
     sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('attempted_email', sa.String(length=200), nullable=True),
+    sa.Column('ip_address', sa.String(length=45), nullable=True),
+    sa.Column('user_agent', sa.String(length=255), nullable=True),
+    sa.Column('details', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
     sa.Column('clinic_id', sa.Integer(), nullable=True),
-    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['clinic_id'], ['clinics.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')

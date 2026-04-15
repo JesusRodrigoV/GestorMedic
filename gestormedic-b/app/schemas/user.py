@@ -32,6 +32,7 @@ class UserCreate(UserBase):
 class AdminUserCreate(UserBase):
     password: Optional[str] = None
     role_id: int
+    clinic_id: Optional[int] = None
     is_active: Optional[bool] = True
 
     @field_validator('password')
@@ -51,7 +52,7 @@ class UserUpdateProfile(BaseModel):
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    #email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
 
 class UserOut(BaseModel):
@@ -62,6 +63,7 @@ class UserOut(BaseModel):
     last_name: Optional[str] = None
     is_active: bool
     role_id: int
+    clinic_id: Optional[int] = None
     photo_url: Optional[str] = None 
     created_at: datetime 
 

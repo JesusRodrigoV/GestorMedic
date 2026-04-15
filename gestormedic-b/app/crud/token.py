@@ -1,21 +1,22 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import secrets
-
+from typing import Optional
 from app.models.token import RefreshToken, PasswordResetToken
 from app.models.user import User
 
-
-def create_refresh_token_record(
-    db: Session, 
+async def create_refresh_token_record(
+    db: AsyncSession, 
     *, 
     user_id: int, 
     jti: str, 
     expires_at: datetime, 
     device_info: str = "Desconocido"
 ):
-    """Guarda un registro del refresh token para permitir revocación."""
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
     db_obj = RefreshToken(
         user_id=user_id,
         jti=jti,
@@ -24,49 +25,42 @@ def create_refresh_token_record(
         is_revoked=False
     )
     db.add(db_obj)
-    db.commit()
-    db.refresh(db_obj)
+    await db.commit()
+    await db.refresh(db_obj)
     return db_obj
 
-def is_refresh_token_valid(db: Session, jti: str) -> bool:
+async def is_refresh_token_valid(db: AsyncSession, jti: str) -> bool:
+    now = datetime.now(timezone.utc)
     stmt = select(RefreshToken).where(
         RefreshToken.jti == jti,
         RefreshToken.is_revoked == False,
-        RefreshToken.expires_at > datetime.utcnow()
+        RefreshToken.expires_at > now
     )
-    result = db.execute(stmt).scalar_one_or_none()
-    return result is not None
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
 
-def revoke_refresh_token_by_jti(db: Session, jti: str, user_id: int = None):
+async def revoke_refresh_token_by_jti(db: AsyncSession, jti: str, user_id: Optional[int] = None):
     stmt = select(RefreshToken).where(RefreshToken.jti == jti)
     if user_id:
         stmt = stmt.where(RefreshToken.user_id == user_id)
         
-    db_token = db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    db_token = result.scalar_one_or_none()
+    
     if db_token:
         db_token.is_revoked = True
-        db.commit()
+        await db.commit()
     return True
 
-def revoke_all_sessions_for_user(db: Session, user_id: int):
-    db.execute(
-        delete(RefreshToken).where(RefreshToken.user_id == user_id)
-    )
-    db.commit()
+async def revoke_all_sessions_for_user(db: AsyncSession, user_id: int):
+    await db.execute(delete(RefreshToken).where(RefreshToken.user_id == user_id))
+    await db.commit()
 
-def get_active_sessions_for_user(db: Session, user_id: int):
-    stmt = select(RefreshToken).where(
-        RefreshToken.user_id == user_id,
-        RefreshToken.is_revoked == False,
-        RefreshToken.expires_at > datetime.utcnow()
-    )
-    return db.execute(stmt).scalars().all()
-
-def create_password_reset_token(db: Session, *, user_id: int) -> str:
+async def create_password_reset_token(db: AsyncSession, *, user_id: int) -> str:
     token = secrets.token_urlsafe(32)
-    expires = datetime.utcnow() + timedelta(hours=1)
+    expires = datetime.now(timezone.utc) + timedelta(hours=1)
     
-    db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user_id))
+    await db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user_id))
     
     db_obj = PasswordResetToken(
         user_id=user_id,
@@ -74,16 +68,22 @@ def create_password_reset_token(db: Session, *, user_id: int) -> str:
         expires_at=expires
     )
     db.add(db_obj)
-    db.commit()
+    await db.commit()
     return token
 
-def get_user_by_reset_token(db: Session, token: str) -> User | None:
-    stmt = select(User).join(PasswordResetToken).where(
-        PasswordResetToken.token == token,
-        PasswordResetToken.expires_at > datetime.utcnow()
+async def get_user_by_reset_token(db: AsyncSession, token: str) -> Optional[User]:
+    now = datetime.now(timezone.utc)
+    stmt = (
+        select(User)
+        .join(PasswordResetToken)
+        .where(
+            PasswordResetToken.token == token,
+            PasswordResetToken.expires_at > now
+        )
     )
-    return db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
 
-def delete_reset_token(db: Session, token: str):
-    db.execute(delete(PasswordResetToken).where(PasswordResetToken.token == token))
-    db.commit()
+async def delete_reset_token(db: AsyncSession, token: str):
+    await db.execute(delete(PasswordResetToken).where(PasswordResetToken.token == token))
+    await db.commit()

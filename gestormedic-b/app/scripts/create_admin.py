@@ -1,54 +1,70 @@
 import logging
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+
 from app.core.config import settings
-from app.db.session import SessionLocal
+from app.db.session import AsyncSessionLocal
 from app.models.user import User
 from app.models.role import Role
 from app.core.security import get_password_hash
 from app.core.enums import UserRole
-from app.crud.user import get_user_by_email
 
 logger = logging.getLogger(__name__)
 
-def create_default_admin():
-    db: Session = SessionLocal()
-    try:
-        admin_role_name = UserRole.SUPERADMIN.value
-        db_admin_role = db.query(Role).filter(Role.name == admin_role_name).first()
 
-        if not db_admin_role:
-            logger.info(f"El rol '{admin_role_name}' no existe. Vamos a crearlo")
-            db_admin_role = Role(name=admin_role_name) 
-            db.add(db_admin_role)
-            db.commit()
-            db.refresh(db_admin_role)
-            logger.info("Rol 'SUPERADMIN' creado exitosamente")
+async def create_default_admin():
+    async with AsyncSessionLocal() as db:
+        try:
+            admin_role_name = UserRole.SUPERADMIN.value
 
-        existing_admin = get_user_by_email(db, email=settings.DEFAULT_ADMIN_EMAIL)
+            result = await db.execute(
+                select(Role).where(Role.name == admin_role_name)
+            )
+            db_admin_role = result.scalars().first()
 
-        if existing_admin:
-            logger.info(f"El usuario administrador ({settings.DEFAULT_ADMIN_EMAIL}) ya existe")
-            return
+            if not db_admin_role:
+                logger.info(f"El rol '{admin_role_name}' no existe. Vamos a crearlo")
+                db_admin_role = Role(name=admin_role_name)
+                db.add(db_admin_role)
+                await db.commit()
+                await db.refresh(db_admin_role)
+                logger.info("Rol 'SUPERADMIN' creado exitosamente")
 
-        logger.info(f"Creando usuario administrador por defecto: {settings.DEFAULT_ADMIN_EMAIL}")
-        hashed_password = get_password_hash(settings.DEFAULT_ADMIN_PASSWORD)
+            result = await db.execute(
+                select(User).where(User.email == settings.DEFAULT_ADMIN_EMAIL)
+            )
+            existing_admin = result.scalars().first()
 
-        admin_user = User(
-            email=settings.DEFAULT_ADMIN_EMAIL,
-            username="Ingeniero IV",
-            first_name="Ramiro",
-            last_name="Delgadillo",
-            hashed_password=hashed_password,
-            is_active=True,
-            role_id=db_admin_role.id 
-        )
+            if existing_admin:
+                logger.info(
+                    f"El usuario administrador ({settings.DEFAULT_ADMIN_EMAIL}) ya existe"
+                )
+                return
 
-        db.add(admin_user)
-        db.commit()
-        logger.info(f"Usuario SuperAdmin ({settings.DEFAULT_ADMIN_EMAIL}) creado exitosamente")
+            logger.info(
+                f"Creando usuario administrador por defecto: {settings.DEFAULT_ADMIN_EMAIL}"
+            )
+            hashed_password = get_password_hash(settings.DEFAULT_ADMIN_PASSWORD)
 
-    except Exception as e:
-        logger.error(f"Error al crear el usuario administrador por defecto: {e}", exc_info=True)
-        db.rollback()
-    finally:
-        db.close()
+            admin_user = User(
+                email=settings.DEFAULT_ADMIN_EMAIL,
+                username="Ingeniero IV",
+                first_name="Ramiro",
+                last_name="Delgadillo",
+                hashed_password=hashed_password,
+                is_active=True,
+                role_id=db_admin_role.id,
+            )
+
+            db.add(admin_user)
+            await db.commit()
+            logger.info(
+                f"Usuario SuperAdmin ({settings.DEFAULT_ADMIN_EMAIL}) creado exitosamente"
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Error al crear el usuario administrador por defecto: {e}",
+                exc_info=True,
+            )
+            await db.rollback()
+            raise

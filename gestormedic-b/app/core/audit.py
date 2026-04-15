@@ -12,22 +12,23 @@ def audit_event(event_type: AuditEvent):
             request: Request = kwargs.get("request")
             db = kwargs.get("db")
             background_tasks: BackgroundTasks = kwargs.get("background_tasks")
+            user_info = kwargs.get("token_data") or kwargs.get("current_user")
             
-            user = kwargs.get("current_user")
-            user_id = user.id if user else None
-            clinic_id = user.clinic_id if user else None
-            
-            ip_address = request.client.host if request else "0.0.0.0"
+            if background_tasks and db and user_info:
+                u_id = getattr(user_info, 'id', None) or user_info.get("sub")
+                c_id = getattr(user_info, 'clinic_id', None) or user_info.get("clinic_id")
+                
+                ip = request.client.host if request else "unknown"
+                path = str(request.url.path) if request else "unknown"
 
-            if background_tasks and db:
                 background_tasks.add_task(
                     create_audit_log,
                     db=db,
                     event=event_type,
-                    user_id=user_id,
-                    ip_address=ip_address,
-                    clinic_id=clinic_id,
-                    details={"path": request.url.path if request else None}
+                    user_id=u_id,
+                    clinic_id=c_id,
+                    ip_address=ip,
+                    details={"path": path}
                 )
             
             return response

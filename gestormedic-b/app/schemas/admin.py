@@ -17,6 +17,7 @@ class UserAdminOut(BaseModel):
     email: EmailStr
     username: str
     role: UserRole
+    status: UserStatus
     is_active: bool
     is_totp_enabled: bool
     last_login: Optional[datetime] = None

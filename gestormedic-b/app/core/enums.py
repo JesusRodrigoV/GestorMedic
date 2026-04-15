@@ -7,7 +7,7 @@ class UserRole(str, Enum):
     RECEPCIONISTA = "recepcionista"
     PACIENTE = "paciente"
     ASEGURADORA = "aseguradora"
-    VISITANTE = "visitante"
+    #VISITANTE = "visitante"
 
 class PlanType(str, Enum):
     FREE = "free"

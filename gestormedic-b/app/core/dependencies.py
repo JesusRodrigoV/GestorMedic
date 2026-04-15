@@ -59,10 +59,15 @@ def require_role(allowed_roles: List[UserRole]):
     def role_checker(
         current_user: User = Depends(get_current_active_user)
     ) -> User:
-        if current_user.role.name.upper() == UserRole.SUPERADMIN.value:
+        user_role_name = current_user.role.name.lower() if current_user.role else ""
+        
+        allowed_values = [r.value.lower() for r in allowed_roles]
+        superadmin_value = UserRole.SUPERADMIN.value.lower()
+
+        if user_role_name == superadmin_value:
             return current_user
             
-        if current_user.role.name.upper() not in [r.value for r in allowed_roles]:
+        if user_role_name not in allowed_values:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permisos insuficientes. Se requiere uno de: {[r.value for r in allowed_roles]}"
@@ -87,9 +92,6 @@ def verify_tenant_access(
     clinic_id: int, 
     current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Valida que el usuario pertenezca a la clínica que intenta consultar.
-    """
     if current_user.role.name.upper() == UserRole.SUPERADMIN.value:
         return True
         

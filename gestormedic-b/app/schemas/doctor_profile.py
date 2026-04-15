@@ -31,6 +31,13 @@ class DoctorProfileOut(DoctorProfileBase):
 
     @computed_field
     @property
+    def clinics(self) -> List[int]:
+        if hasattr(self, "clinic_associations"):
+            return [assoc.clinic_id for assoc in self.clinic_associations if assoc.is_active]
+        return []
+
+    @computed_field
+    @property
     def specialties(self) -> List[SpecialtyOut]:
         if hasattr(self, "specialty_associations"):
             return [assoc.specialty for assoc in self.specialty_associations]

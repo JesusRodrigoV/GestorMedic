@@ -55,4 +55,4 @@ class TOTPSetupOut(BaseModel):
 
 class TOTPConfirmRequest(BaseModel):
     code: str
-    secret: str
+    #secret: str
