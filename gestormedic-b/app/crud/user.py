@@ -184,19 +184,24 @@ def delete_user_by_admin(db: Session, user_id: int) -> bool:
     db.commit()
     return True
 
-def update_own_profile(db: Session, db_user: User, user_in: UserUpdateProfile) -> User:
-    """Actualización del perfil por el propio usuario"""
+def update_own_profile(db: Session, *, db_user: User, user_in: UserUpdateProfile) -> User:
     update_data = user_in.model_dump(exclude_unset=True)
     
     for field, value in update_data.items():
-        setattr(db_user, field, value)
+        if hasattr(db_user, field):
+            setattr(db_user, field, value)
         
     try:
+        db.add(db_user) 
         db.commit()
         db.refresh(db_user)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="Datos en uso por otro usuario.")
+       
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, 
+            detail="Los datos (email o username) ya están siendo usados por otro usuario."
+        )
     return db_user
 
 def update_password(db: Session, db_user: User, new_password: str) -> None:

@@ -18,16 +18,17 @@ router = APIRouter()
 def read_user_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
-
-
 @router.put("/me", response_model=UserOut)
 def update_user_me(
     payload: UserUpdateProfile,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    return crud_user.update_own_profile(db, db_user_to_update=current_user, user_in=payload)
-
+    return crud_user.update_own_profile(
+        db, 
+        db_user=current_user, 
+        user_in=payload
+    )
 
 @router.get("/", response_model=List[UserAdminOut])
 def list_users(
