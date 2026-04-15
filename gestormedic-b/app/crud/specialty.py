@@ -1,5 +1,5 @@
 from sqlalchemy import select, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from typing import List, Optional
@@ -7,16 +7,18 @@ from typing import List, Optional
 from app.models.specialty import Specialty
 from app.schemas.specialty import SpecialtyCreate, SpecialtyUpdate
 
-def get_specialty(db: Session, specialty_id: int) -> Optional[Specialty]:
+async def get_specialty(db: AsyncSession, specialty_id: int) -> Optional[Specialty]:
     stmt = select(Specialty).where(Specialty.id == specialty_id)
-    return db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
 
-def get_specialty_by_name(db: Session, name: str) -> Optional[Specialty]:
+async def get_specialty_by_name(db: AsyncSession, name: str) -> Optional[Specialty]:
     stmt = select(Specialty).where(Specialty.name.ilike(name.strip()))
-    return db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
 
-def get_specialties(
-    db: Session, 
+async def get_specialties(
+    db: AsyncSession, 
     skip: int = 0, 
     limit: int = 100, 
     search: Optional[str] = None
@@ -33,9 +35,10 @@ def get_specialties(
         )
     
     stmt = stmt.order_by(Specialty.name).offset(skip).limit(limit)
-    return list(db.execute(stmt).scalars().all())
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
 
-def create_specialty(db: Session, specialty_in: SpecialtyCreate) -> Specialty:
+async def create_specialty(db: AsyncSession, specialty_in: SpecialtyCreate) -> Specialty:
     """Crea una nueva especialidad médica."""
     specialty_in.name = specialty_in.name.strip()
     
@@ -43,17 +46,17 @@ def create_specialty(db: Session, specialty_in: SpecialtyCreate) -> Specialty:
     
     db.add(db_specialty)
     try:
-        db.commit()
-        db.refresh(db_specialty)
+        await db.commit()
+        await db.refresh(db_specialty)
     except IntegrityError:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"La especialidad '{specialty_in.name}' ya esta registrada"
+            detail=f"La especialidad '{specialty_in.name}' ya está registrada"
         )
     return db_specialty
 
-def update_specialty(db: Session, db_specialty: Specialty, specialty_in: SpecialtyUpdate) -> Specialty:
+async def update_specialty(db: AsyncSession, db_specialty: Specialty, specialty_in: SpecialtyUpdate) -> Specialty:
     update_data = specialty_in.model_dump(exclude_unset=True)
     
     for field, value in update_data.items():
@@ -62,22 +65,21 @@ def update_specialty(db: Session, db_specialty: Specialty, specialty_in: Special
         setattr(db_specialty, field, value)
 
     try:
-        db.commit()
-        db.refresh(db_specialty)
+        await db.commit()
+        await db.refresh(db_specialty)
     except IntegrityError:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Ya existe otra especialidad con ese nombre"
         )
     return db_specialty
 
-def delete_specialty(db: Session, specialty_id: int) -> bool:
-
-    db_specialty = get_specialty(db, specialty_id)
+async def delete_specialty(db: AsyncSession, specialty_id: int) -> bool:
+    db_specialty = await get_specialty(db, specialty_id)
     if not db_specialty:
         return False
     
-    db.delete(db_specialty)
-    db.commit()
+    await db.delete(db_specialty)
+    await db.commit()
     return True

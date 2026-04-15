@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.schemas.auth import ForgotPasswordRequest, ResetPasswordRequest
@@ -16,13 +16,12 @@ router = APIRouter()
 async def forgot_password(
     body: ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
-
-    user = crud_user.get_user_by_email(db, email=body.email)
+    user = await crud_user.get_user_by_email(db, email=body.email)
     
     if user and user.is_active:
-        token = crud_token.create_password_reset_token(db, user_id=user.id)
+        token = await crud_token.create_password_reset_token(db, user_id=user.id)
         
         background_tasks.add_task(
             email_service.send_password_reset_email,
@@ -30,16 +29,16 @@ async def forgot_password(
             token=token,
             username=user.username
         )
+    
     return {"msg": "Si el correo está registrado y activo, se enviará un enlace de recuperación a su bandeja de entrada."}
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 @audit_event(AuditEvent.PASSWORD_RESET_SUCCESS)
-def reset_password(
+async def reset_password(
     body: ResetPasswordRequest, 
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
-
-    user = crud_token.get_user_by_reset_token(db, token=body.token)
+    user = await crud_token.get_user_by_reset_token(db, token=body.token)
     
     if not user:
         raise HTTPException(
@@ -53,10 +52,8 @@ def reset_password(
             detail="No se puede cambiar la contraseña de una cuenta inactiva."
         )
 
-    crud_user.update_password(db, db_user=user, new_password=body.new_password)
+    await crud_user.update_password(db, db_user=user, new_password=body.new_password)
+    await crud_token.delete_reset_token(db, token=body.token)
+    await crud_token.revoke_all_sessions_for_user(db, user_id=user.id)
     
-    crud_token.delete_reset_token(db, token=body.token)
-    
-    crud_token.revoke_all_sessions_for_user(db, user_id=user.id)
-    
-    return {"msg": "Contraseña actualizada exitosamente. Todas las sesiones anteriores han sido cerradas. Por favor, inicie sesión nuevamente."}
+    return {"msg": "Contraseña actualizada exitosamente. Todas las sesiones anteriores han sido cerradas."}

@@ -28,7 +28,7 @@ class User(Base):
     last_name: Mapped[Optional[str]] = mapped_column(
         EncryptedType(String(100), settings.SECRET_KEY, AesEngine, 'pkcs5')
     )
-    
+    clinic_id: Mapped[Optional[int]] = mapped_column(ForeignKey("clinics.id"), nullable=True)
     photo_url: Mapped[Optional[str]] = mapped_column(String(2048))
 
     hashed_password: Mapped[Optional[str]] = mapped_column(String(200))
@@ -53,9 +53,12 @@ class User(Base):
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), nullable=False)
     role: Mapped["Role"] = relationship("Role", back_populates="users")
 
+
+    clinic: Mapped[Optional["Clinic"]] = relationship("Clinic")
+    staff_profile: Mapped[Optional["StaffProfile"]] = relationship("StaffProfile", back_populates="user", uselist=False)
     doctor_profile: Mapped[Optional["DoctorProfile"]] = relationship("DoctorProfile", back_populates="user", uselist=False)
     patient_profile: Mapped[Optional["PatientProfile"]] = relationship("PatientProfile", back_populates="user", uselist=False)
-    backup_codes: Mapped[List["TwoFactorCodes"]] = relationship("TwoFactorCodes", back_populates="user", cascade="all, delete-orphan")
+    #backup_codes: Mapped[List["TwoFactorCodes"]] = relationship("TwoFactorCodes", back_populates="user", cascade="all, delete-orphan")
 
     #
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(

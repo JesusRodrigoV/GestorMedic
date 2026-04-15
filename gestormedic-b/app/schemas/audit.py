@@ -17,6 +17,8 @@ class AuditLogOut(BaseModel):
     attempted_email: Optional[str] = None
     
     ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    details: Optional[dict] = None
     clinic_id: Optional[int] = None
 
     user: Optional[AuditLogUser] = None 

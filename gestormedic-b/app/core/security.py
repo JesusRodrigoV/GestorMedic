@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from jose import jwt
+from typing import Any, Optional
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 import uuid
+from fastapi import HTTPException, status
 from app.core.config import settings
-from jose import jwt, JWTError
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password: str) -> str:
@@ -12,36 +14,49 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(subject: str, expires_minutes: int | None = None, extra_claims: dict | None = None) -> str:
+def create_access_token(
+    subject: str, 
+    role: str, 
+    clinic_id: Optional[int] = None, 
+    expires_minutes: int | None = None
+) -> str:
     now = datetime.now(timezone.utc)
     expires = now + timedelta(minutes=(expires_minutes or settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+    
     payload = {
         "sub": str(subject),
         "iat": now,
         "exp": expires,
+        "role": role,
+        "clinic_id": clinic_id,
         "type": "access"
     }
-    if extra_claims:
-        payload.update(extra_claims)
+    
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
-def create_refresh_token(subject: str, expires_days: int | None = None, device_info: str | None = None) -> dict:
+def create_refresh_token(subject: str, expires_days: int | None = None) -> dict:
+    # 1. Calculamos con UTC para precisión
     now = datetime.now(timezone.utc)
     expires = now + timedelta(days=(expires_days or settings.REFRESH_TOKEN_EXPIRE_DAYS))
     jti = str(uuid.uuid4())
+    
     payload = {
         "sub": str(subject),
         "iat": now,
-        "exp": expires,
+        "exp": expires, # El JWT sí debe llevar la zona horaria en el payload
         "jti": jti,
         "type": "refresh"
     }
+    
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return {"token": token, "jti": jti, "expires_at": expires, "device_info": device_info}
-#sistema actual stateless, el token se mantiene activo
-#implementacion de hibrido: Access Tokens Stateless y Refresh Tokens Stateful.
+    
+    # 2. Devolvemos expires_at como 'naive' (sin tzinfo) para SQLAlchemy/Postgres
+    return {
+        "token": token, 
+        "jti": jti, 
+        "expires_at": expires.replace(tzinfo=None) 
+    }
 
-#token 5 minutitos 2fa
 def create_2fa_token(subject: str) -> str:
     now = datetime.now(timezone.utc)
     payload = {
@@ -52,20 +67,9 @@ def create_2fa_token(subject: str) -> str:
     }
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
-from datetime import datetime, timedelta
-from typing import Any, Union
-from jose import jwt, JWTError # Necesitas instalar python-jose[cryptography]
-from app.core.config import settings
-
-# ... tus funciones de create_access_token y verify_password ...
-
 def decode_token(token: str) -> dict:
     try:
-        payload = jwt.decode(
-            token, 
-            settings.SECRET_KEY, 
-            algorithms=[settings.ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from datetime import datetime
 from app.core.enums import UserRole, UserStatus
@@ -17,6 +17,7 @@ class UserAdminOut(BaseModel):
     email: EmailStr
     username: str
     role: UserRole
+    status: UserStatus
     is_active: bool
     is_totp_enabled: bool
     last_login: Optional[datetime] = None
@@ -24,7 +25,7 @@ class UserAdminOut(BaseModel):
     clinic_id: Optional[int] = None
     
     class Config:
-        from_attributes = True
+        model_config = ConfigDict(from_attributes=True)
 
 class DashboardStats(BaseModel):
     total_users: int

@@ -8,8 +8,8 @@ class StaffProfile(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False)
-
+    
     employee_id: Mapped[Optional[str]] = mapped_column(String(50), unique=True)
     position: Mapped[Optional[str]] = mapped_column(String(100))
-
-    user: Mapped["User"] = relationship("User")
+    
+    user: Mapped["User"] = relationship("User", back_populates="staff_profile")
