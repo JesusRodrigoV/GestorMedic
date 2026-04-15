@@ -21,7 +21,7 @@ def get_my_staff_profile(
     current_user: User = Depends(require_staff)
 ):
 
-    profile = crud_staff.get_staff_profile_by_user_id(db=db, user_id=current_user.id)
+    profile = crud_staff.get_staff_by_user_id(db=db, user_id=current_user.id)
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil de personal no encontrado")
     return profile
@@ -33,11 +33,11 @@ def update_my_staff_profile(
     current_user: User = Depends(require_staff)
 ):
 
-    profile = crud_staff.get_staff_profile_by_user_id(db=db, user_id=current_user.id)
+    profile = crud_staff.get_staff_by_user_id(db=db, user_id=current_user.id)
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil de personal no encontrado")
         
-    return crud_staff.update_staff_profile(db=db, db_obj=profile, obj_in=profile_in)
+    return crud_staff.update_staff(db=db, db_obj=profile, obj_in=profile_in)
 
 
 @router.get("/{user_id}", response_model=StaffProfileOut)
@@ -54,7 +54,7 @@ def get_staff_profile_by_admin(
     if target_user.clinic_id:
         verify_tenant_access(clinic_id=target_user.clinic_id, current_user=current_user)
 
-    profile = crud_staff.get_staff_profile_by_user_id(db=db, user_id=user_id)
+    profile = crud_staff.get_staff_by_user_id(db=db, user_id=user_id)
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El usuario no tiene un perfil de personal")
         
@@ -75,8 +75,8 @@ def update_staff_profile_by_admin(
     if target_user.clinic_id:
         verify_tenant_access(clinic_id=target_user.clinic_id, current_user=current_user)
 
-    profile = crud_staff.get_staff_profile_by_user_id(db=db, user_id=user_id)
+    profile = crud_staff.get_staff_by_user_id(db=db, user_id=user_id)
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El usuario no tiene un perfil de personal")
 
-    return crud_staff.update_staff_profile(db=db, db_obj=profile, obj_in=profile_in)
+    return crud_staff.update_staff(db=db, db_obj=profile, obj_in=profile_in)
