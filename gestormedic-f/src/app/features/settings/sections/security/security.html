@@ -1,0 +1,90 @@
+<div class="security-settings-layout">
+  <header class="section-header">
+    <h2>Seguridad y Acceso</h2>
+    <p>Gestione la seguridad de su cuenta y la autenticación en dos pasos.</p>
+  </header>
+
+  <section class="security-card">
+    <div class="card-header">
+      <div class="header-icon">
+        <i class="bx bx-shield-quarter"></i>
+      </div>
+      <div class="header-text">
+        <h3>Autenticación de Dos Factores (2FA)</h3>
+        <p>Añada una capa extra de seguridad. Además de su contraseña, necesitará un código generado por su aplicación móvil.</p>
+      </div>
+    </div>
+
+    <div class="card-body">
+      @if (authStore.currentUser()?.is_totp_enabled || twoFactorStore.setupComplete()) {
+        <div class="success-state">
+          <i class="bx bx-check-shield success-icon"></i>
+          <h4>Seguridad Máxima Activada</h4>
+          <p>Su cuenta está protegida. Se requerirá un código de su aplicación autenticadora (Google Authenticator, Authy, etc.) cada vez que inicie sesión.</p>
+          
+          @if (twoFactorStore.setupComplete() && twoFactorStore.backupCodes().length > 0) {
+            <div class="backup-codes-alert">
+              <strong>¡Guarde estos códigos de recuperación!</strong>
+              <p>Son la única forma de recuperar su cuenta si pierde el acceso a su dispositivo móvil.</p>
+              <ul class="code-list">
+                @for (code of twoFactorStore.backupCodes(); track code) {
+                  <li>{{ code }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      } @else if (twoFactorStore.isProcessing() && !twoFactorStore.qrCodeUri()) {
+        <div class="loading-skeleton">Generando credenciales criptográficas seguras...</div>
+      } @else if (twoFactorStore.qrCodeUri()) {
+        <div class="setup-flow">
+          <div class="step-instruction">
+            <span class="step-number">1</span>
+            <p>Escanee este código QR usando una aplicación como Google Authenticator o Authy.</p>
+          </div>
+          
+          <div class="qr-container">
+            <qrcode 
+              [qrdata]="twoFactorStore.qrCodeUri()!" 
+              [width]="200" 
+              [errorCorrectionLevel]="'M'">
+            </qrcode>
+          </div>
+
+          <div class="step-instruction">
+            <span class="step-number">2</span>
+            <p>Si no puede escanear el código, ingrese esta clave secreta manualmente: 
+              <br><strong class="secret-text">{{ twoFactorStore.secretKey() }}</strong>
+            </p>
+          </div>
+
+          <div class="step-instruction">
+            <span class="step-number">3</span>
+            <p>Ingrese el código de 6 dígitos que muestra su aplicación para confirmar la vinculación.</p>
+          </div>
+
+          <form [formGroup]="verificationForm" (ngSubmit)="onConfirmSetup()" class="verification-form">
+            <div class="input-container">
+              <input 
+                pInputText 
+                id="code" 
+                formControlName="code" 
+                placeholder="000000" 
+                maxlength="6"
+                autocomplete="off"
+              />
+            </div>
+            <gm-rounded-button
+              type="submit"
+              label="Verificar y Activar"
+              severity="primary"
+              (onClick)="onConfirmSetup()"
+              [disabled]="verificationForm.invalid || twoFactorStore.isProcessing()"
+              [loading]="twoFactorStore.isProcessing()"
+            />
+          </form>
+        </div>
+      }
+    </div>
+  </section>
+</div>

@@ -38,17 +38,24 @@
       (onClick)="onNewAction()"
     />
 
-    <div class="v-sep"></div> 
+    <div class="v-sep"></div>
 
     <gm-notification-button />
 
-    <div class="user-capsule" pTooltip="Opciones de cuenta" tooltipPosition="bottom">
+    <div
+      class="user-capsule"
+      pTooltip="Ver mi perfil"
+      tooltipPosition="bottom"
+      (click)="goToProfile()"
+      style="cursor: pointer"
+    >
       <div class="user-meta">
         <span class="user-name">{{ userDisplayName() }}</span>
         <span class="user-role">{{ userRoleName() }}</span>
       </div>
-      <p-avatar [image]="selectedPhoto()" shape="circle" />
-      <button class="logout-btn" (click)="onLogout()" title="Cerrar sesión">
+      <p-avatar [image]="userAvatar()" shape="circle" />
+
+      <button class="logout-btn" (click)="onLogout($event)" title="Cerrar sesión">
         <i class="bx bx-log-out"></i>
       </button>
     </div>

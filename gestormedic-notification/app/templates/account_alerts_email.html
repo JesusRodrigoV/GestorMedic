@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Alerta de Cuenta</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <h2 style="color: #f39c12">Alerta de Seguridad</h2>
+    <p>Hemos detectado una actividad importante en tu cuenta de GestorMedic.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0">
+      <tr>
+        <td
+          style="
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+          "
+        >
+          Acción:
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd">
+          {{ action_details }}
+        </td>
+      </tr>
+      <tr>
+        <td
+          style="
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+          "
+        >
+          Dirección IP:
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd">
+          {{ ip_address }}
+        </td>
+      </tr>
+    </table>
+    <p style="font-size: 0.8em; color: #7f8c8d; margin-top: 40px">
+      Si fuiste tú, no es necesario realizar ninguna acción. Si no reconoces
+      esta actividad, cambia tu contraseña inmediatamente.
+    </p>
+  </body>
+</html>

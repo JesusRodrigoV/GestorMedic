@@ -38,32 +38,23 @@ export default class RegisterDoctor {
 
   isProcessing = signal(false);
 
-  // Un solo formulario que agrupa datos personales y profesionales
   registerForm = this.fb.nonNullable.group({
-    // Datos del Médico (User)
-    full_name: ['', [Validators.required, Validators.minLength(3)]],
+    firstName: ['', [Validators.required, Validators.minLength(3)]],
+    lastName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
 
-    // Datos Profesionales (Doctor Profile)
     specialties: ['', [Validators.required]],
     professional_license: ['', [Validators.required, Validators.pattern(/^[A-Z0-9\-]{5,20}$/)]],
     phone: ['', [Validators.required, Validators.pattern(/^[+\d\s\-()]+$/)]],
     university: ['', [Validators.required, Validators.minLength(3)]],
-    experience_years: [
-      '',
-      [Validators.required, Validators.min(0), Validators.max(70)],
-    ],
+    experience_years: ['', [Validators.required, Validators.min(0), Validators.max(70)]],
     bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
   });
 
   async executeRegistrationFlow() {
     if (this.registerForm.invalid) {
-      this.notification
-        .builder()
-        .warn()
-        .summary('Por favor, revise todos los campos')
-        .show();
+      this.notification.builder().warn().summary('Por favor, revise todos los campos').show();
       return;
     }
 
@@ -71,18 +62,16 @@ export default class RegisterDoctor {
     const formValues = this.registerForm.getRawValue();
 
     try {
-      // PASO 1: Crear la Identidad del Médico
       const userPayload = {
         email: formValues.email,
         username: formValues.email.split('@')[0],
         password: formValues.password,
-        first_name: formValues.full_name,
-        role_id: 3, // Asumiendo que 3 es DOCTOR
+        first_name: formValues.firstName,
+        last_name: formValues.lastName,
       };
 
       await firstValueFrom(this.authService.register(userPayload));
 
-      // PASO 2: Autenticación Táctica (Obtener Token)
       const loginRes = await firstValueFrom(
         this.authService.login({
           username: userPayload.email,
@@ -92,7 +81,6 @@ export default class RegisterDoctor {
 
       localStorage.setItem('gm_token', loginRes.access_token);
 
-      // PASO 3: Registrar el Perfil Médico (Ahora sí tenemos autorización)
       const doctorPayload = {
         specialties: formValues.specialties,
         professional_license: formValues.professional_license,
@@ -106,7 +94,6 @@ export default class RegisterDoctor {
 
       await firstValueFrom(this.http.post(`${environment.apiUrl}/doctors/`, doctorPayload));
 
-      // PASO FINAL: Hidratar el Store y redirigir
       this.notification
         .builder()
         .success()
@@ -122,9 +109,7 @@ export default class RegisterDoctor {
         .builder()
         .error()
         .summary('Error en el registro')
-        .detail(
-          error?.error?.detail || 'Por favor, intenta nuevamente o contacta al soporte.',
-        )
+        .detail(error?.error?.detail || 'Por favor, intenta nuevamente o contacta al soporte.')
         .show();
 
       this.isProcessing.set(false);

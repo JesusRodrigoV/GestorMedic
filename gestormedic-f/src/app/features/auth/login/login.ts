@@ -1,12 +1,15 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NotificationService } from '@core/services/notification';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { NgOptimizedImage } from '@angular/common';
 import { AuthStore } from '../stores/auth.store';
+import { environment } from '@env/environment';
+
+declare var google: any;
 
 @Component({
   selector: 'gm-login',
@@ -23,37 +26,43 @@ import { AuthStore } from '../stores/auth.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Login {
-  private readonly _fb = inject(FormBuilder);
-  private readonly _router = inject(Router);
-  private readonly _notification = inject(NotificationService);
-  protected readonly authStore = inject(AuthStore);
+  private _fb = inject(FormBuilder);
+  private _notification = inject(NotificationService);
+  protected authStore = inject(AuthStore);
 
   protected readonly loginForm = this._fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  ngOnInit(): void {
+    google.accounts.id.initialize({
+      client_id: environment.googleClientId,
+      callback: this.handleCredentialResponse.bind(this),
+    });
+  }
+
   protected onLogin(): void {
     if (this.loginForm.invalid) {
-      this._notification
-        .builder()
-        .warn()
-        .summary('Por favor, revise los campos del formulario.')
-        .show();
+      this._notification.builder().warn().summary('Por favor, revise los campos.').show();
       return;
     }
+    this.authStore.login(this.loginForm.getRawValue());
+  }
 
-    const credentials = this.loginForm.getRawValue();
+  protected onGoogleLoginTrigger(): void {
+    google.accounts.id.prompt();
+  }
 
-    this.authStore.login(credentials).subscribe({
-      error: (err) => {
-        this._notification
-          .builder()
-          .error()
-          .summary('Fallo en la autenticación')
-          .detail('Las credenciales proporcionadas son incorrectas.')
-          .show();
-      },
-    });
+  private handleCredentialResponse(response: any): void {
+    if (response.credential) {
+      this.authStore.loginWithGoogle({ credential: response.credential });
+    } else {
+      this._notification
+        .builder()
+        .error()
+        .summary('Error de autenticación con proveedor externo')
+        .show();
+    }
   }
 }

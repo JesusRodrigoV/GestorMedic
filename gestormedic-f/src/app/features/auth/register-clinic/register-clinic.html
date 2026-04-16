@@ -1,140 +1,194 @@
 <main class="gm-onboarding-layout">
   <div class="onboarding-container">
     <header class="onboarding-header">
-      <div class="brand-logo" style="background: transparent; border: none; box-shadow: none;">
+      <div class="brand-logo" style="background: transparent; border: none; box-shadow: none">
         <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="64" height="64" priority />
       </div>
       <h1 class="title">Alta Institucional</h1>
       <p class="subtitle">Despliegue su clínica en el ecosistema GestorMedic.</p>
     </header>
 
-    <form [formGroup]="registerForm" (ngSubmit)="executeRegistrationFlow()" class="onboarding-form">
-      <fieldset class="form-section">
-        <legend><i class="bx bx-user-pin"></i> Representante Legal</legend>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="admin_name">Nombre Completo</label>
-            <div class="input-container">
-              <i class="bx bx-user"></i>
-              <input
-                pInputText
-                id="admin_name"
-                formControlName="admin_name"
-                placeholder="Ej. Dr. Carlos Méndez"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="email">Correo Institucional</label>
-            <div class="input-container">
-              <i class="bx bx-envelope"></i>
-              <input
-                pInputText
-                id="email"
-                type="email"
-                formControlName="email"
-                placeholder="direccion@clinica.com"
-              />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="password">Clave de Seguridad</label>
-            <div class="input-container">
-              <i class="bx bx-lock-alt"></i>
-              <p-password
-                formControlName="password"
-                [toggleMask]="true"
-                [feedback]="false"
-                placeholder="Mínimo 8 caracteres"
-                styleClass="gm-password-full"
-              />
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="form-section">
-        <legend><i class="bx bx-buildings"></i> Infraestructura de la Clínica</legend>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="clinic_name">Razón Social o Nombre Comercial</label>
-            <div class="input-container">
-              <i class="bx bx-clinic"></i>
-              <input
-                pInputText
-                id="clinic_name"
-                formControlName="clinic_name"
-                placeholder="Centro Médico San Lucas"
-              />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="nit_ruc">NIT (Identificación Tributaria)</label>
-            <div class="input-container">
-              <i class="bx bx-id-card"></i>
-              <input pInputText id="nit_ruc" formControlName="nit_ruc" placeholder="1234567890" />
-            </div>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="phone">Teléfono Central</label>
-            <div class="input-container">
-              <i class="bx bx-phone"></i>
-              <input
-                pInputText
-                id="phone"
-                formControlName="phone"
-                placeholder="Ej. +591 22445566"
-              />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="address">Dirección Física</label>
-            <div class="input-container">
-              <i class="bx bx-map-pin"></i>
-              <input
-                pInputText
-                id="address"
-                formControlName="address"
-                placeholder="Av. Principal #123, La Paz"
-              />
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="form-actions">
-        <gm-rounded-button
-          label="Inicializar Plataforma"
-          type="submit"
-          severity="primary"
-          [disabled]="registerForm.invalid || isProcessing()"
-          [loading]="isProcessing()"
-          class="w-full"
-        />
-        <p class="terms-text">
-          Al registrarse, usted acepta nuestros <a href="#">Protocolos de Seguridad</a> y
-          <a href="#">Términos de Servicio</a>.
-        </p>
+    <div class="stepper-indicator">
+      <div class="step" [class.active]="step() === 1" [class.completed]="step() > 1">
+        <div class="step-number">1</div>
+        <div class="step-label">Representante</div>
       </div>
+      <div class="step-line"></div>
+      <div class="step" [class.active]="step() === 2">
+        <div class="step-number">2</div>
+        <div class="step-label">Infraestructura</div>
+      </div>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="executeRegistrationFlow()" class="onboarding-form">
+      @if (step() === 1) {
+        <fieldset class="form-section fade-in-section">
+          <legend><i class="bx bx-user-pin"></i> Representante Legal</legend>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="admin_name">Nombre Completo</label>
+              <div class="input-container">
+                <i class="bx bx-user"></i>
+                <input
+                  pInputText
+                  id="admin_name"
+                  formControlName="admin_name"
+                  placeholder="Ej. Dr. Carlos Méndez"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="email">Correo Institucional</label>
+              <div class="input-container">
+                <i class="bx bx-envelope"></i>
+                <input
+                  pInputText
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  placeholder="direccion@clinica.com"
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="password">Clave de Seguridad</label>
+              <div class="input-container">
+                <i class="bx bx-lock-alt"></i>
+                <p-password
+                  formControlName="password"
+                  [toggleMask]="true"
+                  [feedback]="false"
+                  placeholder="Mínimo 8 caracteres"
+                  styleClass="gm-password-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions single-action">
+            <gm-rounded-button
+              label="Continuar"
+              type="button"
+              severity="primary"
+              (onClick)="nextStep()"
+              class="w-full"
+            />
+          </div>
+        </fieldset>
+      }
+
+      @if (step() === 2) {
+        <fieldset class="form-section fade-in-section">
+          <legend><i class="bx bx-buildings"></i> Infraestructura de la Clínica</legend>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="clinic_name">Razón Social o Nombre Comercial</label>
+              <div class="input-container">
+                <i class="bx bx-clinic"></i>
+                <input
+                  pInputText
+                  id="clinic_name"
+                  formControlName="clinic_name"
+                  placeholder="Centro Médico San Lucas"
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="nit_ruc">NIT (Identificación Tributaria)</label>
+              <div class="input-container">
+                <i class="bx bx-id-card"></i>
+                <input pInputText id="nit_ruc" formControlName="nit_ruc" placeholder="1234567890" />
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="phone">Teléfono Central</label>
+              <div class="input-container">
+                <i class="bx bx-phone"></i>
+                <input
+                  pInputText
+                  id="phone"
+                  formControlName="phone"
+                  placeholder="Ej. +591 22445566"
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="address">Dirección Física</label>
+              <div class="input-container">
+                <i class="bx bx-map-pin"></i>
+                <input
+                  pInputText
+                  id="address"
+                  formControlName="address"
+                  placeholder="Av. Principal #123, La Paz"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions split-actions">
+            <gm-rounded-button
+              label="Volver"
+              type="button"
+              severity="secondary"
+              variant="outlined"
+              (onClick)="prevStep()"
+              [disabled]="isProcessing()"
+            />
+            <gm-rounded-button
+              label="Inicializar Plataforma"
+              type="submit"
+              severity="primary"
+              [disabled]="registerForm.invalid || isProcessing()"
+              [loading]="isProcessing()"
+            />
+          </div>
+          <p class="terms-text">
+            Al registrarse, usted acepta nuestros <a href="#">Protocolos de Seguridad</a> y
+            <a href="#">Términos de Servicio</a>.
+          </p>
+        </fieldset>
+      }
     </form>
 
-    <footer class="onboarding-footer" style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; margin-top: 1.5rem;">
-      <p style="margin: 0;">¿Ya tiene una cuenta? <a routerLink="/auth/login" style="color: var(--p-primary-color);">Iniciar sesión</a></p>
-      <div class="auth-links" style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
-        <a routerLink="/auth/forgot-password" style="color: var(--p-text-muted-color);">¿Olvidó su contraseña?</a>
-        <span style="color: #cbd5e1;">|</span>
-        <a routerLink="/auth/register" style="color: var(--p-primary-color); display: flex; align-items: center; gap: 0.25rem;">
+    <footer
+      class="onboarding-footer"
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1.5rem;
+      "
+    >
+      <p style="margin: 0">
+        ¿Ya tiene una cuenta?
+        <a routerLink="/auth/login" style="color: var(--p-primary-color)">Iniciar sesión</a>
+      </p>
+      <div
+        class="auth-links"
+        style="display: flex; gap: 1rem; align-items: center; justify-content: center"
+      >
+        <a routerLink="/auth/forgot-password" style="color: var(--p-text-muted-color)"
+          >¿Olvidó su contraseña?</a
+        >
+        <span style="color: #cbd5e1">|</span>
+        <a
+          routerLink="/auth/register"
+          style="color: var(--p-primary-color); display: flex; align-items: center; gap: 0.25rem"
+        >
           <i class="bx bx-arrow-back"></i> Volver a selección
         </a>
       </div>

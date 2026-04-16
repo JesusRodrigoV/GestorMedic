@@ -1,3 +1,5 @@
+import { UserRole } from './role.model';
+
 export interface User {
   id: number;
   email: string;
@@ -7,7 +9,7 @@ export interface User {
   full_name?: string;
   is_active: boolean;
   is_admin: boolean;
-  role_id: number;
+  role_id: UserRole;
   clinic_id?: number;
   photo_url?: string;
   created_at: string;
@@ -20,12 +22,15 @@ export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
   token_type: string;
+  session_token?: string;
 }
 
 export interface AuthState {
   user: User | null;
-  status: 'loading' | 'authenticated' | 'unauthenticated' | 'error';
+  status: 'loading' | 'authenticated' | 'unauthenticated' | 'error' | 'awaiting_2fa'; 
   error: string | null;
+  sessions: UserSession[];
+  pendingSessionToken: string | null; 
 }
 
 export interface UserSession {
@@ -48,8 +53,8 @@ export interface ResetPasswordData {
 }
 
 export interface LoginCredentials {
-  email?: string; 
-  username?: string; 
+  email?: string;
+  username?: string;
   password?: string;
 }
 
@@ -57,8 +62,15 @@ export interface RegisterData {
   email: string;
   username: string;
   first_name: string;
-  last_name?: string; 
-  password?: string;
+  last_name: string;
+  password: string;
   google_id?: string;
-  role_id?: number;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface GoogleLoginData {
+  credential: string;
 }

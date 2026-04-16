@@ -7,7 +7,7 @@ class UserRole(str, Enum):
     RECEPCIONISTA = "recepcionista"
     PACIENTE = "paciente"
     ASEGURADORA = "aseguradora"
-    VISITANTE = "visitante"
+    #VISITANTE = "visitante"
 
 
 class PlanType(str, Enum):
@@ -27,3 +27,5 @@ class AuditEvent(str, Enum):
     UPDATE_PROFILE = "UPDATE_PROFILE"
     LOGOUT = "LOGOUT"
     REGISTER = "REGISTER"
+    PASSWORD_RESET_REQUEST = "PASSWORD_RESET_REQUEST"
+    PASSWORD_RESET_SUCCESS = "PASSWORD_RESET_SUCCESS"

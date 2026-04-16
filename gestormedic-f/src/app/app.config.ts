@@ -20,6 +20,7 @@ import { CustomTitleStrategy } from '@core/strategies/page-title-strategy';
 import { Theme } from '@core/services/theme';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
+import { AuthStore } from '@features/auth/stores/auth.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,7 +30,12 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     { provide: TitleStrategy, useClass: CustomTitleStrategy },
     provideAppInitializer(() => {
-      const themeService = inject(Theme);
+      inject(Theme);
+      const authStore = inject(AuthStore);
+
+      if (typeof window !== 'undefined' && localStorage.getItem('gm_token')) {
+        authStore.fetchUser();
+      }
     }),
     provideRouter(
       routes,

@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from fastapi.concurrency import run_in_threadpool
 from fastapi_pagination import add_pagination
 
 from app.core.config import settings
@@ -29,10 +28,10 @@ async def lifespan(app: FastAPI):
         print(f"Error al conectar con Redis: {e}")
 
     print("Verificando datos semilla (Roles)")
-    await run_in_threadpool(init_db)
+    await init_db()
 
     print("Verificando usuario SuperAdmin")
-    await run_in_threadpool(create_default_admin)
+    await create_default_admin()
     
     print("Verificación de arranque exitosa")
     

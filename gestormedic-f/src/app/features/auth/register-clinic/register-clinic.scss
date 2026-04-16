@@ -1,65 +1,47 @@
-// ============================================================================
-// REGISTER CLINIC COMPONENT STYLES
-// ============================================================================
-// Refactored with design system: enhanced form layout, consistent spacing,
-// improved inputs, refined error states, and smooth animations
+@use '../../../shared/styles/design-tokens' as t;
+@use '../../../shared/styles/form-system' as f;
+@use '../../../shared/styles/card-system' as c;
+@use '../../../shared/styles/button-system' as b;
 
-@import '../../../shared/styles/design-tokens.scss';
-@import '../../../shared/styles/form-system.scss';
-@import '../../../shared/styles/card-system.scss';
-@import '../../../shared/styles/button-system.scss';
-
-// ============================================================================
-// MAIN LAYOUT CONTAINER
-// ============================================================================
 .gm-onboarding-layout {
   min-height: 100dvh;
-  background: radial-gradient(circle at top, $color-bg-secondary 0%, #e2e8f0 100%);
-  
+  background: radial-gradient(circle at top, t.$color-bg-secondary 0%, #e2e8f0 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  padding: $spacing-xl $spacing-lg;
+  padding: t.$spacing-xl t.$spacing-lg;
   font-family: inherit;
 }
 
-// ============================================================================
-// CONTAINER
-// ============================================================================
 .onboarding-container {
   width: 100%;
   max-width: 50rem;
-  
-  @include card-elevated($padding: 3.5rem, $border-radius: $border-radius-2xl);
-  
-  // Enhanced border and shadow
-  border: 1px solid $color-border-default;
-  box-shadow: $shadow-elevated;
-  
-  animation: cardSlideIn $animation-normal $ease-out;
-  
+
+  @include c.card-elevated($padding: 3.5rem, $border-radius: t.$border-radius-2xl);
+
+  border: 1px solid t.$color-border-default;
+  box-shadow: t.$shadow-elevated;
+
+  animation: cardSlideIn t.$animation-normal t.$ease-out;
+
   @media (max-width: 768px) {
-    padding: $spacing-xl;
+    padding: t.$spacing-xl;
   }
-  
+
   @media (max-width: 640px) {
-    padding: $spacing-lg;
+    padding: t.$spacing-lg;
   }
 }
 
-// ============================================================================
-// HEADER SECTION
-// ============================================================================
 .onboarding-header {
   text-align: center;
-  margin-bottom: $spacing-3xl;
-  animation: fadeInDown $animation-normal $ease-out;
-  
+  margin-bottom: t.$spacing-3xl;
+  animation: fadeInDown t.$animation-normal t.$ease-out;
+
   .brand-logo {
     display: block;
-    margin-bottom: $spacing-lg;
-    
+    margin-bottom: t.$spacing-lg;
+
     img {
       display: block;
       margin: 0 auto;
@@ -68,132 +50,120 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
     }
   }
-  
+
   .title {
-    font-size: $font-size-3xl;
-    color: $color-secondary;
-    font-weight: $font-weight-heavy;
-    margin: 0 0 $spacing-sm 0;
-    line-height: $line-height-tight;
-    
+    font-size: t.$font-size-3xl;
+    color: t.$color-secondary;
+    font-weight: t.$font-weight-heavy;
+    margin: 0 0 t.$spacing-sm 0;
+    line-height: t.$line-height-tight;
+
     @media (max-width: 640px) {
-      font-size: $font-size-2xl;
+      font-size: t.$font-size-2xl;
     }
   }
-  
+
   .subtitle {
-    color: $color-text-secondary;
-    font-size: $font-size-lg;
+    color: t.$color-text-secondary;
+    font-size: t.$font-size-lg;
     margin: 0;
-    line-height: $line-height-normal;
-    font-weight: $font-weight-normal;
+    line-height: t.$line-height-normal;
+    font-weight: t.$font-weight-normal;
   }
 }
 
-// ============================================================================
-// FORM
-// ============================================================================
 .onboarding-form {
   display: flex;
   flex-direction: column;
-  gap: $spacing-2xl;
-  
-  animation: fadeInUp $animation-normal $ease-out 0.2s both;
-  
-  // ========================================================================
-  // FORM SECTIONS
-  // ========================================================================
+  gap: t.$spacing-2xl;
+
+  animation: fadeInUp t.$animation-normal t.$ease-out 0.2s both;
+
   .form-section {
-    @include form-section-layout($gap: $spacing-lg);
-    
+    @include f.form-section-layout($gap: t.$spacing-lg);
+
     border: none;
     padding: 0;
     margin: 0;
-    
+
     legend {
-      @include form-section-legend();
-      
-      // Remove default styling
+      @include f.form-section-legend();
+
       border: none;
       width: 100%;
-      padding-bottom: $spacing-md;
-      margin-bottom: $spacing-lg;
-      
-      // Visual divider
-      border-bottom: 2px solid $color-border-default;
-      
+      padding-bottom: t.$spacing-md;
+      margin-bottom: t.$spacing-lg;
+      border-bottom: 2px solid t.$color-border-default;
+
       i {
-        font-size: $font-size-xl;
+        font-size: t.$font-size-xl;
       }
     }
   }
-  
-  // ========================================================================
-  // FIELD ROWS & GROUPS
-  // ========================================================================
+
   .field-row {
-    @include form-field-row();
-    
+    @include f.form-field-row();
+
     .field-group {
-      @include form-field-group();
-      
+      @include f.form-field-group();
+
       label {
-        @include form-label();
+        @include f.form-label();
       }
-      
-      // Input container styling
+
       .input-container {
-        @include form-input-with-icon();
-        
+        @include f.form-input-with-icon();
+
         i.bx {
-          @include form-input-icon();
+          @include f.form-input-icon();
         }
-        
+
         input {
-          @include form-input-base();
-          @include form-input-with-icon-padding();
-          
-          // Error state
+          @include f.form-input-base();
+          @include f.form-input-with-icon-padding();
+
           &.ng-invalid.ng-touched {
-            border-color: $color-border-error;
-            
+            border-color: t.$color-border-error;
+
             &:focus {
-              border-color: $color-border-error;
-              box-shadow: $shadow-focus-error, $shadow-medium;
+              border-color: t.$color-border-error;
+              box-shadow: t.$shadow-focus-error, t.$shadow-medium;
             }
           }
         }
-        
-        // PrimeNG Password Override
+
         ::ng-deep .gm-password-full {
           width: 100%;
-          
+
           .p-password-input {
-            @include form-input-base();
-            @include form-input-with-icon-padding($icon-size: $input-icon-size, $icon-offset: 2rem);
-            
+            @include f.form-input-base();
+            @include f.form-input-with-icon-padding(
+              $icon-size: t.$input-icon-size,
+              $icon-offset: 2rem
+            );
+
             &.ng-invalid.ng-touched {
-              border-color: $color-border-error;
-              
+              border-color: t.$color-border-error;
+
               &:focus {
-                border-color: $color-border-error;
-                box-shadow: $shadow-focus-error, $shadow-medium;
+                border-color: t.$color-border-error;
+                box-shadow: t.$shadow-focus-error, t.$shadow-medium;
               }
             }
           }
-          
+
           .p-icon-wrapper {
-            right: $spacing-md;
-            color: $color-text-tertiary;
+            right: t.$spacing-md;
+            color: t.$color-text-tertiary;
             cursor: pointer;
-            transition: color $transition-base $ease-in-out;
-            
+            transition: color t.$transition-base t.$ease-in-out;
+
             &:hover {
-              color: $color-text-secondary;
+              color: t.$color-text-secondary;
             }
-            
+
             &:focus-visible {
-              outline: 2px solid $color-primary;
+              outline: 2px solid t.$color-primary;
               outline-offset: 2px;
             }
           }
@@ -201,49 +171,46 @@
       }
     }
   }
-  
-  // ========================================================================
-  // FORM ACTIONS
-  // ========================================================================
+
   .form-actions {
-    margin-top: $spacing-xl;
+    margin-top: t.$spacing-xl;
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
-    
-    animation: fadeInUp $animation-normal $ease-out 0.4s both;
-    
+    gap: t.$spacing-md;
+
+    animation: fadeInUp t.$animation-normal t.$ease-out 0.4s both;
+
     gm-rounded-button {
       width: 100%;
-      
+
       ::ng-deep .p-button {
         width: 100%;
-        height: $button-height-md;
-        
+        height: t.$button-height-md;
+
         &.p-button-primary {
-          background-color: $color-primary;
-          border-color: $color-primary;
-          box-shadow: $shadow-medium;
-          
-          transition: all $transition-base $ease-in-out;
-          
+          background-color: t.$color-primary;
+          border-color: t.$color-primary;
+          box-shadow: t.$shadow-medium;
+
+          transition: all t.$transition-base t.$ease-in-out;
+
           &:hover:not(:disabled) {
-            background-color: $color-primary-hover;
-            border-color: $color-primary-hover;
-            box-shadow: $shadow-elevated;
+            background-color: t.$color-primary-hover;
+            border-color: t.$color-primary-hover;
+            box-shadow: t.$shadow-elevated;
             transform: translateY(-1px);
           }
-          
+
           &:focus-visible {
             outline: none;
-            box-shadow: $shadow-focus-primary, $shadow-elevated;
+            box-shadow: t.$shadow-focus-primary, t.$shadow-elevated;
           }
-          
+
           &:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: $shadow-medium;
+            box-shadow: t.$shadow-medium;
           }
-          
+
           &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -251,113 +218,204 @@
         }
       }
     }
-    
+
     .terms-text {
-      margin-top: $spacing-md;
-      font-size: $font-size-xs;
-      color: $color-text-secondary;
+      margin-top: t.$spacing-md;
+      font-size: t.$font-size-xs;
+      color: t.$color-text-secondary;
       text-align: center;
-      line-height: $line-height-normal;
-      
+      line-height: t.$line-height-normal;
+
       a {
-        color: $color-primary;
+        color: t.$color-primary;
         text-decoration: none;
-        font-weight: $font-weight-semibold;
-        
-        transition: all $transition-base $ease-in-out;
-        
+        font-weight: t.$font-weight-semibold;
+
+        transition: all t.$transition-base t.$ease-in-out;
+
         &:hover {
-          color: $color-primary-hover;
+          color: t.$color-primary-hover;
           text-decoration: underline;
           text-decoration-thickness: 1px;
           text-underline-offset: 2px;
         }
-        
+
         &:focus-visible {
-          outline: 2px solid $color-primary;
+          outline: 2px solid t.$color-primary;
           outline-offset: 2px;
-          border-radius: $border-radius-sm;
+          border-radius: t.$border-radius-sm;
         }
       }
     }
   }
 }
 
-// ============================================================================
-// BACK LINK
-// ============================================================================
 .back-link {
   text-align: center;
-  margin-top: $spacing-xl;
-  animation: fadeInUp $animation-normal $ease-out 0.8s both;
-  
+  margin-top: t.$spacing-xl;
+  animation: fadeInUp t.$animation-normal t.$ease-out 0.8s both;
+
   a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: $spacing-sm;
-    
-    color: $color-text-secondary;
-    font-size: $font-size-base;
-    font-weight: $font-weight-semibold;
+    gap: t.$spacing-sm;
+
+    color: t.$color-text-secondary;
+    font-size: t.$font-size-base;
+    font-weight: t.$font-weight-semibold;
     text-decoration: none;
-    
-    transition: all $transition-base $ease-in-out;
-    
+
+    transition: all t.$transition-base t.$ease-in-out;
+
     &:hover {
-      color: $color-secondary;
-      gap: $spacing-md;
+      color: t.$color-secondary;
+      gap: t.$spacing-md;
     }
-    
+
     &:focus-visible {
-      outline: 2px solid $color-primary;
+      outline: 2px solid t.$color-primary;
       outline-offset: 2px;
-      border-radius: $border-radius-sm;
+      border-radius: t.$border-radius-sm;
     }
   }
 }
 
-// ============================================================================
-// RESPONSIVE ADJUSTMENTS
-// ============================================================================
 @media (max-width: 768px) {
   .onboarding-container {
-    padding: $spacing-xl;
+    padding: t.$spacing-xl;
   }
-  
+
   .onboarding-header {
-    margin-bottom: $spacing-2xl;
-    
+    margin-bottom: t.$spacing-2xl;
+
     .title {
-      font-size: $font-size-2xl;
+      font-size: t.$font-size-2xl;
     }
   }
 }
 
 @media (max-width: 640px) {
   .gm-onboarding-layout {
-    padding: $spacing-md;
+    padding: t.$spacing-md;
   }
-  
+
   .onboarding-container {
-    padding: $spacing-lg;
+    padding: t.$spacing-lg;
   }
-  
+
   .onboarding-header {
-    margin-bottom: $spacing-xl;
-    
+    margin-bottom: t.$spacing-xl;
+
     .subtitle {
-      font-size: $font-size-base;
+      font-size: t.$font-size-base;
     }
   }
-  
+
   .onboarding-form {
-    gap: $spacing-xl;
-    
+    gap: t.$spacing-xl;
+
     .field-row {
       flex-direction: column;
-      gap: $spacing-md;
+      gap: t.$spacing-md;
     }
   }
 }
 
+.stepper-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: t.$spacing-2xl;
+  padding: 0 t.$spacing-xl;
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: t.$spacing-xs;
+    position: relative;
+    z-index: 2;
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: t.$color-bg-secondary;
+      border: 2px solid t.$color-border-default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: t.$font-weight-bold;
+      color: t.$color-text-secondary;
+      transition: all t.$transition-base t.$ease-out;
+    }
+
+    .step-label {
+      font-size: t.$font-size-xs;
+      color: t.$color-text-secondary;
+      font-weight: t.$font-weight-semibold;
+      transition: color t.$transition-base t.$ease-out;
+    }
+
+    &.active {
+      .step-number {
+        background: t.$color-primary;
+        border-color: t.$color-primary;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(var(--p-primary-500-rgb), 0.15);
+      }
+      .step-label {
+        color: t.$color-primary;
+      }
+    }
+
+    &.completed {
+      .step-number {
+        background: t.$color-primary;
+        border-color: t.$color-primary;
+        color: white;
+      }
+    }
+  }
+
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: t.$color-border-default;
+    margin: 0 t.$spacing-md;
+    position: relative;
+    top: -10px;
+    z-index: 1;
+  }
+}
+
+.split-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: t.$spacing-md;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.single-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fade-in-section {
+  animation: fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

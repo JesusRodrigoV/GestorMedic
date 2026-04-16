@@ -1,8 +1,8 @@
-from sqlalchemy import select, or_, func
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException
-from starlette import status
+from fastapi import HTTPException, status
 from typing import List, Optional
 
 from app.models.user import User
@@ -10,42 +10,33 @@ from app.models.role import Role
 from app.models.associations import ClinicDoctor
 from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate, UserUpdateProfile
 from app.core.security import get_password_hash
-from app.core.enums import UserRole
+from app.schemas.admin import UserAdminUpdate
 
-def _get_visitante_role_id(db: Session) -> int:
-    stmt = select(Role).where(Role.name == UserRole.VISITANTE.value)
-    role = db.execute(stmt).scalar_one_or_none()
-    if not role:
-        raise RuntimeError(f"Rol por defecto '{UserRole.VISITANTE.value}' no encontrado")
-    return role.id
-
-def get_user(db: Session, user_id: int) -> Optional[User]:
-    """Obtiene un usuario por su ID con su rol cargado"""
+async def get_user(db: AsyncSession, user_id: int) -> Optional[User]:
     stmt = (
         select(User)
         .options(joinedload(User.role))
         .where(User.id == user_id)
     )
-    return db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    """Busca un usuario por email"""
+async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
     normalized_email = email.strip().lower()
     stmt = (
         select(User)
         .options(joinedload(User.role))
         .where(User.email == normalized_email)
     )
-    return db.execute(stmt).scalar_one_or_none()
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
 
 def get_users_query(
-    db: Session, 
     role_id: Optional[int] = None, 
     is_active: Optional[bool] = None,
     clinic_id: Optional[int] = None,
     search: Optional[str] = None
 ):
-
     stmt = select(User).options(joinedload(User.role))
     
     if role_id is not None:
@@ -70,15 +61,16 @@ def get_users_query(
         
     return stmt.order_by(User.id)
 
-def create_public_user(db: Session, user_in: UserCreate, role_name: str = "paciente") -> User:
+async def create_public_user(db: AsyncSession, user_in: UserCreate, role_name: str = "paciente") -> User:
     if not user_in.password:
         raise HTTPException(status_code=400, detail="La contraseña es obligatoria.")
 
-    stmt = select(Role.id).where(Role.name == role_name)
-    role_id = db.execute(stmt).scalar_one_or_none()
+    role_stmt = select(Role.id).where(Role.name == role_name)
+    role_result = await db.execute(role_stmt)
+    role_id = role_result.scalar_one_or_none()
 
     if not role_id:
-        role_id = _get_visitante_role_id(db)
+        raise HTTPException(status_code=500, detail=f"Error de configuración: El rol '{role_name}' no existe.")
         
     user = User(
         email=user_in.email.strip().lower(),
@@ -92,23 +84,24 @@ def create_public_user(db: Session, user_in: UserCreate, role_name: str = "pacie
     
     db.add(user)
     try:
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
     except IntegrityError:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(status_code=409, detail="El email o usuario ya existen.")
     return user
 
-def create_user_by_google(
-    db: Session, 
+async def create_user_by_google(
+    db: AsyncSession, 
     email: str, 
     username: str, 
     google_id: str, 
     first_name: Optional[str] = None, 
     last_name: Optional[str] = None
 ) -> User:
-    """Crea un usuario autenticado por Google"""
-    role_id = _get_visitante_role_id(db)
+    role_stmt = select(Role.id).where(Role.name == "paciente")
+    role_result = await db.execute(role_stmt)
+    role_id = role_result.scalar_one_or_none()
     
     user = User(
         email=email.strip().lower(),
@@ -123,83 +116,125 @@ def create_user_by_google(
     
     db.add(user)
     try:
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
     except IntegrityError:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Esta cuenta de Google ya esta vinculada a otro usuario."
+            detail="Esta cuenta de Google ya está vinculada a otro usuario."
         )
     return user
 
-def create_user_by_admin(db: Session, user_in: AdminUserCreate) -> User:
-    if not user_in.password:
-        raise HTTPException(status_code=400, detail="Contraseña requerida")
-        
+async def create_user_by_admin(db: AsyncSession, user_in: AdminUserCreate) -> User:
     user = User(
         email=user_in.email.strip().lower(),
         username=user_in.username,
         first_name=user_in.first_name,
         last_name=user_in.last_name,
-        hashed_password=get_password_hash(user_in.password),
+        hashed_password=get_password_hash(user_in.password) if user_in.password else None,
         is_active=user_in.is_active,
         role_id=user_in.role_id 
     )
     
     db.add(user)
     try:
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
     except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Conflicto: Email o Username ya existen."
-        )
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="Conflicto: Email o Username ya existen.")
     return user
 
-def update_user_by_admin(db: Session, db_user: User, user_in: AdminUserUpdate) -> User:
-    """Actualización administrativa"""
+async def update_user_by_admin(db: AsyncSession, db_user: User, user_in: AdminUserUpdate) -> User:
     update_data = user_in.model_dump(exclude_unset=True)
     
+    if "password" in update_data:
+        db_user.hashed_password = get_password_hash(update_data.pop("password"))
+
     for field, value in update_data.items():
         setattr(db_user, field, value)
 
     try:
-        db.commit()
-        db.refresh(db_user)
+        await db.commit()
+        await db.refresh(db_user)
     except IntegrityError:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(status_code=409, detail="Conflicto al actualizar datos únicos.")
     return db_user
 
-def delete_user_by_admin(db: Session, user_id: int) -> bool:
-    """Eliminación física de usuario"""
-    user = get_user(db, user_id)
+async def delete_user_by_admin(db: AsyncSession, user_id: int) -> bool:
+    user = await get_user(db, user_id)
     if not user:
         return False
     
-    db.delete(user)
-    db.commit()
+    await db.delete(user)
+    await db.commit()
     return True
 
-def update_own_profile(db: Session, db_user: User, user_in: UserUpdateProfile) -> User:
-    """Actualización del perfil por el propio usuario"""
+async def update_own_profile(db: AsyncSession, db_user: User, user_in: UserUpdateProfile) -> User:
     update_data = user_in.model_dump(exclude_unset=True)
     
     for field, value in update_data.items():
-        setattr(db_user, field, value)
+        if hasattr(db_user, field):
+            setattr(db_user, field, value)
         
     try:
-        db.commit()
-        db.refresh(db_user)
+        await db.commit()
+        await db.refresh(db_user)
     except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=409, detail="Datos en uso por otro usuario.")
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="Los datos ya están siendo usados.")
     return db_user
 
-def update_password(db: Session, db_user: User, new_password: str) -> None:
-    """Cambio de contraseña seguro"""
-    db_user.hashed_password = get_password_hash(new_password)
-    db.commit()
+#async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
+#    stmt = select(User).where(User.id == user_id)
+#    result = await db.execute(stmt)
+#    return result.scalars().first()
+
+async def get_user_by_id(db: AsyncSession, user_id: int):
+    stmt = (
+        select(User)
+        .options(selectinload(User.role), selectinload(User.clinic)) 
+        .where(User.id == user_id)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+async def admin_update_user(db: AsyncSession, db_user: User, user_in: UserAdminUpdate):
+    update_data = user_in.model_dump(exclude_unset=True)
+    
+    for field, value in update_data.items():
+        if field == "role":
+            role_stmt = select(Role).where(Role.name == value.value)
+            role_res = await db.execute(role_stmt)
+            role_obj = role_res.scalar_one_or_none()
+            if role_obj:
+                db_user.role = role_obj
+        else:
+            setattr(db_user, field, value)
+
+    await db.commit()
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.role),
+            selectinload(User.clinic)
+        )
+        .where(User.id == db_user.id)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one()
+
+async def enable_2fa(db: AsyncSession, *, user: User, secret: str) -> User:
+    user.totp_secret = secret
+    user.is_totp_enabled = True
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

@@ -1,5 +1,4 @@
 from .user import User
-from .two_factor_codes import TwoFactorCodes  
 from .token import RefreshToken, PasswordResetToken
 from .staff_profile import StaffProfile
 from .specialty import Specialty

@@ -12,6 +12,8 @@ import { NotificationService } from '@core/services/notification';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 import { AuthStore } from '@features/auth/stores/auth.store';
 import { NotificationButton } from '@shared/components/notification-button';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserRole } from '@core/models/role.model';
 
 @Component({
   selector: 'gm-admin-header',
@@ -24,51 +26,72 @@ import { NotificationButton } from '@shared/components/notification-button';
   },
 })
 export class AdminHeader {
+  
+  route = inject(ActivatedRoute);
   authStore = inject(AuthStore);
   notification = inject(NotificationService);
+  router = inject(Router);
 
   user = this.authStore.user;
   onToggleSidebar = output<void>();
-
-  availablePhotos = ['profile/1.webp', 'profile/2.webp', 'profile/3.webp', 'profile/4.webp'];
-  selectedPhoto = signal(this.user()?.photo_url || this.availablePhotos[0]);
 
   isLoggedIn = this.authStore.isAuthenticated;
 
   tenantName = computed(() => {
     const data = this.user();
-    if (data?.is_admin) return 'Centro de Control Maestro';
-    return data ? 'Clínica Central Médica' : 'Cargando Jurisdicción...';
+    if (!data) return 'Cargando...';
+
+    switch (data.role_id) {
+      case UserRole.SUPERADMIN:
+        return 'Centro de Control Maestro';
+      case UserRole.ADMIN_CLINICA:
+        return 'Administración de Clínica';
+      case UserRole.MEDICO:
+        return 'Consultorio Médico';
+      case UserRole.PACIENTE:
+        return 'Portal del Paciente';
+      default:
+        return 'GestorMedic';
+    }
   });
 
   userDisplayName = computed(() => {
     const data = this.user();
-    return data ? `${data.first_name} ${data.last_name}` : 'Profesional';
+    return data ? `${data.first_name} ${data.last_name}` : 'Usuario';
   });
 
   userRoleName = computed(() => {
     const roleId = this.user()?.role_id;
     switch (roleId) {
-      case 1:
-        return 'Administrador de Centro';
-      case 2:
+      case UserRole.SUPERADMIN:
+        return 'Super Admin';
+      case UserRole.ADMIN_CLINICA:
+        return 'Administrador';
+      case UserRole.MEDICO:
         return 'Médico Especialista';
+      case UserRole.RECEPCIONISTA:
+        return 'Recepción';
+      case UserRole.PACIENTE:
+        return 'Paciente';
+      case UserRole.ASEGURADORA:
+        return 'Aseguradora';
       default:
-        return 'Personal Autorizado';
+        return 'Usuario';
     }
   });
 
-  avatarUrl = computed(
-    () =>
-      this.user()?.photo_url ||
-      'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png',
-  );
+  userAvatar = computed(() => this.user()?.photo_url || 'profile/1.webp');
 
   onNewAction(): void {
     this.notification.builder().info('Iniciando registro de nueva actividad clínica.').show();
   }
 
-  onLogout(): void {
+  goToProfile(): void {
+    this.router.navigate(['profile'], { relativeTo: this.route });
+  }
+
+  onLogout(event: Event): void {
+    event.stopPropagation();
     this.authStore.logout();
   }
 }

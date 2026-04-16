@@ -1,0 +1,29 @@
+<div class="profile-settings-container">
+  <header class="section-header">
+    <h2>Información Personal</h2>
+    <p>Gestione sus datos de identidad y perfil en la plataforma.</p>
+  </header>
+
+  <div class="section-content">
+    @if (user()) {
+      @switch (user()!.role_id) {
+        @case (UserRole.PACIENTE) {
+          <gm-patient-profile />
+        }
+        @case (UserRole.MEDICO) {
+          <gm-doctor-profile />
+        }
+        @case (UserRole.ADMIN_CLINICA) {
+          <gm-admin-profile />
+        }
+        @default {
+          <div class="alert alert-warning">
+            El perfil para este nivel de acceso no está configurado.
+          </div>
+        }
+      }
+    } @else {
+      <div class="loader-skeleton">Cargando perfil...</div>
+    }
+  </div>
+</div>
