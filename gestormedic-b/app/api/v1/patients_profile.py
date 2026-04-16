@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.crud import patient_profile as crud_patient
 from app.crud import user as crud_user
-from app.schemas.patient_profile import PatientProfileOut, PatientProfileUpdate
+from app.schemas.patient_profile import PatientProfileOut, PatientProfileUpdate, PatientProfileCreate
 from app.core.dependencies import (
     get_current_active_user, 
     require_staff, 
@@ -34,7 +34,7 @@ async def update_my_patient_profile(
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Perfil de paciente no encontrado")
         
-    return await crud_patient.update_patient(db=db, db_obj=profile, obj_in=profile_in)
+    return await crud_patient.update_patient(db=db, db_profile=profile, profile_in=profile_in)
 
 @router.get("/{user_id}", response_model=PatientProfileOut)
 async def get_patient_profile_by_staff(
@@ -74,3 +74,22 @@ async def update_patient_profile_by_staff(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El usuario no tiene un perfil de paciente")
 
     return await crud_patient.update_patient(db=db, db_obj=profile, obj_in=profile_in)
+
+@router.post("/me", response_model=PatientProfileOut, status_code=status.HTTP_201_CREATED)
+async def create_my_patient_profile(
+    profile_in: PatientProfileUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    existing_profile = await crud_patient.get_patient_by_user_id(db, user_id=current_user.id)
+    if existing_profile:
+        raise HTTPException(
+            status_code=400, 
+            detail="El perfil ya existe. Usa PUT para actualizarlo."
+        )
+
+    full_profile_data = PatientProfileCreate(
+        **profile_in.model_dump(),
+        user_id=current_user.id
+    )
+    return await crud_patient.create_patient(db=db, profile_in=full_profile_data)

@@ -14,7 +14,7 @@ class DoctorProfile(Base):
     bio: Mapped[Optional[str]] = mapped_column(Text)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
     signature_url: Mapped[Optional[str]] = mapped_column(String(2048))
-
+    base_consultation_price: Mapped[int] = mapped_column(Integer, default=0)
     user: Mapped["User"] = relationship("User", back_populates="doctor_profile")
 
     clinic_associations: Mapped[List["ClinicDoctor"]] = relationship(

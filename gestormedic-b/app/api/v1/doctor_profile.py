@@ -6,7 +6,7 @@ from app.db.session import get_db
 from app.crud import doctor_profile as crud_doctor
 from app.crud import user as crud_user
 from app.crud import specialty as crud_specialty
-from app.schemas.doctor_profile import DoctorProfileOut, DoctorProfileUpdate
+from app.schemas.doctor_profile import DoctorProfileOut, DoctorProfileUpdate, DoctorRegister
 from app.schemas.specialty import SpecialtyOut
 from app.core.dependencies import (
     get_current_active_user, 
@@ -110,3 +110,14 @@ async def update_doctor_profile_by_admin(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El usuario no tiene un perfil de doctor")
 
     return await crud_doctor.update_doctor_profile(db=db, db_obj=profile, obj_in=profile_in)
+
+@router.post(
+    "/register-doctor", 
+    response_model=DoctorProfileOut, 
+    status_code=status.HTTP_201_CREATED
+)
+async def register_doctor_complete(
+    payload: DoctorRegister,
+    db: AsyncSession = Depends(get_db)
+):
+    return await crud_doctor.create_doctor_with_user(db=db, doctor_in=payload)

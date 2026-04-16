@@ -7,8 +7,8 @@ from typing import Optional, List
 
 from app.models.doctor_profile import DoctorProfile
 from app.models.specialty import Specialty
-from app.schemas.doctor_profile import DoctorProfileCreate, DoctorProfileUpdate
-
+from app.schemas.doctor_profile import DoctorProfileCreate, DoctorProfileUpdate, DoctorRegister
+import app.crud.user as crud_user
 
 async def get_doctor_by_id(db: AsyncSession, profile_id: int) -> Optional[DoctorProfile]:
     stmt = (
@@ -118,3 +118,67 @@ async def delete_doctor(db: AsyncSession, profile_id: int) -> bool:
     await db.delete(db_profile)
     await db.commit()
     return True
+
+from app.models.user import User
+from app.models.role import Role
+from app.core.security import get_password_hash
+from app.models.specialty import Specialty
+
+async def create_doctor_with_user(db: AsyncSession, doctor_in: DoctorRegister) -> DoctorProfile:
+    existing_user = await crud_user.get_user_by_email(db, doctor_in.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+
+    role_stmt = select(Role.id).where(Role.name == "medico")
+    role_result = await db.execute(role_stmt)
+    role_id = role_result.scalar_one_or_none()
+    
+    if not role_id:
+        raise HTTPException(status_code=500, detail="El rol 'doctor' no está configurado.")
+
+    try:
+        new_user = User(
+            email=doctor_in.email.strip().lower(),
+            username=doctor_in.username,
+            first_name=doctor_in.first_name,
+            last_name=doctor_in.last_name,
+            hashed_password=get_password_hash(doctor_in.password),
+            role_id=role_id,
+            clinic_id=doctor_in.clinic_id,
+            is_active=True
+        )
+        db.add(new_user)
+        await db.flush()
+
+        new_profile = DoctorProfile(
+            user_id=new_user.id,
+            license_number=doctor_in.license_number,
+            bio=doctor_in.bio,
+            experience_years=doctor_in.experience_years,
+            base_consultation_price=doctor_in.base_consultation_price,
+            #is_telemedicine_enabled=doctor_in.is_telemedicine_enabled
+        )
+
+        if doctor_in.specialty_ids:
+            spec_stmt = select(Specialty).where(Specialty.id.in_(doctor_in.specialty_ids))
+            spec_result = await db.execute(spec_stmt)
+            new_profile.specialties = list(spec_result.scalars().all())
+
+        db.add(new_profile)
+        
+        await db.commit()
+        await db.refresh(new_profile)
+        await db.refresh(new_user) 
+        
+        return new_profile
+
+    except IntegrityError as e:
+        await db.rollback()
+        error_msg = str(e.orig)
+        if "license_number" in error_msg:
+            raise HTTPException(status_code=409, detail="La matrícula profesional ya existe.")
+        raise HTTPException(status_code=409, detail="El email o nombre de usuario ya existen.")
+        
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, computed_field
 from typing import Optional, List
 from app.schemas.specialty import SpecialtyOut
+from app.schemas.user import UserCreate
 
 class DoctorProfileBase(BaseModel):
     license_number: str
@@ -8,7 +9,7 @@ class DoctorProfileBase(BaseModel):
     experience_years: int = 0
     signature_url: Optional[str] = None
     base_consultation_price: int = 0
-    is_telemedicine_enabled: bool = False
+    #is_telemedicine_enabled: bool = False
 
 class DoctorProfileCreate(DoctorProfileBase):
     user_id: int
@@ -20,7 +21,7 @@ class DoctorProfileUpdate(BaseModel):
     experience_years: Optional[int] = None
     signature_url: Optional[str] = None
     base_consultation_price: Optional[int] = None
-    is_telemedicine_enabled: Optional[bool] = None
+    #is_telemedicine_enabled: Optional[bool] = None
     specialty_ids: Optional[List[int]] = None
 
 class DoctorProfileOut(DoctorProfileBase):
@@ -42,3 +43,14 @@ class DoctorProfileOut(DoctorProfileBase):
         if hasattr(self, "specialty_associations"):
             return [assoc.specialty for assoc in self.specialty_associations]
         return []
+    
+class DoctorRegister(UserCreate):
+    # Campos profesionales del Doctor
+    license_number: str
+    bio: Optional[str] = None
+    experience_years: int = 0
+    base_consultation_price: int = 0
+    #is_telemedicine_enabled: bool = False
+    specialty_ids: List[int] = []
+    
+    clinic_id: Optional[int] = None

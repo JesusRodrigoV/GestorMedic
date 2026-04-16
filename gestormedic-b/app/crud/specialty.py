@@ -39,7 +39,6 @@ async def get_specialties(
     return list(result.scalars().all())
 
 async def create_specialty(db: AsyncSession, specialty_in: SpecialtyCreate) -> Specialty:
-    """Crea una nueva especialidad médica."""
     specialty_in.name = specialty_in.name.strip()
     
     db_specialty = Specialty(**specialty_in.model_dump())
