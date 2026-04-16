@@ -12,6 +12,7 @@ from app.models.user import User
 
 router = APIRouter()
 
+
 @router.get("/", response_model=Page[AuditLogOut], summary="Obtener logs de auditoría")
 def get_audit_logs(
     clinic_id: Optional[int] = Query(None, description="Filtrar por ID de clínica (Solo SuperAdmin)"),

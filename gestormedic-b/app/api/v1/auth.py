@@ -121,8 +121,12 @@ async def login_google(
             google_requests.Request(), 
             settings.GOOGLE_CLIENT_ID
         )
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de Google inválido o expirado")
+    except ValueError as e:
+        print(f"Error exacto de Google: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail=str(e)
+        )
 
     email = idinfo.get("email")
     if not email:
@@ -153,7 +157,12 @@ async def verify_2fa(
     response: Response, 
     db: AsyncSession = Depends(get_db)
 ):
-    email = decode_token(payload.session_token)
+    token_payload = decode_token(payload.session_token)
+    email = token_payload.get("sub")
+    
+    if not email:
+        raise HTTPException(status_code=401, detail="Token inválido o corrupto")
+
     user = await crud_user.get_user_by_email(db, email)
     
     if not user or not pyotp.TOTP(user.totp_secret).verify(payload.code):

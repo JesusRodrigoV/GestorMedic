@@ -8,6 +8,8 @@ import {
   ResetPasswordData,
   TwoFAInfo,
   UserSession,
+  GoogleLoginData,
+  ForgotPasswordData,
 } from '@core/models/auth.model';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
@@ -31,23 +33,8 @@ export class Auth {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, this.httpOptions);
   }
 
-  setup2FA(): Observable<TwoFAInfo> {
-    return this.http.post<TwoFAInfo>(`${this.apiUrl}/2fa/setup`, {}, this.httpOptions);
-  }
-
-  confirm2FA(code: string, secret: string): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/2fa/confirm`, { code, secret }, this.httpOptions);
-  }
-
-  verify2FA(sessionToken: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
-      `${this.apiUrl}/2fa/verify`,
-      {
-        session_token: sessionToken,
-        code,
-      },
-      this.httpOptions,
-    );
+  loginGoogle(data: GoogleLoginData): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login/google`, data, this.httpOptions);
   }
 
   getSessions(): Observable<UserSession[]> {
@@ -70,8 +57,11 @@ export class Auth {
     return this.http.get<User>(`${this.apiUrl}/me`, this.httpOptions);
   }
 
-  resetPassword(data: ResetPasswordData): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, data);
+  forgotPassword(data: ForgotPasswordData): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/forgot-password`, data);
   }
 
+  resetPassword(data: ResetPasswordData): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/reset-password`, data);
+  }
 }

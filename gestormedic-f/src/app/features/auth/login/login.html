@@ -45,20 +45,39 @@
       <div class="form-actions">
         <gm-rounded-button
           label="Acceder al Sistema"
-          type="submit"
           [loading]="authStore.isLoading()"
+          [disabled]="authStore.isLoading()"
           severity="primary"
-          (onClick)="onLogin()"
         />
       </div>
     </form>
+
+    <div style="display: flex; align-items: center; margin: 1.5rem 0; color: var(--p-slate-400);">
+      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200);"></div>
+      <span style="padding: 0 1rem; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">O continuar con</span>
+      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200);"></div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+      <gm-rounded-button
+        label="Acceder con Google"
+        icon="bx bxl-google"
+        type="button"
+        variant="outlined"
+        severity="secondary"
+        [disabled]="authStore.isLoading()"
+        (onClick)="onGoogleLoginTrigger()"
+        class="w-full"
+        style="width: 100%; display: block;"
+      />
+    </div>
 
     <footer class="login-footer">
       <a routerLink="/auth/forgot-password" class="forgot-link">¿Olvidó su contraseña?</a>
       <div class="divider"></div>
       <p>
         ¿No tiene una cuenta?
-        <span class="text-energy" routerLink="/auth/register">Registrarse gratis</span>
+        <span class="text-energy" routerLink="/auth/register" style="cursor: pointer;">Registrarse gratis</span>
       </p>
     </footer>
   </div>

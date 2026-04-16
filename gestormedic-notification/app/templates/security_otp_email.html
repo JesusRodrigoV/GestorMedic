@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Código de Seguridad</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <h2 style="color: #2c3e50">Verificación de Identidad</h2>
+    <p>
+      Para continuar con tu operación en GestorMedic, ingresa el siguiente
+      código de seguridad:
+    </p>
+    <div
+      style="
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        text-align: center;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+      "
+    >
+      <span
+        style="
+          font-size: 24px;
+          font-weight: bold;
+          letter-spacing: 5px;
+          color: #2c3e50;
+        "
+        >{{ otp_code }}</span
+      >
+    </div>
+    <p style="font-size: 0.8em; color: #7f8c8d; margin-top: 40px">
+      No compartas este código con nadie. El equipo de GestorMedic nunca te
+      pedirá este código por teléfono o mensaje.
+    </p>
+  </body>
+</html>

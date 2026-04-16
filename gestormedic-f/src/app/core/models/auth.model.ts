@@ -22,13 +22,15 @@ export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
   token_type: string;
+  session_token?: string;
 }
 
 export interface AuthState {
   user: User | null;
-  status: 'loading' | 'authenticated' | 'unauthenticated' | 'error';
+  status: 'loading' | 'authenticated' | 'unauthenticated' | 'error' | 'awaiting_2fa'; 
   error: string | null;
   sessions: UserSession[];
+  pendingSessionToken: string | null; 
 }
 
 export interface UserSession {
@@ -63,4 +65,12 @@ export interface RegisterData {
   last_name: string;
   password: string;
   google_id?: string;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface GoogleLoginData {
+  credential: string;
 }

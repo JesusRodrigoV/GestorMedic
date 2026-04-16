@@ -1,0 +1,54 @@
+<main class="login-container">
+  <div class="login-bento-card glass-morphism">
+    <header class="login-header">
+      <img
+        ngSrc="logos/logo.png"
+        alt="GestorMedic Logo"
+        width="64"
+        height="64"
+        priority
+      />
+      <h1 class="yale-title">Verificación de Seguridad</h1>
+      <p class="slate-subtitle">
+        Ingrese el código de 6 dígitos generado por su aplicación autenticadora.
+      </p>
+    </header>
+
+    <form [formGroup]="twoFAForm" (ngSubmit)="onVerify()" class="login-form">
+      <div class="field-group">
+        <label for="code" style="text-align: center;">Código de Autenticación</label>
+        <input
+          id="code"
+          type="text"
+          pInputText
+          formControlName="code"
+          placeholder="000000"
+          class="gm-input"
+          maxlength="6"
+          autocomplete="off"
+          style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: bold;"
+          fluid
+        />
+      </div>
+
+      <div class="form-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+        <gm-rounded-button
+          label="Verificar Identidad"
+          type="submit"
+          (onClick)="onVerify()"
+          [loading]="authStore.isLoading()"
+          [disabled]="twoFAForm.invalid || authStore.isLoading()"
+          severity="primary"
+        />
+        <gm-rounded-button
+          label="Cancelar"
+          type="button"
+          variant="text"
+          severity="secondary"
+          (onClick)="onCancel()"
+          [disabled]="authStore.isLoading()"
+        />
+      </div>
+    </form>
+  </div>
+</main>

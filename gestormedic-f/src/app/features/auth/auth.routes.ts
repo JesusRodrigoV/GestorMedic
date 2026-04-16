@@ -31,6 +31,10 @@ export const AUTH_ROUTES: Routes = [
         path: 'register/doctor',
         loadComponent: () => import('./register-doctor/register-doctor'),
       },
+      {
+        path: 'verify-2fa',
+        loadComponent: () => import('./verify2fa/verify2fa'),
+      },
     ],
   },
 ];
