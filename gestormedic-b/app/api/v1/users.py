@@ -74,9 +74,12 @@ async def admin_update_user(
     admin: User = Depends(require_admin_clinica)
 ):
     db_user = await crud_user.get_user_by_id(db, user_id)
+    
     if not db_user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    if admin.role.name.upper() != UserRole.SUPERADMIN.value and db_user.clinic_id != admin.clinic_id:
+    
+    is_superadmin = admin.role.name.upper() == UserRole.SUPERADMIN.value
+    if not is_superadmin and db_user.clinic_id != admin.clinic_id:
         raise HTTPException(status_code=403, detail="No puedes editar usuarios ajenos a tu clínica")
 
     return await crud_user.admin_update_user(db, db_user=db_user, user_in=payload)
