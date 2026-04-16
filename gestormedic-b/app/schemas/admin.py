@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, field_validator
 from typing import Optional
 from datetime import datetime
 from app.core.enums import UserRole, UserStatus
@@ -24,8 +24,24 @@ class UserAdminOut(BaseModel):
     locked_until: Optional[datetime] = None
     clinic_id: Optional[int] = None
     
-    class Config:
-        model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
+    @field_validator("role", mode="before")
+    @classmethod
+    def transform_role(cls, v):
+        if hasattr(v, "name"):
+            return v.name.lower()
+        if isinstance(v, str):
+            return v.lower()
+        return v
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def transform_status(cls, v):
+        if hasattr(v, "name"):
+            return v.name.lower()
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
 class DashboardStats(BaseModel):
     total_users: int

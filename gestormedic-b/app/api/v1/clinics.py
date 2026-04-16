@@ -51,9 +51,9 @@ async def create_clinic(clinic_in: ClinicCreate, db: AsyncSession = Depends(get_
     if existing_nit:
         raise HTTPException(status_code=400, detail="El NIT/RUC ya se encuentra registrado")
     
-    existing_domain = await crud_clinic.get_clinic_by_domain(db=db, domain=clinic_in.domain)
-    if existing_domain:
-        raise HTTPException(status_code=400, detail="El subdominio ya está en uso")
+    #existing_domain = await crud_clinic.get_clinic_by_domain(db=db, domain=clinic_in.domain)
+    #if existing_domain:
+    #    raise HTTPException(status_code=400, detail="El subdominio ya está en uso")
     
     return await crud_clinic.create_clinic(db=db, clinic_in=clinic_in)
 
@@ -71,11 +71,11 @@ async def update_clinic(
     if not clinic_db:
         raise HTTPException(status_code=404, detail="Clínica no encontrada")
     
-    if clinic_in.domain and clinic_in.domain != clinic_db.domain:
-        if await crud_clinic.get_clinic_by_domain(db=db, domain=clinic_in.domain):
-            raise HTTPException(status_code=400, detail="El subdominio ya está en uso por otra clínica")
-
-    return await crud_clinic.update_clinic(db=db, db_clinic_to_update=clinic_db, clinic_in=clinic_in)
+    return await crud_clinic.update_clinic(
+        db=db, 
+        db_clinic=clinic_db,
+        clinic_in=clinic_in
+    )
 
 
 @router.delete("/{clinic_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_superadmin)])

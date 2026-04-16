@@ -1,6 +1,6 @@
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from typing import List, Optional
@@ -187,26 +187,48 @@ async def update_own_profile(db: AsyncSession, db_user: User, user_in: UserUpdat
         raise HTTPException(status_code=409, detail="Los datos ya están siendo usados.")
     return db_user
 
-async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
-    stmt = select(User).where(User.id == user_id)
-    result = await db.execute(stmt)
-    return result.scalars().first()
+#async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
+#    stmt = select(User).where(User.id == user_id)
+#    result = await db.execute(stmt)
+#    return result.scalars().first()
 
-async def admin_update_user(db: AsyncSession, *, db_user: User, user_in: UserAdminUpdate) -> User:
+async def get_user_by_id(db: AsyncSession, user_id: int):
+    stmt = (
+        select(User)
+        .options(selectinload(User.role), selectinload(User.clinic)) 
+        .where(User.id == user_id)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+async def admin_update_user(db: AsyncSession, db_user: User, user_in: UserAdminUpdate):
     update_data = user_in.model_dump(exclude_unset=True)
     
-    if update_data.get("password"):
-        hashed_password = get_password_hash(update_data["password"])
-        db_user.hashed_password = hashed_password
-        del update_data["password"]
+    for field, value in update_data.items():
+        if field == "role":
+            role_stmt = select(Role).where(Role.name == value.value)
+            role_res = await db.execute(role_stmt)
+            role_obj = role_res.scalar_one_or_none()
+            if role_obj:
+                db_user.role = role_obj
+        else:
+            setattr(db_user, field, value)
 
-    for field in update_data:
-        setattr(db_user, field, update_data[field])
-
-    db.add(db_user)
     await db.commit()
-    await db.refresh(db_user)
-    return db_user
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.role),
+            selectinload(User.clinic)
+        )
+        .where(User.id == db_user.id)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one()
 
 async def enable_2fa(db: AsyncSession, *, user: User, secret: str) -> User:
     user.totp_secret = secret

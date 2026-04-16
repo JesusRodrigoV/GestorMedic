@@ -91,7 +91,7 @@ async def verify_tenant_access(
     clinic_id: int, 
     current_user: User = Depends(get_current_active_user)
 ):
-    user_role_val = current_user.role.value.lower() if current_user.role else ""
+    user_role_val = current_user.role.name.lower() if current_user.role else ""
     
     if user_role_val == UserRole.SUPERADMIN.value.lower():
         return True
