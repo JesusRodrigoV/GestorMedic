@@ -9,7 +9,7 @@ from app.scripts.seeds import init_db
 
 from app.api.v1 import (
     auth, 
-    #users, 
+    users,
     clinics, specialties, audit
 )
 from app.api.v1 import (
@@ -55,7 +55,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Autenticación y Seguridad"])
-#app.include_router(users.router, prefix="/api/v1/users", tags=["Gestión de Usuarios"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["Gestión de Usuarios"])
 app.include_router(clinics.router, prefix="/api/v1/clinics", tags=["Gestión de Clínicas (Tenants)"])
 app.include_router(specialties.router, prefix="/api/v1/specialties", tags=["Catálogo de Especialidades"])
 app.include_router(audit.router, prefix="/api/v1/audit", tags=["Auditoría de Sistema"])

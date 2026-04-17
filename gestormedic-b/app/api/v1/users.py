@@ -32,9 +32,11 @@ async def update_user_me(
 @router.get("/", response_model=UserListResponse)
 async def list_users(
     db: AsyncSession = Depends(get_db),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
-    search: str = Query(None),
+    page: int = Query(1, ge=1),
+    pageSize: int = Query(20, ge=1, le=100),
+    sortBy: str = Query("created_at"),
+    sortType: str = Query("desc", pattern="^(asc|desc)$"),
+    filter: str = Query(None),
     current_user: User = Depends(require_admin_clinica)
 ):
     stmt = select(User)
@@ -42,17 +44,30 @@ async def list_users(
     if current_user.role.name.upper() != UserRole.SUPERADMIN.value:
         stmt = stmt.where(User.clinic_id == current_user.clinic_id)
     
-    if search:
-        search_filter = f"%{search}%"
+    if filter:
+        search_filter = f"%{filter}%"
         stmt = stmt.where(
             or_(User.email.ilike(search_filter), User.username.ilike(search_filter))
         )
+
+    sort_column_map = {
+        "created_at": User.created_at,
+        "email": User.email,
+        "username": User.username,
+        "is_active": User.is_active,
+    }
+    order_column = sort_column_map.get(sortBy, User.created_at)
+    if sortType.lower() == "asc":
+        stmt = stmt.order_by(order_column.asc())
+    else:
+        stmt = stmt.order_by(order_column.desc())
         
     count_stmt = select(func.count()).select_from(stmt.subquery())
     total_result = await db.execute(count_stmt)
     total_users = total_result.scalar() or 0
 
-    stmt = stmt.offset(skip).limit(limit)
+    skip = (page - 1) * pageSize
+    stmt = stmt.offset(skip).limit(pageSize)
     result = await db.execute(stmt)
     users = result.scalars().all()
     
@@ -60,9 +75,11 @@ async def list_users(
         "items": users,
         "metadata": {
             "total": total_users,
+            "page": page,
+            "pageSize": pageSize,
             "skip": skip,
-            "limit": limit,
-            "total_pages": (total_users + limit - 1) // limit
+            "limit": pageSize,
+            "total_pages": (total_users + pageSize - 1) // pageSize
         }
     }
 

@@ -11,7 +11,8 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       allowedRoles: [UserRole.PACIENTE],
       menu: [
         { label: 'Mi Resumen', icon: 'bx-pulse', route: '/portal/resumen' },
-        { label: 'Mis Citas', icon: 'bx-calendar', route: '/portal/citas' },
+        { label: 'Citas - Agendar', icon: 'bx-calendar-plus', route: '/portal/citas/agendar' },
+        { label: 'Citas - Historial', icon: 'bx-calendar-check', route: '/portal/citas/historial' },
         { label: 'Mi Historial', icon: 'bx-book-heart', route: '/portal/historial' },
         { label: 'Documentos', icon: 'bx-file', route: '/portal/documentos' },
         { label: 'Recetas', icon: 'bx-capsule', route: '/portal/recetas' },
@@ -30,6 +31,15 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       },
       {
         path: 'citas',
+        redirectTo: 'citas/agendar',
+        pathMatch: 'full',
+      },
+      {
+        path: 'citas/agendar',
+        loadComponent: () => import('./appointment-booking/appointment-booking'),
+      },
+      {
+        path: 'citas/historial',
         loadComponent: () => import('./appointment-history/appointment-history'),
       },
       {

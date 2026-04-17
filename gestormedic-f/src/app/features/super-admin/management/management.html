@@ -1,1 +1,50 @@
-<p>management works!</p>
+<main class="management-page">
+	<header>
+		<div>
+			<p class="eyebrow">Super Admin</p>
+			<h2>Usuarios del sistema</h2>
+			<p>Paginación server-side con orden y filtro.</p>
+		</div>
+		<input
+			type="text"
+			placeholder="Filtrar por usuario o correo"
+			[ngModel]="filter()"
+			(ngModelChange)="onFilterChange($event)"
+		/>
+	</header>
+
+	<section class="table-wrap">
+		<table>
+			<thead>
+				<tr>
+					<th (click)="onSortChange('username')">Usuario</th>
+					<th (click)="onSortChange('email')">Correo</th>
+					<th>Rol</th>
+					<th (click)="onSortChange('is_active')">Estado</th>
+					<th (click)="onSortChange('created_at')">Creado</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (item of rows(); track item.id) {
+					<tr>
+						<td>{{ item.username }}</td>
+						<td>{{ item.email }}</td>
+						<td>{{ item.role_id }}</td>
+						<td>{{ item.is_active ? 'Activo' : 'Inactivo' }}</td>
+						<td>{{ item.created_at | date: 'short' }}</td>
+					</tr>
+				} @empty {
+					<tr>
+						<td colspan="5" class="empty">No se encontraron usuarios.</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+
+	<footer>
+		<button type="button" (click)="prevPage()">Anterior</button>
+		<span>Pagina {{ page() }} · Total {{ total() }}</span>
+		<button type="button" (click)="nextPage()">Siguiente</button>
+	</footer>
+</main>
