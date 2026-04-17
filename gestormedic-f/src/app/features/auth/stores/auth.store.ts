@@ -13,8 +13,8 @@ import {
   ResetPasswordData,
   User,
 } from '@core/models/auth.model';
-import { Auth } from '@core/services/auth';
-import { TwoFactor } from '@core/services/two-factor';
+import { Auth } from '@core/services/auth-service';
+import { TwoFactor } from '@core/services/two-factor-service';
 import { NotificationService } from '@core/services/notification';
 
 function getInitialStatus(): 'loading' | 'unauthenticated' {

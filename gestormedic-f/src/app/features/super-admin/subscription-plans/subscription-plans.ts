@@ -7,4 +7,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './subscription-plans.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SubscriptionPlans {}
+export default class SubscriptionPlans {}

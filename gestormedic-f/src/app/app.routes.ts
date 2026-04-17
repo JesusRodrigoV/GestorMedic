@@ -12,7 +12,7 @@ export const routes: Routes = [
   {
     path: 'app',
     loadChildren: () =>
-      import('./features/medical-admin/medical-admin.routes').then((m) => m.MEDICAL_ADMIN_ROUTES),
+      import('./features/medical-admin/medical-admin.routes').then((m) => m.CLINIC_WORKSPACE_ROUTES),
   },
   {
     path: 'portal',

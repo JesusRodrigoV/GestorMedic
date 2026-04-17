@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { TextareaModule } from 'primeng/textarea';
 import { AuthStore } from '@features/auth/stores/auth.store';
-import { Auth } from '@core/services/auth';
+import { Auth } from '@core/services/auth-service';
 import { NotificationService } from '@core/services/notification';
 import { environment } from '@env/environment';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';

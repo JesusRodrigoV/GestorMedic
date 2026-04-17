@@ -6,7 +6,6 @@ import {
   LoginCredentials,
   RegisterData,
   ResetPasswordData,
-  TwoFAInfo,
   UserSession,
   GoogleLoginData,
   ForgotPasswordData,

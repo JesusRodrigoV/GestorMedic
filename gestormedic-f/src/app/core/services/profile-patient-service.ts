@@ -5,9 +5,9 @@ import { environment } from '@env/environment';
 import { PatientProfile, UpdatePatientProfilePayload } from '@core/models/patient-profile.model';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class PatientProfileService {
+export class ProfilePatientService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/profiles/patients`;
 

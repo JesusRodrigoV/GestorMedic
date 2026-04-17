@@ -57,6 +57,27 @@ async def create_clinic(clinic_in: ClinicCreate, db: AsyncSession = Depends(get_
     
     return await crud_clinic.create_clinic(db=db, clinic_in=clinic_in)
 
+@router.post("/onboarding", response_model=ClinicOut, status_code=status.HTTP_201_CREATED)
+async def onboarding_clinic(
+    clinic_in: ClinicCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    existing_nit = await crud_clinic.get_clinic_by_nit(db=db, nit_ruc=clinic_in.nit_ruc)
+    if existing_nit:
+        raise HTTPException(status_code=400, detail="El NIT/RUC ya se encuentra registrado")
+        
+    new_clinic = await crud_clinic.create_clinic(db=db, clinic_in=clinic_in)
+    
+    current_user.clinic_id = new_clinic.id
+    current_user.role_id = 2
+    
+    db.add(current_user)
+    await db.commit()
+    await db.refresh(current_user)
+    
+    return new_clinic
+
 
 @router.put("/{clinic_id}", response_model=ClinicOut)
 async def update_clinic(
