@@ -1,0 +1,90 @@
+<main class="rooms-page">
+  <header>
+    <div>
+      <p class="eyebrow">Administrador</p>
+      <h2>Consultorios</h2>
+      <p>Controla que doctores y especialidades pueden operar por consultorio y horario.</p>
+    </div>
+
+    <label>
+      Consultorio
+      <select [ngModel]="selectedRoomId() || 0" (ngModelChange)="onRoomSelect(+$event)">
+        @for (room of rooms(); track room.id) {
+          <option [value]="room.id">{{ room.name }}</option>
+        }
+      </select>
+    </label>
+  </header>
+
+  <section class="grid">
+    <article class="panel">
+      <h3>Permisos de doctores - {{ selectedRoomName() }}</h3>
+
+      <div class="form-grid">
+        <label>
+          Doctor
+          <select [ngModel]="selectedDoctorId()" (ngModelChange)="selectedDoctorId.set(+$event)">
+            @for (doctor of doctors(); track doctor.doctor_id) {
+              <option [value]="doctor.doctor_id">{{ doctor.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Dia
+          <select [ngModel]="selectedWeekday()" (ngModelChange)="selectedWeekday.set(+$event)">
+            @for (day of weekDays; track day; let index = $index) {
+              <option [value]="index">{{ day }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Inicio
+          <input type="time" [ngModel]="startTime()" (ngModelChange)="startTime.set($event)" />
+        </label>
+
+        <label>
+          Fin
+          <input type="time" [ngModel]="endTime()" (ngModelChange)="endTime.set($event)" />
+        </label>
+      </div>
+
+      <button type="button" (click)="addDoctorPermission()">Guardar permiso doctor</button>
+
+      <ul>
+        @for (item of roomDoctorPermissions(); track item.id) {
+          <li>
+            <strong>{{ doctorName(item.doctor_id) }}</strong>
+            - {{ weekDays[item.weekday] }} - {{ item.start_time }} a {{ item.end_time }}
+          </li>
+        } @empty {
+          <li>Sin permisos de doctor asignados.</li>
+        }
+      </ul>
+    </article>
+
+    <article class="panel">
+      <h3>Especialidades habilitadas</h3>
+
+      <label>
+        Especialidad
+        <select [ngModel]="selectedSpecialtyId()" (ngModelChange)="selectedSpecialtyId.set(+$event)">
+          @for (item of specialties(); track item.id) {
+            <option [value]="item.id">{{ item.name }}</option>
+          }
+        </select>
+      </label>
+
+      <button type="button" (click)="addSpecialtyPermission()">Guardar especialidad</button>
+
+      <ul>
+        @for (item of roomSpecialtyPermissions(); track item.id) {
+          <li>{{ specialtyName(item.specialty_id) }}</li>
+        } @empty {
+          <li>Sin especialidades habilitadas.</li>
+        }
+      </ul>
+    </article>
+  </section>
+</main>

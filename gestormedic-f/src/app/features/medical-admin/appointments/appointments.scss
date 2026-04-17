@@ -1,0 +1,76 @@
+@use '../../../shared/styles/design-tokens.scss' as *;
+
+.doctor-appointments-page {
+  display: grid;
+  gap: 1rem;
+
+  header {
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-xl;
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+
+    .eyebrow {
+      margin: 0;
+      color: $color-primary;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    h2 {
+      margin: 0.25rem 0;
+    }
+
+    p {
+      margin: 0;
+      color: $color-text-secondary;
+    }
+
+    label {
+      display: grid;
+      gap: 0.2rem;
+      font-size: 0.85rem;
+      color: $color-text-secondary;
+
+      input {
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-md;
+        padding: 0.42rem;
+        font: inherit;
+      }
+    }
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.8rem;
+
+  article {
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-lg;
+    background: white;
+    padding: 0.85rem;
+
+    h3 {
+      margin: 0;
+      color: $color-text-primary;
+    }
+
+    p {
+      margin: 0.35rem 0 0;
+      color: $color-text-secondary;
+    }
+  }
+
+  .empty {
+    border-style: dashed;
+  }
+}

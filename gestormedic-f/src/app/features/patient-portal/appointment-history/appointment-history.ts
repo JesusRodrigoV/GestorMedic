@@ -1,64 +1,50 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { AppointmentItem } from '@core/models/appointment.model';
+import { AppointmentsService } from '@core/services/appointments';
+import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'app-appointment-history',
-  imports: [RouterLink],
+  imports: [FormsModule],
   templateUrl: './appointment-history.html',
   styleUrl: './appointment-history.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AppointmentHistory {
-  readonly nextAppointments = signal([
-    {
-      date: '14 Abr 2026 - 10:30',
-      doctor: 'Dra. Camila Flores',
-      type: 'Cardiologia',
-      mode: 'Videollamada',
-      status: 'Confirmada',
-    },
-    {
-      date: '20 Abr 2026 - 17:00',
-      doctor: 'Dr. Daniel Perez',
-      type: 'Medicina interna',
-      mode: 'Presencial',
-      status: 'Pendiente de pago',
-    },
-  ]);
+  private appointmentsService = inject(AppointmentsService);
+  private notification = inject(NotificationService);
 
-  readonly history = signal([
-    {
-      date: '04 Abr 2026 - 09:00',
-      doctor: 'Dr. Alberto Vargas',
-      type: 'Traumatologia',
-      result: 'Alta con fisioterapia',
-    },
-    {
-      date: '18 Mar 2026 - 16:30',
-      doctor: 'Dra. Carla Rojas',
-      type: 'Neumologia',
-      result: 'Control en 6 semanas',
-    },
-  ]);
+  readonly status = signal('');
+  readonly appointments = signal<AppointmentItem[]>([]);
 
-  readonly records = signal([
-    'Resumen clinico de ultima consulta',
-    'Resultado de laboratorio - perfil lipidico',
-    'Indicaciones de seguimiento en casa',
-  ]);
+  constructor() {
+    this.load();
+  }
 
-  readonly actionCards = signal([
-    {
-      title: 'Reservar nueva cita',
-      detail: 'Selecciona medico, especialidad y horario disponible.',
-    },
-    {
-      title: 'Unirme por videollamada',
-      detail: 'Accede a tu consulta virtual desde la web o movil.',
-    },
-    {
-      title: 'Programar recordatorios',
-      detail: 'Recibe alertas por WhatsApp, SMS o email.',
-    },
-  ]);
+  onStatusChange(value: string): void {
+    this.status.set(value);
+    this.load();
+  }
+
+  formatWindow(item: AppointmentItem): string {
+    const startsAt = new Date(item.starts_at);
+    const endsAt = new Date(item.ends_at);
+    return `${startsAt.toLocaleDateString()} ${startsAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endsAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
+
+  private load(): void {
+    const selected = this.status().trim();
+    this.appointmentsService.getMyAppointments(selected || undefined).subscribe({
+      next: (rows) => this.appointments.set(rows),
+      error: () => {
+        this.notification
+          .builder()
+          .warn()
+          .summary('No se pudo cargar el historial')
+          .detail('Intenta nuevamente en unos segundos.')
+          .show();
+      },
+    });
+  }
 }

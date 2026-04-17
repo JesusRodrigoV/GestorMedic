@@ -1,0 +1,314 @@
+@use '../../../shared/styles/design-tokens.scss' as *;
+
+.appointments-page {
+  display: grid;
+  gap: 1rem;
+  min-height: calc(100vh - 120px);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  background: linear-gradient(135deg, rgba(26, 60, 90, 0.08), rgba(74, 144, 226, 0.09));
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-xl;
+  padding: 1rem 1.2rem;
+
+  .eyebrow {
+    margin: 0;
+    color: $color-primary;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  h2 {
+    margin: 0.3rem 0;
+  }
+
+  p {
+    margin: 0;
+    color: $color-text-secondary;
+  }
+
+  .actions {
+    display: inline-flex;
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-full;
+    overflow: hidden;
+
+    button {
+      border: 0;
+      background: transparent;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+
+    .active {
+      background: var(--p-yale-500);
+      color: white;
+    }
+  }
+}
+
+.layout-shell {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 260px);
+}
+
+.main-list {
+  width: calc(100% - (var(--detail-width, 0) * 1%));
+  overflow-y: auto;
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-xl;
+  padding: 1rem;
+  background: white;
+}
+
+.search-row {
+  input {
+    width: 100%;
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-lg;
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+  }
+}
+
+.doctor-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.doctor-card {
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-lg;
+  padding: 0.85rem;
+  cursor: pointer;
+  transition: transform $transition-base ease, box-shadow $transition-base ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-medium;
+  }
+
+  h3 {
+    margin: 0;
+  }
+
+  .meta {
+    margin: 0.2rem 0 0;
+    color: $color-text-secondary;
+    font-size: 0.9rem;
+  }
+
+  .bio {
+    margin: 0.5rem 0;
+    color: $color-text-secondary;
+    min-height: 42px;
+  }
+
+  .chips {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+
+    span {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: $border-radius-full;
+      background: rgba(74, 144, 226, 0.12);
+      color: var(--p-yale-700);
+    }
+  }
+}
+
+.empty-state {
+  border: 1px dashed $color-border-default;
+  border-radius: $border-radius-lg;
+  padding: 1rem;
+  color: $color-text-secondary;
+}
+
+.splitter {
+  width: 8px;
+  cursor: col-resize;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(74, 144, 226, 0.15), rgba(26, 60, 90, 0.18));
+  margin: 0 6px;
+}
+
+.detail-pane {
+  width: calc(var(--detail-width, 36) * 1%);
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-xl;
+  padding: 1rem;
+  background: white;
+  overflow-y: auto;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h3 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0.25rem 0 0;
+      color: $color-text-secondary;
+    }
+
+    button {
+      border: 1px solid $color-border-default;
+      background: white;
+      border-radius: $border-radius-full;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.slots-cards,
+.slots-calendar {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.slot-card {
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-md;
+  padding: 0.65rem;
+
+  strong,
+  p {
+    display: block;
+    margin: 0;
+  }
+
+  p {
+    margin-top: 0.25rem;
+    color: $color-text-secondary;
+  }
+
+  button {
+    margin-top: 0.5rem;
+    border: 0;
+    background: var(--p-energy-500);
+    color: white;
+    border-radius: $border-radius-full;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+  }
+}
+
+.slots-calendar .grid {
+  display: grid;
+  gap: 0.45rem;
+
+  button {
+    border: 1px solid $color-border-default;
+    background: white;
+    border-radius: $border-radius-md;
+    text-align: left;
+    padding: 0.5rem;
+    cursor: pointer;
+
+    &.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 998;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 90vw);
+  z-index: 999;
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-xl;
+  background: white;
+  box-shadow: $shadow-large;
+  padding: 1rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  p {
+    color: $color-text-secondary;
+  }
+
+  label {
+    display: grid;
+    gap: 0.3rem;
+    font-weight: 600;
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      border: 1px solid $color-border-default;
+      border-radius: $border-radius-md;
+      padding: 0.55rem;
+      font: inherit;
+    }
+  }
+
+  footer {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: end;
+    gap: 0.5rem;
+
+    button {
+      border: 0;
+      border-radius: $border-radius-full;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+    }
+
+    .ghost {
+      border: 1px solid $color-border-default;
+      background: white;
+    }
+
+    .primary {
+      background: var(--p-yale-500);
+      color: white;
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .layout-shell {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .main-list,
+  .detail-pane {
+    width: 100%;
+  }
+
+  .splitter {
+    display: none;
+  }
+}

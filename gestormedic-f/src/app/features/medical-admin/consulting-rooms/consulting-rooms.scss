@@ -1,0 +1,106 @@
+@use '../../../shared/styles/design-tokens.scss' as *;
+
+.rooms-page {
+  display: grid;
+  gap: 1rem;
+
+  header {
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-xl;
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+
+    .eyebrow {
+      margin: 0;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: $color-primary;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 0.25rem 0;
+    }
+
+    p {
+      margin: 0;
+      color: $color-text-secondary;
+    }
+
+    label {
+      display: grid;
+      gap: 0.25rem;
+      font-size: 0.85rem;
+      color: $color-text-secondary;
+
+      select {
+        border: 1px solid $color-border-default;
+        border-radius: $border-radius-md;
+        padding: 0.42rem;
+        font: inherit;
+      }
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.panel {
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-lg;
+  background: white;
+  padding: 0.9rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  label {
+    margin-top: 0.6rem;
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: $color-text-secondary;
+
+    input,
+    select {
+      border: 1px solid $color-border-default;
+      border-radius: $border-radius-md;
+      padding: 0.42rem;
+      font: inherit;
+    }
+  }
+
+  button {
+    margin-top: 0.7rem;
+    border: 0;
+    border-radius: $border-radius-full;
+    background: var(--p-yale-500);
+    color: white;
+    padding: 0.42rem 0.9rem;
+    cursor: pointer;
+  }
+
+  ul {
+    margin: 0.8rem 0 0;
+    padding-left: 1rem;
+    color: $color-text-secondary;
+    display: grid;
+    gap: 0.35rem;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}

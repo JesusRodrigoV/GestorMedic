@@ -95,6 +95,21 @@ services:
         condition: service_started
     networks:
       - gm-network
+
+  gm-citas:
+    build:
+      context: ./gestormedic-citas
+      dockerfile: Dockerfile
+    env_file:
+      - ./gestormedic-citas/.env_do
+    ports:
+      - "8002:8000"
+    depends_on:
+      gm-backend-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
   gm-frontend:
     build: 
       context: ./gestormedic-f 

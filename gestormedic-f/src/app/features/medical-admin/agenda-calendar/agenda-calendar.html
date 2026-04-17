@@ -1,0 +1,86 @@
+<main class="calendar-page">
+  <header>
+    <div>
+      <p class="eyebrow">Agenda</p>
+      <h2>Calendario</h2>
+      <p>Visualiza por dia, semana o mes y edita un horario puntual.</p>
+    </div>
+    <div class="view-switch">
+      <button type="button" [class.active]="view() === 'dia'" (click)="setView('dia')">Dia</button>
+      <button type="button" [class.active]="view() === 'semana'" (click)="setView('semana')">Semana</button>
+      <button type="button" [class.active]="view() === 'mes'" (click)="setView('mes')">Mes</button>
+    </div>
+  </header>
+
+  <section class="calendar-grid">
+    @for (bucket of slotsByDay(); track bucket.day) {
+      <article class="day-card">
+        <h3>{{ bucket.day }}</h3>
+        <div class="slots">
+          @for (slot of bucket.slots; track slot.starts_at) {
+            <button
+              type="button"
+              [style.background]="colorBySpecialty(slot.specialty_name)"
+              [class.disabled]="!slot.is_available"
+              (click)="openSlot(slot)"
+            >
+              <strong>{{ formatSlot(slot) }}</strong>
+              <span>{{ slot.specialty_name }}</span>
+              <small>{{ slot.room_name }}</small>
+            </button>
+          }
+        </div>
+      </article>
+    }
+  </section>
+</main>
+
+@if (modalOpen() && selectedSlot()) {
+  <div class="overlay" (click)="closeModal()"></div>
+  <section class="modal" role="dialog" aria-modal="true">
+    <h3>Editar horario puntual</h3>
+
+    <label>
+      Fin de cita
+      <input type="datetime-local" [ngModel]="editEnd()" (ngModelChange)="editEnd.set($event)" />
+    </label>
+
+    <label>
+      Especialidad
+      <select [ngModel]="editSpecialtyId()" (ngModelChange)="editSpecialtyId.set(+$event)">
+        @for (item of specialties(); track item.id) {
+          <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Consultorio
+      <select [ngModel]="editRoomId()" (ngModelChange)="editRoomId.set(+$event)">
+        @for (item of rooms(); track item.id) {
+          <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Precio
+      <input type="number" [ngModel]="editPrice()" (ngModelChange)="editPrice.set(+$event)" />
+    </label>
+
+    <label>
+      Descripcion adicional
+      <textarea [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)"></textarea>
+    </label>
+
+    <label class="checkbox">
+      <input type="checkbox" [ngModel]="editBlocked()" (ngModelChange)="editBlocked.set(!!$event)" />
+      Bloquear este horario para reservas
+    </label>
+
+    <footer>
+      <button type="button" class="ghost" (click)="closeModal()">Cancelar</button>
+      <button type="button" class="primary" (click)="saveSlot()">Guardar cambios</button>
+    </footer>
+  </section>
+}

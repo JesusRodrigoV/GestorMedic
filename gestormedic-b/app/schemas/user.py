@@ -86,6 +86,8 @@ class UserSettingsUpdate(BaseModel):
 
 class UserPaginationMetadata(BaseModel):
     total: int
+    page: int
+    pageSize: int
     skip: int
     limit: int
     total_pages: int
