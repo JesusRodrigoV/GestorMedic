@@ -1,45 +1,40 @@
 <main class="gm-onboarding-layout">
   <div class="onboarding-container">
-    <!-- Header -->
     <header class="onboarding-header">
-      <div class="brand-logo" style="background: transparent; border: none; box-shadow: none;">
+      <div class="brand-logo" style="background: transparent; border: none; box-shadow: none">
         <img ngSrc="logos/logo.png" alt="GestorMedic Logo" width="64" height="64" priority />
       </div>
       <h1 class="title">Registro de Profesional Médico</h1>
-      <p class="subtitle">
-        Complete su perfil para comenzar a gestionar pacientes y agendar citas en línea.
-      </p>
+      <p class="subtitle">Complete su perfil base para habilitar su consultorio virtual.</p>
     </header>
 
     <form [formGroup]="registerForm" (ngSubmit)="executeRegistrationFlow()" class="onboarding-form">
-      <!-- SECCIÓN 1: Datos Personales -->
       <fieldset class="form-section">
         <legend><i class="bx bx-user-pin"></i> Datos Personales</legend>
 
         <div class="field-row">
           <div class="field-group">
-            <label for="full_name">Nombre Completo</label>
+            <label for="firstName">Nombre(s)</label>
             <div class="input-container">
               <i class="bx bx-user"></i>
               <input
                 pInputText
-                id="full_name"
-                formControlName="full_name"
-                placeholder="Ej. Dr. Carlos Méndez López"
+                id="firstName"
+                formControlName="firstName"
+                placeholder="Ej. Carlos"
               />
             </div>
-            @let nameControl = registerForm.get('full_name');
-            @if (nameControl?.invalid && nameControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                @if (nameControl?.errors?.['required']) {
-                  El nombre es requerido
-                }
-                @if (nameControl?.errors?.['minlength']) {
-                  Mínimo 3 caracteres
-                }
-              </small>
-            }
+          </div>
+          <div class="field-group">
+            <label for="lastName">Apellidos</label>
+            <div class="input-container">
+              <input
+                pInputText
+                id="lastName"
+                formControlName="lastName"
+                placeholder="Ej. Méndez López"
+              />
+            </div>
           </div>
         </div>
 
@@ -56,13 +51,6 @@
                 placeholder="doctor@clinica.com"
               />
             </div>
-            @let emailControl = registerForm.get('email');
-            @if (emailControl?.invalid && emailControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Ingrese un correo válido
-              </small>
-            }
           </div>
 
           <div class="field-group">
@@ -78,44 +66,16 @@
                 styleClass="gm-password-full"
               />
             </div>
-            @let passwControl = registerForm.get('password');
-            @if (passwControl?.invalid && passwControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Mínimo 8 caracteres
-              </small>
-            }
           </div>
         </div>
       </fieldset>
 
-      <!-- SECCIÓN 2: Datos Profesionales -->
       <fieldset class="form-section">
-        <legend><i class="bx bx-plus-medical"></i> Datos Profesionales</legend>
+        <legend><i class="bx bx-plus-medical"></i> Acreditación Profesional</legend>
 
         <div class="field-row">
           <div class="field-group">
-            <label for="specialties">Especialidad Médica</label>
-            <div class="input-container">
-              <i class="bx bx-stethoscope"></i>
-              <input
-                pInputText
-                id="specialties"
-                formControlName="specialties"
-                placeholder="Ej. Cardiología, Pediatría"
-              />
-            </div>
-            @let specControl = registerForm.get('specialties');
-            @if (specControl?.invalid && specControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                La especialidad es requerida
-              </small>
-            }
-          </div>
-
-          <div class="field-group">
-            <label for="professional_license">Número de Cédula Profesional</label>
+            <label for="professional_license">Cédula Profesional / Matrícula</label>
             <div class="input-container">
               <i class="bx bx-id-card"></i>
               <input
@@ -125,35 +85,6 @@
                 placeholder="Ej. PROF-001234"
               />
             </div>
-            @let licenseControl = registerForm.get('professional_license');
-            @if (licenseControl?.invalid && licenseControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Formato inválido (5-20 caracteres, mayúsculas y guiones)
-              </small>
-            }
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field-group">
-            <label for="phone">Teléfono de Contacto</label>
-            <div class="input-container">
-              <i class="bx bx-phone"></i>
-              <input
-                pInputText
-                id="phone"
-                formControlName="phone"
-                placeholder="Ej. +591 22445566"
-              />
-            </div>
-            @let phoneControl = registerForm.get('phone');
-            @if (phoneControl?.invalid && phoneControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Teléfono inválido
-              </small>
-            }
           </div>
 
           <div class="field-group">
@@ -170,42 +101,27 @@
                 placeholder="Ej. 8"
               />
             </div>
-            @let expControl = registerForm.get('experience_years');
-            @if (expControl?.invalid && expControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Ingrese un valor entre 0 y 70
-              </small>
-            }
           </div>
         </div>
 
         <div class="field-row">
           <div class="field-group">
-            <label for="university">Universidad / Instituto de Formación</label>
+            <label for="phone">Teléfono de Contacto</label>
             <div class="input-container">
-              <i class="bx bx-building-smiles"></i>
+              <i class="bx bx-phone"></i>
               <input
                 pInputText
-                id="university"
-                formControlName="university"
-                placeholder="Ej. Universidad Estatal de Medicina"
+                id="phone"
+                formControlName="phone"
+                placeholder="Ej. +591 22445566"
               />
             </div>
-            @let univControl = registerForm.get('university');
-            @if (univControl?.invalid && univControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                Mínimo 3 caracteres
-              </small>
-            }
           </div>
         </div>
       </fieldset>
 
-      <!-- SECCIÓN 3: Biografía Profesional -->
       <fieldset class="form-section">
-        <legend><i class="bx bx-edit"></i> Biografía Profesional</legend>
+        <legend><i class="bx bx-edit"></i> Biografía</legend>
 
         <div class="field-row">
           <div class="field-group full-width">
@@ -216,34 +132,14 @@
                 pInputTextarea
                 id="bio"
                 formControlName="bio"
-                placeholder="Cuéntenos sobre su experiencia, especialización, y lo que hace usted diferente..."
-                rows="5"
-                [autoResize]="true"
+                placeholder="Cuéntenos sobre su experiencia y enfoque médico..."
+                rows="4"
               ></textarea>
             </div>
-            @let bioControl = registerForm.get('bio');
-            @if (bioControl?.invalid && bioControl?.touched) {
-              <small class="field-error">
-                <i class="bx bx-info-circle"></i>
-                @if (bioControl?.errors?.['required']) {
-                  La biografía es requerida
-                }
-                @if (bioControl?.errors?.['minlength']) {
-                  Mínimo 10 caracteres
-                }
-                @if (bioControl?.errors?.['maxlength']) {
-                  Máximo 500 caracteres
-                }
-              </small>
-            }
-            <small class="char-counter">
-              {{ registerForm.get('bio')?.value?.length || 0 }} / 500 caracteres
-            </small>
           </div>
         </div>
       </fieldset>
 
-      <!-- Submit Button -->
       <div class="form-actions">
         <gm-rounded-button
           label="Crear Perfil Profesional"
@@ -251,24 +147,9 @@
           [disabled]="registerForm.invalid || isProcessing()"
           severity="primary"
           (onClick)="executeRegistrationFlow()"
+          type="submit"
         />
       </div>
     </form>
-
-    <!-- Footer -->
-    <footer class="onboarding-footer" style="display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; margin-top: 1.5rem;">
-      <p style="margin: 0;">¿Ya tiene una cuenta? <a routerLink="/auth/login" style="color: var(--p-primary-color);">Iniciar sesión</a></p>
-      <div class="auth-links" style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
-        <a routerLink="/auth/forgot-password" style="color: var(--p-text-muted-color);">¿Olvidó su contraseña?</a>
-        <span style="color: #cbd5e1;">|</span>
-        <a routerLink="/auth/register" style="color: var(--p-primary-color); display: flex; align-items: center; gap: 0.25rem;">
-          <i class="bx bx-arrow-back"></i> Volver a selección
-        </a>
-      </div>
-      <p class="footer-note" style="margin-top: 1rem;">
-        Al registrarse, acepta nuestros <a href="#">términos de servicio</a> y
-        <a href="#">política de privacidad</a>
-      </p>
-    </footer>
   </div>
 </main>

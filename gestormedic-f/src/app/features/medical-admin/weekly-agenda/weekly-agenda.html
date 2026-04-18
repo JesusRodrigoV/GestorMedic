@@ -1,0 +1,81 @@
+<main class="weekly-page">
+  <header>
+    <div>
+      <p class="eyebrow">Agenda</p>
+      <h2>Agenda semanal</h2>
+      <p>Configura bloques semanales de atencion por dia, especialidad y consultorio.</p>
+    </div>
+    <button type="button" class="save" (click)="save()">Guardar agenda</button>
+  </header>
+
+  <section class="days">
+    @for (day of weekDays; track day; let idx = $index) {
+      <button type="button" [class.active]="selectedDay() === idx" (click)="selectDay(idx)">{{ day }}</button>
+    }
+  </section>
+
+  <section class="blocks">
+    <div class="toolbar">
+      <h3>Bloques del dia</h3>
+      <button type="button" (click)="addBlock()">Agregar bloque</button>
+    </div>
+
+    @for (block of dayBlocks(selectedDay()); track $index; let i = $index) {
+      <article class="block-row">
+        <label>
+          Inicio
+          <input
+            type="time"
+            [ngModel]="block.start_time"
+            (ngModelChange)="updateBlock(i, 'start_time', $event)"
+          />
+        </label>
+
+        <label>
+          Fin
+          <input type="time" [ngModel]="block.end_time" (ngModelChange)="updateBlock(i, 'end_time', $event)" />
+        </label>
+
+        <label>
+          Duracion (min)
+          <input
+            type="number"
+            [ngModel]="block.consultation_minutes"
+            (ngModelChange)="updateBlock(i, 'consultation_minutes', +$event)"
+          />
+        </label>
+
+        <label>
+          Especialidad
+          <select [ngModel]="block.specialty_id" (ngModelChange)="updateBlock(i, 'specialty_id', +$event)">
+            @for (item of specialties(); track item.id) {
+              <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Consultorio
+          <select [ngModel]="block.room_id" (ngModelChange)="updateBlock(i, 'room_id', +$event)">
+            @for (item of rooms(); track item.id) {
+              <option [value]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Precio
+          <input
+            type="number"
+            [ngModel]="block.consultation_price || 0"
+            (ngModelChange)="updateBlock(i, 'consultation_price', +$event)"
+          />
+        </label>
+
+        <button type="button" class="remove" (click)="removeBlock(i)">Eliminar</button>
+      </article>
+    } @empty {
+      <article class="empty">No hay bloques configurados para este dia.</article>
+    }
+  </section>
+</main>

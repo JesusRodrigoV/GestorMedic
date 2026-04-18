@@ -17,7 +17,7 @@ export const authGuard: CanActivateChildFn = (childRoute, state) => {
       } else if (user.role_id === UserRole.ADMIN_CLINICA || user.role_id === UserRole.MEDICO) {
         route = '/app/dashboard';
       } else {
-        route = '/portal/appointments';
+        route = '/portal/resumen';
       }
     }
 
