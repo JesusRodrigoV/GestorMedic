@@ -43,12 +43,15 @@
       </div>
 
       <div class="form-actions">
-        <gm-rounded-button
-          label="Acceder al Sistema"
-          [loading]="authStore.isLoading()"
+        <button
+          type="submit"
+          (click)="onLogin()"
+          class="gm-input w-full"
+          style="background: var(--p-primary-500); color: white; padding: 0.75rem; border: none; border-radius: 2rem; cursor: pointer; font-weight: 600;"
           [disabled]="authStore.isLoading()"
-          severity="primary"
-        />
+        >
+          {{ authStore.isLoading() ? 'Cargando...' : 'Acceder al Sistema' }}
+        </button>
       </div>
     </form>
 

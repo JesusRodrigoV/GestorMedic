@@ -1,16 +1,17 @@
-<p-button
-      [label]="label()"
-      [icon]="icon()"
-      [severity]="severity()"
-      [loading]="loading()"
-      [disabled]="disabled() || loading()"
-      [rounded]="rounded()"
-      [outlined]="outlined()"
-      [text]="text()"
-      [size]="size()"
-      [styleClass]="styleClass()"
-      [variant]="variant()"
-      (onClick)="onClick.emit($event)"
-      pRipple
-      fluid
-    />
+<button
+  pButton
+  pRipple
+  [label]="label()"
+  [icon]="icon()"
+  [severity]="severity()"
+  [loading]="loading()"
+  [disabled]="disabled() || loading()"
+  [rounded]="rounded()"
+  [outlined]="outlined()"
+  [text]="text()"
+  [size]="size()"
+  [class]="styleClass()"
+  [type]="type()"
+  (click)="onClick.emit($event)"
+  class="w-full"
+></button>

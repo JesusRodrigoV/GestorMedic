@@ -103,17 +103,13 @@
           weakLabel="Débil"
           mediumLabel="Media"
           strongLabel="Fuerte"
-          placeholder="Mínimo 10 caracteres"
+          placeholder="Mínimo 8 caracteres"
           fluid
         >
           <ng-template #footer>
             <p-divider />
             <ul class="password-rules">
-              <li [class.valid]="!hasError('password', 'minlength')">Al menos 10 caracteres</li>
-              <li [class.valid]="!hasError('password', 'pattern')">Una mayúscula y un número</li>
-              <li [class.valid]="!hasError('password', 'pattern')">
-                Un carácter especial (@$!%*?&)
-              </li>
+              <li [class.valid]="!hasError('password', 'minlength')">Al menos 8 caracteres</li>
             </ul>
           </ng-template>
         </p-password>

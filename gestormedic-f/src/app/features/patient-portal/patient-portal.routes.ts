@@ -12,6 +12,7 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       menu: [
         { label: 'Mi Resumen', icon: 'bx-pulse', route: '/portal/resumen' },
         { label: 'Mis Citas', icon: 'bx-calendar', route: '/portal/citas' },
+        { label: 'Ranking', icon: 'bx-heart', route: '/portal/ranking' },
         { label: 'Mi Historial', icon: 'bx-book-heart', route: '/portal/historial' },
         { label: 'Documentos', icon: 'bx-file', route: '/portal/documentos' },
         { label: 'Recetas', icon: 'bx-capsule', route: '/portal/recetas' },
@@ -31,6 +32,10 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       {
         path: 'citas',
         loadComponent: () => import('./appointment-history/appointment-history'),
+      },
+      {
+        path: 'ranking',
+        loadComponent: () => import('../public/ranking').then((m) => m.default),
       },
       {
         path: 'historial',

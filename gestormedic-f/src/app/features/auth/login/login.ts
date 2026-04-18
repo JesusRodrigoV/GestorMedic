@@ -36,17 +36,23 @@ export default class Login {
   });
 
   ngOnInit(): void {
-    google.accounts.id.initialize({
-      client_id: environment.googleClientId,
-      callback: this.handleCredentialResponse.bind(this),
-    });
+    if (typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: this.handleCredentialResponse.bind(this),
+      });
+    }
   }
 
   protected onLogin(): void {
+    alert('Boton presionado!');
+    console.log('Intento de login...', this.loginForm.value);
     if (this.loginForm.invalid) {
+      console.warn('Formulario inválido:', this.loginForm.errors);
       this._notification.builder().warn().summary('Por favor, revise los campos.').show();
       return;
     }
+    console.log('Llamando a authStore.login...');
     this.authStore.login(this.loginForm.getRawValue());
   }
 

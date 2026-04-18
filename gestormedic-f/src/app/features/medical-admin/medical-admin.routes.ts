@@ -12,6 +12,7 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
       menu: [
         { label: 'Panel de Control', icon: 'bx-grid-alt', route: '/app/dashboard' },
         { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
+        { label: 'Ranking', icon: 'bx-heart', route: '/app/ranking' },
         { label: 'Agenda y Citas', icon: 'bx-calendar-event', route: '/app/appointments' },
         { label: 'Historiales Clínicos', icon: 'bx-folder-open', route: '/app/medical-records' },
         { label: 'Configuración', icon: 'bx-cog', route: '/app/settings' },
@@ -34,6 +35,10 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
       {
         path: 'patients',
         loadComponent: () => import('./patient-list/patient-list'),
+      },
+      {
+        path: 'ranking',
+        loadComponent: () => import('../public/ranking').then((m) => m.default),
       },
     ],
   },
