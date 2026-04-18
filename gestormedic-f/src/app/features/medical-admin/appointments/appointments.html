@@ -1,0 +1,30 @@
+<main class="doctor-appointments-page">
+  <header>
+    <div>
+      <p class="eyebrow">Citas</p>
+      <h2>Citas reservadas por dia</h2>
+      <p>Visualiza el detalle de cada cita reservada por pacientes.</p>
+    </div>
+    <label>
+      Fecha
+      <input type="date" [ngModel]="day()" (ngModelChange)="onDayChange($event)" />
+    </label>
+  </header>
+
+  <section class="cards">
+    @for (row of rows(); track row.id) {
+      <article>
+        <h3>{{ formatWindow(row) }}</h3>
+        <p><strong>Paciente:</strong> {{ row.patient_name }}</p>
+        <p><strong>Especialidad:</strong> {{ row.specialty_name }}</p>
+        <p><strong>Consultorio:</strong> {{ row.room_name }}</p>
+        <p><strong>Estado:</strong> {{ row.status }}</p>
+        @if (row.extra_notes) {
+          <p><strong>Notas:</strong> {{ row.extra_notes }}</p>
+        }
+      </article>
+    } @empty {
+      <article class="empty">No hay citas reservadas para esta fecha.</article>
+    }
+  </section>
+</main>

@@ -13,6 +13,7 @@ import { ActivatedRoute, Router, NavigationEnd, RouterOutlet } from '@angular/ro
 })
 export default class AdminLayout {
   private route = inject(ActivatedRoute);
+  private authStore = inject(AuthStore);
 
   isSidebarCollapsed = signal(false);
   menuItems = signal<MenuItem[]>(this.findMenuItems());

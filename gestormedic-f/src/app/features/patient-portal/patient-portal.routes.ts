@@ -31,6 +31,15 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       },
       {
         path: 'citas',
+        redirectTo: 'citas/agendar',
+        pathMatch: 'full',
+      },
+      {
+        path: 'citas/agendar',
+        loadComponent: () => import('./appointment-booking/appointment-booking'),
+      },
+      {
+        path: 'citas/historial',
         loadComponent: () => import('./appointment-history/appointment-history'),
       },
       {

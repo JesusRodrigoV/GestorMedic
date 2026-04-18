@@ -1,0 +1,73 @@
+:host {
+  display: block;
+}
+
+.profile-card {
+  background: var(--p-surface-0);
+  border-radius: 8px;
+  border: 1px solid var(--p-surface-200);
+  padding: 1.5rem;
+}
+
+.card-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--p-surface-200);
+  padding-bottom: 1rem;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: var(--p-surface-900);
+  }
+  
+  p {
+    margin: 0;
+    color: var(--p-text-muted-color);
+    font-size: 0.9rem;
+  }
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--p-primary-color);
+    font-weight: 600;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 600;
+    color: var(--p-slate-700);
+    font-size: 0.85rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--p-surface-200);
+}

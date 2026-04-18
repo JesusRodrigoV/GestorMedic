@@ -1,0 +1,179 @@
+@use '../../../shared/styles/design-tokens.scss' as *;
+
+.calendar-page {
+  display: grid;
+  gap: 1rem;
+
+  header {
+    border: 1px solid $color-border-default;
+    border-radius: $border-radius-xl;
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+
+    .eyebrow {
+      margin: 0;
+      font-size: 0.72rem;
+      color: $color-primary;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 0.25rem 0;
+    }
+
+    p {
+      margin: 0;
+      color: $color-text-secondary;
+    }
+  }
+}
+
+.view-switch {
+  display: inline-flex;
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-full;
+  overflow: hidden;
+
+  button {
+    border: 0;
+    background: transparent;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+
+    &.active {
+      background: var(--p-yale-500);
+      color: white;
+    }
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.day-card {
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-lg;
+  background: white;
+  padding: 0.8rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.slots {
+  margin-top: 0.7rem;
+  display: grid;
+  gap: 0.5rem;
+
+  button {
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: $border-radius-md;
+    text-align: left;
+    padding: 0.55rem;
+    cursor: pointer;
+
+    strong,
+    span,
+    small {
+      display: block;
+    }
+
+    span,
+    small {
+      color: #334155;
+    }
+
+    &.disabled {
+      opacity: 0.6;
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 998;
+}
+
+.modal {
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 90vw);
+  border: 1px solid $color-border-default;
+  border-radius: $border-radius-xl;
+  background: white;
+  padding: 1rem;
+  display: grid;
+  gap: 0.55rem;
+
+  h3 {
+    margin: 0 0 0.2rem;
+  }
+
+  label {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: $color-text-secondary;
+
+    input,
+    select,
+    textarea {
+      border: 1px solid $color-border-default;
+      border-radius: $border-radius-md;
+      padding: 0.45rem;
+      font: inherit;
+      color: $color-text-primary;
+      background: white;
+    }
+
+    textarea {
+      min-height: 64px;
+      resize: vertical;
+    }
+  }
+
+  .checkbox {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  footer {
+    display: flex;
+    justify-content: end;
+    gap: 0.5rem;
+
+    button {
+      border: 0;
+      border-radius: $border-radius-full;
+      padding: 0.4rem 0.85rem;
+      cursor: pointer;
+    }
+
+    .ghost {
+      border: 1px solid $color-border-default;
+      background: white;
+    }
+
+    .primary {
+      background: var(--p-yale-500);
+      color: white;
+    }
+  }
+}

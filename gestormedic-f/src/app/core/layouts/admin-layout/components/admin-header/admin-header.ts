@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
 import { Avatar } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { NotificationService } from '@core/services/notification';
@@ -26,7 +19,6 @@ import { UserRole } from '@core/models/role.model';
   },
 })
 export class AdminHeader {
-  
   route = inject(ActivatedRoute);
   authStore = inject(AuthStore);
   notification = inject(NotificationService);
@@ -87,7 +79,11 @@ export class AdminHeader {
   }
 
   goToProfile(): void {
-    this.router.navigate(['profile'], { relativeTo: this.route });
+    const currentUrl = this.router.url;
+    const urlSegments = currentUrl.split('/');
+    const baseSegment = urlSegments[1];
+
+    this.router.navigate([`/${baseSegment}/settings/profile`]);
   }
 
   onLogout(event: Event): void {

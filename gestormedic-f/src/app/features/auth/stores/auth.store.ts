@@ -13,8 +13,8 @@ import {
   ResetPasswordData,
   User,
 } from '@core/models/auth.model';
-import { Auth } from '@core/services/auth';
-import { TwoFactor } from '@core/services/two-factor';
+import { Auth } from '@core/services/auth-service';
+import { TwoFactor } from '@core/services/two-factor-service';
 import { NotificationService } from '@core/services/notification';
 
 function getInitialStatus(): 'loading' | 'unauthenticated' {
@@ -54,9 +54,9 @@ export const AuthStore = signalStore(
       const redirectByUserRole = (user: User) => {
         let route = '/portal/';
         if (user.is_admin || user.role_id === 1) {
-          route = '/control/management';
+          route = '/control/';
         } else if (user.role_id === 2 || user.role_id === 3) {
-          route = '/app/dashboard';
+          route = '/app/';
         }
         router.navigate([route]);
       };
@@ -64,7 +64,7 @@ export const AuthStore = signalStore(
       const clearLocalState = () => {
         localStorage.removeItem('gm_token');
         patchState(store, initialState);
-        router.navigate(['/auth/login']);
+        window.location.href = '/auth/login';
       };
 
       const fetchUser = rxMethod<void>(
@@ -228,6 +228,7 @@ export const AuthStore = signalStore(
         ),
         logout: rxMethod<void>(
           pipe(
+            tap(() => patchState(store, { status: 'loading', error: null })),
             switchMap(() =>
               authService.logout().pipe(
                 tapResponse({

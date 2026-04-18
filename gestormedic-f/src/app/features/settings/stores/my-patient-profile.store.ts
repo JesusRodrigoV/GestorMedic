@@ -4,11 +4,11 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { NotificationService } from '@core/services/notification';
-import { PatientProfile, UpdatePatientProfilePayload } from '@core/models/patient-profile.model';
-import { PatientProfileService } from '@core/services/patient-profile-service';
+import { PatientProfile as PatientProfileModel, UpdatePatientProfilePayload } from '@core/models/patient-profile.model';
+import { ProfilePatientService } from '@core/services/profile-patient-service';
 
 type PatientProfileState = {
-  profile: PatientProfile | null;
+  profile: PatientProfileModel | null;
   isLoading: boolean;
   error: string | null;
 };
@@ -28,8 +28,8 @@ export const MyPatientProfileStore = signalStore(
   withMethods(
     (
       store,
-      profileService = inject(PatientProfileService),
-      notification = inject(NotificationService),
+      profileService = inject(ProfilePatientService),
+      notification = inject(NotificationService)
     ) => ({
       loadProfile: rxMethod<void>(
         pipe(
@@ -56,10 +56,10 @@ export const MyPatientProfileStore = signalStore(
                   patchState(store, { error: msg, isLoading: false });
                   notification.builder().error().summary('Error de sistema').detail(msg).show();
                 },
-              }),
-            ),
-          ),
-        ),
+              })
+            )
+          )
+        )
       ),
       updateProfile: rxMethod<UpdatePatientProfilePayload>(
         pipe(
@@ -72,22 +72,20 @@ export const MyPatientProfileStore = signalStore(
                   notification
                     .builder()
                     .success()
-                    .summary('Perfil actualizado')
-                    .detail('La información médica ha sido guardada en el archivo central.')
+                    .summary('Expediente actualizado')
+                    .detail('Su información biométrica y de contacto ha sido guardada exitosamente.')
                     .show();
                 },
                 error: (err: any) => {
-                  const msg =
-                    err.error?.detail ||
-                    'Los datos proporcionados no cumplen los criterios de validación.';
+                  const msg = err.error?.detail || 'Los datos proporcionados no cumplen con el formato requerido.';
                   patchState(store, { error: msg, isLoading: false });
                   notification.builder().error().summary('Error de validación').detail(msg).show();
                 },
-              }),
-            ),
-          ),
-        ),
-      ),
-    }),
-  ),
+              })
+            )
+          )
+        )
+      )
+    })
+  )
 );

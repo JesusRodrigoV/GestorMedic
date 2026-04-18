@@ -1,0 +1,55 @@
+<div class="profile-card">
+  <div class="card-header">
+    <h3>Registro de Entidad Aseguradora</h3>
+    <p>Información fiscal y canales formales de comunicación institucional.</p>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-form">
+    
+    <div class="form-section">
+      <h4>Identidad Corporativa</h4>
+      <div class="form-grid">
+        <div class="field-group col-span-2">
+          <label for="company_name">Razón Social o Nombre Comercial</label>
+          <input pInputText id="company_name" formControlName="company_name" fluid />
+        </div>
+        <div class="field-group">
+          <label for="tax_id">NIT / Identificación Tributaria</label>
+          <input pInputText id="tax_id" formControlName="tax_id" fluid />
+        </div>
+        <div class="field-group">
+          <label for="office_address">Dirección Física Principal</label>
+          <input pInputText id="office_address" formControlName="office_address" fluid />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Contacto Institucional</h4>
+      <div class="form-grid">
+        <div class="field-group col-span-2">
+          <label for="contact_person">Nombre del Representante Legal o Enlace</label>
+          <input pInputText id="contact_person" formControlName="contact_person" fluid />
+        </div>
+        <div class="field-group">
+          <label for="contact_phone">Teléfono de Enlace</label>
+          <input pInputText id="contact_phone" formControlName="contact_phone" fluid />
+        </div>
+        <div class="field-group">
+          <label for="contact_email">Correo Electrónico Oficial</label>
+          <input pInputText id="contact_email" type="email" formControlName="contact_email" fluid />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <gm-rounded-button 
+        type="submit" 
+        label="Guardar Registro Corporativo" 
+        severity="primary" 
+        [loading]="store.isProcessing()" 
+        [disabled]="profileForm.invalid || store.isProcessing()" 
+      />
+    </div>
+  </form>
+</div>

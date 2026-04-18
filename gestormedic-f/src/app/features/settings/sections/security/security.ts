@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthStore } from '@features/auth/stores/auth.store';
-import { TwoFactorStore } from '@features/auth/stores/two-factor.store';
+import { TwoFactorStore } from '@features/settings/stores/two-factor.store';
 import { RoundedButton } from '@shared/ui/rounded-button';
 import { InputTextModule } from 'primeng/inputtext';
 import { QRCodeComponent } from 'angularx-qrcode';

@@ -1,0 +1,104 @@
+<div class="manager-layout">
+  <header class="manager-header">
+    <h2>Registros de Auditoría y Seguridad</h2>
+    <p>Trazabilidad inalterable de operaciones críticas en el sistema descentralizado.</p>
+  </header>
+
+  <div class="toolbar">
+    <form [formGroup]="filterForm" class="filter-form" (ngSubmit)="applyFilters()">
+      <div class="filter-inputs">
+        <div class="field-group">
+          <p-inputNumber 
+            formControlName="clinic_id" 
+            placeholder="ID de Clínica" 
+            [useGrouping]="false"
+            class="w-full"
+          />
+        </div>
+        <div class="field-group">
+          <p-select 
+            formControlName="event_type" 
+            [options]="eventOptions" 
+            optionLabel="label" 
+            optionValue="value" 
+            placeholder="Tipo de Evento"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+      </div>
+      <div class="filter-actions">
+        <gm-rounded-button 
+          label="Filtrar" 
+          icon="bx bx-filter-alt" 
+          type="submit" 
+          severity="primary" 
+          [loading]="store.isProcessing()"
+        />
+        <gm-rounded-button 
+          label="Limpiar" 
+          icon="bx bx-reset" 
+          type="button" 
+          variant="outlined" 
+          severity="secondary" 
+          (onClick)="clearFilters()"
+          [disabled]="store.isProcessing()"
+        />
+      </div>
+    </form>
+  </div>
+
+  <p-table
+    [value]="store.logsList()"
+    [lazy]="true"
+    (onLazyLoad)="onPageChange($event)"
+    [paginator]="true"
+    [rows]="store.pageSize()"
+    [totalRecords]="store.totalRecords()"
+    [loading]="store.isProcessing()"
+    styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 180px">Marca de Tiempo</th>
+        <th>Evento Crítico</th>
+        <th>Usuario / Email</th>
+        <th style="width: 120px">IP Origen</th>
+        <th style="width: 100px; text-align: center;">ID Clínica</th>
+        <th>Detalles Técnicos</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-log>
+      <tr>
+        <td>{{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+        <td><span class="event-badge">{{ log.event }}</span></td>
+        <td>
+          @if (log.user) {
+            <strong>{{ log.user.username }}</strong><br>
+            <small class="text-muted">{{ log.user.email }}</small>
+          } @else {
+            <span class="text-muted">{{ log.attempted_email || 'Desconocido' }}</span>
+          }
+        </td>
+        <td><span class="ip-text">{{ log.ip_address || 'N/A' }}</span></td>
+        <td style="text-align: center;">
+          @if (log.clinic_id) {
+            <span class="clinic-badge">{{ log.clinic_id }}</span>
+          } @else {
+            <span class="text-muted">-</span>
+          }
+        </td>
+        <td>
+          <div class="details-box">
+            {{ log.details | json }}
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="empty-message">No existen registros de auditoría bajo estos parámetros.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -55,13 +55,15 @@
       </div>
     </form>
 
-    <div style="display: flex; align-items: center; margin: 1.5rem 0; color: var(--p-slate-400);">
-      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200);"></div>
-      <span style="padding: 0 1rem; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">O continuar con</span>
-      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200);"></div>
+    <div style="display: flex; align-items: center; margin: 1.5rem 0; color: var(--p-slate-400)">
+      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200)"></div>
+      <span style="padding: 0 1rem; font-size: 0.8rem; font-weight: 600; text-transform: uppercase"
+        >O continuar con</span
+      >
+      <div style="flex-grow: 1; height: 1px; background-color: var(--p-surface-200)"></div>
     </div>
 
-    <div style="margin-bottom: 1.5rem;">
+    <div style="margin-bottom: 1.5rem">
       <gm-rounded-button
         label="Acceder con Google"
         icon="bx bxl-google"
@@ -71,7 +73,7 @@
         [disabled]="authStore.isLoading()"
         (onClick)="onGoogleLoginTrigger()"
         class="w-full"
-        style="width: 100%; display: block;"
+        style="width: 100%; display: block"
       />
     </div>
 
@@ -80,7 +82,9 @@
       <div class="divider"></div>
       <p>
         ¿No tiene una cuenta?
-        <span class="text-energy" routerLink="/auth/register" style="cursor: pointer;">Registrarse gratis</span>
+        <span class="text-energy" routerLink="/auth/register" style="cursor: pointer"
+          >Registrarse gratis</span
+        >
       </p>
     </footer>
   </div>

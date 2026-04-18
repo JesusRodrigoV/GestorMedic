@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { AuthStore } from '@features/auth/stores/auth.store';
-import { Auth } from '@core/services/auth';
-import { NotificationService } from '@core/services/notification';
-import { environment } from '@env/environment';
-import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
-import { NgOptimizedImage } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
+import { NgOptimizedImage } from '@angular/common';
+import { AuthStore } from '@features/auth/stores/auth.store';
+import { Auth } from '@core/services/auth-service';
+import { ClinicsService } from '@core/services/clinics-service';
+import { NotificationService } from '@core/services/notification';
+import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 
 @Component({
   selector: 'gm-register-clinic',
@@ -22,7 +21,7 @@ import { StepperModule } from 'primeng/stepper';
     RoundedButton,
     RouterLink,
     NgOptimizedImage,
-    StepperModule
+    StepperModule,
   ],
   templateUrl: './register-clinic.html',
   styleUrl: './register-clinic.scss',
@@ -32,8 +31,7 @@ export default class RegisterClinic {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
   private authStore = inject(AuthStore);
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private clinicsService = inject(ClinicsService);
   private notification = inject(NotificationService);
 
   isProcessing = signal(false);
@@ -43,7 +41,6 @@ export default class RegisterClinic {
     lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-
     clinic_name: ['', [Validators.required]],
     nit_ruc: ['', [Validators.required]],
     phone: ['', [Validators.required]],
@@ -56,7 +53,8 @@ export default class RegisterClinic {
     if (this.isStepOneValid()) {
       this.step.set(2);
     } else {
-      this.registerForm.get('admin_name')?.markAsTouched();
+      this.registerForm.get('firstName')?.markAsTouched();
+      this.registerForm.get('lastName')?.markAsTouched();
       this.registerForm.get('email')?.markAsTouched();
       this.registerForm.get('password')?.markAsTouched();
     }
@@ -67,11 +65,12 @@ export default class RegisterClinic {
   }
 
   isStepOneValid(): boolean {
-    const adminName = this.registerForm.get('admin_name');
+    const firstName = this.registerForm.get('firstName');
+    const lastName = this.registerForm.get('lastName');
     const email = this.registerForm.get('email');
     const password = this.registerForm.get('password');
 
-    return !!(adminName?.valid && email?.valid && password?.valid);
+    return !!(firstName?.valid && lastName?.valid && email?.valid && password?.valid);
   }
 
   async executeRegistrationFlow() {
@@ -93,33 +92,35 @@ export default class RegisterClinic {
 
       const loginRes = await firstValueFrom(
         this.authService.login({
-          username: userPayload.email,
+          email: userPayload.email,
           password: userPayload.password,
         }),
       );
 
-      localStorage.setItem('gm_token', loginRes.access_token);
+      localStorage.setItem('gm_token', loginRes.access_token!);
 
       const clinicPayload = {
         name: formValues.clinic_name,
         nit_ruc: formValues.nit_ruc,
         address: formValues.address,
         phone: formValues.phone,
-        logo_url: null,
+        logo_url: '',
         plan: 'free',
+        is_active: true,
       };
 
-      await firstValueFrom(this.http.post(`${environment.apiUrl}/clinics/`, clinicPayload));
+      await firstValueFrom(this.clinicsService.createOnboarding(clinicPayload));
 
       this.notification
         .builder()
         .success()
         .summary('Infraestructura inicializada con éxito.')
         .show();
+
       this.authStore.fetchUser();
     } catch (error: any) {
-      console.error('Fallo en la cadena de registro:', error);
-      this.notification.builder().error().summary('Error en el protocolo de registro.').show();
+      const msg = error.error?.detail || 'Error en el protocolo de registro.';
+      this.notification.builder().error().summary('Operación fallida').detail(msg).show();
     } finally {
       this.isProcessing.set(false);
     }
