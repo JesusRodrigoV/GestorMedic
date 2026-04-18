@@ -72,6 +72,32 @@ export const MyDoctorProfileStore = signalStore(
             )
           )
         )
+      ),
+
+      createProfile: rxMethod<UpdateDoctorProfilePayload>(
+        pipe(
+          tap(() => patchState(store, { isLoading: true, error: null })),
+          switchMap((payload) =>
+            profileService.createOnboarding(payload).pipe(
+              tapResponse({
+                next: (profile) => {
+                  patchState(store, { profile, isLoading: false });
+                  notification
+                    .builder()
+                    .success()
+                    .summary('Perfil profesional creado')
+                    .detail('Su registro profesional ha sido creado.')
+                    .show();
+                },
+                error: (err: any) => {
+                  const msg = err.error?.detail || 'No se pudo crear el perfil profesional.';
+                  patchState(store, { error: msg, isLoading: false });
+                  notification.builder().error().summary('Error al crear perfil').detail(msg).show();
+                },
+              })
+            )
+          )
+        )
       )
     })
   )

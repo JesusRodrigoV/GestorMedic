@@ -71,6 +71,11 @@ export class DoctorProfile implements OnInit {
 
   protected onSave(): void {
     if (this.profileForm.invalid) return;
-    this.store.updateProfile(this.profileForm.getRawValue());
+    const payload = this.profileForm.getRawValue();
+    if (!this.store.currentProfile()) {
+      this.store.createProfile(payload);
+    } else {
+      this.store.updateProfile(payload);
+    }
   }
 }
