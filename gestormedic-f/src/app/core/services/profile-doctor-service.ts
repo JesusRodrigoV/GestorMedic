@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 import { DoctorProfile, UpdateDoctorProfilePayload } from '@core/models/doctor-profile.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProfileDoctorService {
   private http = inject(HttpClient);
@@ -14,6 +14,10 @@ export class ProfileDoctorService {
   private readonly httpOptions = {
     withCredentials: true,
   };
+
+  createOnboarding(payload: UpdateDoctorProfilePayload): Observable<DoctorProfile> {
+    return this.http.post<DoctorProfile>(`${this.apiUrl}/onboarding`, payload, this.httpOptions);
+  }
 
   getMyProfile(): Observable<DoctorProfile> {
     return this.http.get<DoctorProfile>(`${this.apiUrl}/me`, this.httpOptions);
@@ -24,18 +28,28 @@ export class ProfileDoctorService {
   }
 
   addSpecialtyToMyProfile(specialtyId: number): Observable<DoctorProfile> {
-    return this.http.post<DoctorProfile>(`${this.apiUrl}/me/specialties/${specialtyId}`, {}, this.httpOptions);
+    return this.http.post<DoctorProfile>(
+      `${this.apiUrl}/me/specialties/${specialtyId}`,
+      {},
+      this.httpOptions,
+    );
   }
 
   removeSpecialtyFromMyProfile(specialtyId: number): Observable<DoctorProfile> {
-    return this.http.delete<DoctorProfile>(`${this.apiUrl}/me/specialties/${specialtyId}`, this.httpOptions);
+    return this.http.delete<DoctorProfile>(
+      `${this.apiUrl}/me/specialties/${specialtyId}`,
+      this.httpOptions,
+    );
   }
 
   getProfileByUserId(userId: number): Observable<DoctorProfile> {
     return this.http.get<DoctorProfile>(`${this.apiUrl}/${userId}`, this.httpOptions);
   }
 
-  updateProfileByUserId(userId: number, payload: UpdateDoctorProfilePayload): Observable<DoctorProfile> {
+  updateProfileByUserId(
+    userId: number,
+    payload: UpdateDoctorProfilePayload,
+  ): Observable<DoctorProfile> {
     return this.http.put<DoctorProfile>(`${this.apiUrl}/${userId}`, payload, this.httpOptions);
   }
 }

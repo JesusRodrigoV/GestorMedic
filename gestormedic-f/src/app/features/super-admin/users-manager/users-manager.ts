@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '@core/models/auth.model';
 import { NotificationService } from '@core/services/notification';
 import { UsersAdminService } from '@core/services/users-admin';
 
 @Component({
-  selector: 'app-management',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './management.html',
-  styleUrl: './management.scss',
+  selector: 'gm-users-manager',
+  imports: [FormsModule, DatePipe],
+  templateUrl: './users-manager.html',
+  styleUrl: './users-manager.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class Management {
+export default class UsersManager {
   private usersAdmin = inject(UsersAdminService);
   private notification = inject(NotificationService);
 

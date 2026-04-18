@@ -16,17 +16,17 @@ const getDynamicMenu = () => {
     { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
   ];
 
-  if (user.role_id === UserRole.MEDICO) {
+  if ([UserRole.MEDICO, UserRole.ADMIN_CLINICA, UserRole.RECEPCIONISTA].includes(user.role_id)) {
     baseMenu.push(
-      { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/agenda-semanal' },
-      { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendario' },
-      { label: 'Citas', icon: 'bx-calendar-event', route: '/app/citas' },
+      { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/weekly-agenda' },
+      { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendar' },
+      { label: 'Citas', icon: 'bx-calendar-event', route: '/app/appointments' },
     );
   }
 
   if (user.role_id === UserRole.ADMIN_CLINICA) {
     baseMenu.push(
-      { label: 'Consultorios', icon: 'bx-building-house', route: '/app/consultorios' },
+      { label: 'Consultorios', icon: 'bx-building-house', route: '/app/consulting-rooms' },
       { label: 'Gestión de Clínica', icon: 'bx-buildings', route: '/app/management' },
     );
   }
@@ -54,20 +54,20 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
         loadComponent: () => import('./dashboard/dashboard'),
       },
       {
-        path: 'agenda-semanal',
+        path: 'weekly-agenda',
         loadComponent: () => import('./weekly-agenda/weekly-agenda'),
         canDeactivate: [pendingChangesGuard],
       },
       {
-        path: 'calendario',
+        path: 'calendar',
         loadComponent: () => import('./agenda-calendar/agenda-calendar'),
       },
       {
-        path: 'citas',
+        path: 'appointments',
         loadComponent: () => import('./appointments/appointments'),
       },
       {
-        path: 'consultorios',
+        path: 'consulting-rooms',
         loadComponent: () => import('./consulting-rooms/consulting-rooms'),
         canActivate: [roleGuard],
         data: { allowedRoles: [UserRole.ADMIN_CLINICA] },

@@ -11,11 +11,12 @@ export const SUPER_ADMIN_ROUTES: Routes = [
       allowedRoles: [UserRole.SUPERADMIN],
       menu: [
         { label: 'Gestión de Inquilinos', icon: 'bx-buildings', route: '/control/clinics' },
+        { label: 'Gestión de usuarios', icon: 'bx-buildings', route: '/control/users' },
         { label: 'Catálogo de Especialidades', icon: 'bx-list-ul', route: '/control/specialties' },
         { label: 'Planes de Suscripción', icon: 'bx-credit-card-front', route: '/control/plans' },
         { label: 'Auditoría y Seguridad', icon: 'bx-shield-quarter', route: '/control/audit' },
-        { label: 'Configuración del Sistema', icon: 'bx-cog', route: '/control/settings' }
-      ]
+        { label: 'Configuración del Sistema', icon: 'bx-cog', route: '/control/settings' },
+      ],
     },
     children: [
       {
@@ -28,6 +29,10 @@ export const SUPER_ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./clinics-manager/clinics-manager'),
       },
       {
+        path: 'users',
+        loadComponent: () => import('./users-manager/users-manager'),
+      },
+      {
         path: 'specialties',
         loadComponent: () => import('./specialties-manager/specialties-manager'),
       },
@@ -37,12 +42,12 @@ export const SUPER_ADMIN_ROUTES: Routes = [
       },
       {
         path: 'audit',
-        loadComponent: () => import('./audit-manager/audit-manager')
+        loadComponent: () => import('./audit-manager/audit-manager'),
       },
       {
         path: 'settings',
         loadChildren: () => import('../settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
-      }
+      },
     ],
   },
 ];

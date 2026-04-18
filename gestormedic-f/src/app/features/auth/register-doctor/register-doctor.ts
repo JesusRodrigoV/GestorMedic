@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -9,9 +8,9 @@ import { TextareaModule } from 'primeng/textarea';
 import { AuthStore } from '@features/auth/stores/auth.store';
 import { Auth } from '@core/services/auth-service';
 import { NotificationService } from '@core/services/notification';
-import { environment } from '@env/environment';
 import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 import { NgOptimizedImage } from '@angular/common';
+import { ProfileDoctorService } from '@core/services/profile-doctor-service';
 
 @Component({
   selector: 'gm-register-doctor',
@@ -21,7 +20,6 @@ import { NgOptimizedImage } from '@angular/common';
     PasswordModule,
     TextareaModule,
     RoundedButton,
-    RouterLink,
     NgOptimizedImage,
   ],
   templateUrl: './register-doctor.html',
@@ -32,7 +30,7 @@ export default class RegisterDoctor {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
   private authStore = inject(AuthStore);
-  private http = inject(HttpClient);
+  private profileDoctorService = inject(ProfileDoctorService);
   private router = inject(Router);
   private notification = inject(NotificationService);
 
@@ -43,12 +41,9 @@ export default class RegisterDoctor {
     lastName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-
-    specialties: ['', [Validators.required]],
-    professional_license: ['', [Validators.required, Validators.pattern(/^[A-Z0-9\-]{5,20}$/)]],
+    professional_license: ['', [Validators.required, /*Validators.pattern(/^[A-Z0-9\-]{5,20}$/)*/]],
     phone: ['', [Validators.required, Validators.pattern(/^[+\d\s\-()]+$/)]],
-    university: ['', [Validators.required, Validators.minLength(3)]],
-    experience_years: ['', [Validators.required, Validators.min(0), Validators.max(70)]],
+    experience_years: [0, [Validators.required, Validators.min(0), Validators.max(70)]],
     bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
   });
 
@@ -62,6 +57,7 @@ export default class RegisterDoctor {
     const formValues = this.registerForm.getRawValue();
 
     try {
+      // 1. Crear identidad básica
       const userPayload = {
         email: formValues.email,
         username: formValues.email.split('@')[0],
@@ -72,27 +68,29 @@ export default class RegisterDoctor {
 
       await firstValueFrom(this.authService.register(userPayload));
 
+      // 2. Iniciar sesión automáticamente (usando email, no username)
       const loginRes = await firstValueFrom(
         this.authService.login({
-          username: userPayload.email,
+          email: userPayload.email,
           password: userPayload.password,
         }),
       );
 
-      localStorage.setItem('gm_token', loginRes.access_token);
+      localStorage.setItem('gm_token', loginRes.access_token!);
 
+      // 3. Configurar el perfil médico inicial (Sin especialidades por ahora, evitar 422)
       const doctorPayload = {
-        specialties: formValues.specialties,
-        professional_license: formValues.professional_license,
-        phone: formValues.phone,
-        university: formValues.university,
-        experience_years: parseInt(formValues.experience_years),
+        license_number: formValues.professional_license,
         bio: formValues.bio,
-        avatar_url: null,
-        is_available: true,
+        experience_years: Number(formValues.experience_years),
+        signature_url: '',
+        base_consultation_price: 0,
+        is_telemedicine_enabled: false,
+        user_id: 0,
+        specialty_ids: [],
       };
 
-      await firstValueFrom(this.http.post(`${environment.apiUrl}/doctors/`, doctorPayload));
+      await firstValueFrom(this.profileDoctorService.createOnboarding(doctorPayload));
 
       this.notification
         .builder()
@@ -104,14 +102,13 @@ export default class RegisterDoctor {
       this.authStore.fetchUser();
     } catch (error: any) {
       console.error('Error en registro:', error);
-
       this.notification
         .builder()
         .error()
         .summary('Error en el registro')
-        .detail(error?.error?.detail || 'Por favor, intenta nuevamente o contacta al soporte.')
+        .detail(error?.error?.detail || 'Fallo de validación en el servidor.')
         .show();
-
+    } finally {
       this.isProcessing.set(false);
     }
   }

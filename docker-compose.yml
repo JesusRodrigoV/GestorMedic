@@ -9,7 +9,7 @@ services:
     networks:
       - gm-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d gestormedic_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notifications_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -48,8 +48,6 @@ services:
       context: ./gestormedic-notification
       dockerfile: Dockerfile
     container_name: gm-notifications-api
-    ports:
-      - "8001:8000"  
     env_file:
       - ./gestormedic-notification/.env_do
     healthcheck:
@@ -86,8 +84,12 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./gestormedic-b/.env_do
-    ports:
-      - "8000:8000"  
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/openapi.json > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     depends_on:
       gm-backend-db:
         condition: service_healthy
@@ -102,26 +104,39 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./gestormedic-citas/.env_do
-    ports:
-      - "8002:8000"
     depends_on:
       gm-backend-db:
+        condition: service_healthy
+      gm-backend:
         condition: service_healthy
     networks:
       - gm-network
 
-  gm-frontend:
-    build: 
-      context: ./gestormedic-f 
+  api-gateway:
+    build:
+      context: ./gestormedic-gateway
       dockerfile: Dockerfile
-    restart: always
+    container_name: gm-api-gateway
     ports:
-      - "4200:4200"
+      - "8000:80"
     depends_on:
       - gm-backend
+      - gm-citas
+      - gm-notifications-api
     networks:
       - gm-network
 
+  # gm-frontend:
+  #   build: 
+  #     context: ./gestormedic-f 
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "4200:4200"
+  #   depends_on:
+  #     - api-gateway
+  #   networks:
+  #     - gm-network
 
 volumes:
   gm-notifications-data:
