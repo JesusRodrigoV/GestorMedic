@@ -1,65 +1,65 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
-import { roleGuard } from '@core/guards/role-guard';
 import { pendingChangesGuard } from '@core/guards/pending-changes.guard';
+import { roleGuard } from '@core/guards/role.guard';
 import { UserRole } from '@core/models/role.model';
+import { AuthStore } from '@features/auth/stores/auth.store';
 
-export const MEDICAL_ADMIN_ROUTES: Routes = [
+const getDynamicMenu = () => {
+  const authStore = inject(AuthStore);
+  const user = authStore.currentUser();
+
+  if (!user) return [];
+
+  const baseMenu = [
+    { label: 'Panel de Control', icon: 'bx-grid-alt', route: '/app/dashboard' },
+    { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
+  ];
+
+  if ([UserRole.MEDICO, UserRole.ADMIN_CLINICA, UserRole.RECEPCIONISTA].includes(user.role_id)) {
+    baseMenu.push(
+      { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/agenda-semanal' },
+      { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendario' },
+      { label: 'Citas', icon: 'bx-calendar-event', route: '/app/citas' },
+    );
+  }
+
+  // Rutas exclusivas del médico (Agregadas por el otro desarrollador)
+  if (user.role_id === UserRole.MEDICO) {
+    baseMenu.push(
+      { label: 'Historiales', icon: 'bx-notepad', route: '/app/historiales' },
+      { label: 'Historiales Editables', icon: 'bx-time-five', route: '/app/historiales/editables' }
+    );
+  }
+
+  if (user.role_id === UserRole.ADMIN_CLINICA) {
+    baseMenu.push(
+      { label: 'Consultorios', icon: 'bx-building-house', route: '/app/consultorios' },
+      { label: 'Gestión de Clínica', icon: 'bx-buildings', route: '/app/management' },
+    );
+  }
+
+  baseMenu.push({ label: 'Configuración Personal', icon: 'bx-cog', route: '/app/settings' });
+
+  return baseMenu;
+};
+
+export const CLINIC_WORKSPACE_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('../../core/layouts/admin-layout/admin-layout'),
     canActivate: [roleGuard],
     data: {
-      allowedRoles: [UserRole.MEDICO, UserRole.ADMIN_CLINICA],
-      menu: [
-        { label: 'Panel de Control', icon: 'bx-grid-alt', route: '/app/dashboard' },
-        {
-          label: 'Agenda Semanal',
-          icon: 'bx-calendar-edit',
-          route: '/app/agenda-semanal',
-          roleIds: [UserRole.MEDICO],
-        },
-        {
-          label: 'Calendario',
-          icon: 'bx-calendar-alt',
-          route: '/app/calendario',
-          roleIds: [UserRole.MEDICO],
-        },
-        { label: 'Citas', icon: 'bx-calendar-event', route: '/app/citas', roleIds: [UserRole.MEDICO] },
-        {
-          label: 'Consultorios',
-          icon: 'bx-building-house',
-          route: '/app/consultorios',
-          roleIds: [UserRole.ADMIN_CLINICA],
-        },
-        { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
-        {
-          label: 'Historiales',
-          icon: 'bx-notepad',
-          route: '/app/historiales',
-          roleIds: [UserRole.MEDICO],
-        },
-        {
-          label: 'Historiales Editables',
-          icon: 'bx-time-five',
-          route: '/app/historiales/editables',
-          roleIds: [UserRole.MEDICO],
-        },
-        { label: 'Configuración', icon: 'bx-cog', route: '/app/settings' },
-      ],
+      allowedRoles: [UserRole.MEDICO, UserRole.ADMIN_CLINICA, UserRole.RECEPCIONISTA],
+    },
+    resolve: {
+      menu: () => getDynamicMenu(),
     },
     children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadComponent: () => import('./dashboard/dashboard'),
-      },
-      {
-        path: 'settings',
-        loadChildren: () => import('../settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
       {
         path: 'agenda-semanal',
@@ -78,9 +78,7 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
         path: 'consultorios',
         loadComponent: () => import('./consulting-rooms/consulting-rooms'),
         canActivate: [roleGuard],
-        data: {
-          allowedRoles: [UserRole.ADMIN_CLINICA],
-        },
+        data: { allowedRoles: [UserRole.ADMIN_CLINICA] },
       },
       {
         path: 'patients',
@@ -90,17 +88,23 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
         path: 'historiales',
         loadComponent: () => import('./medical-histories/medical-histories'),
         canActivate: [roleGuard],
-        data: {
-          allowedRoles: [UserRole.MEDICO],
-        },
+        data: { allowedRoles: [UserRole.MEDICO] },
       },
       {
         path: 'historiales/editables',
         loadComponent: () => import('./medical-histories/medical-histories'),
         canActivate: [roleGuard],
-        data: {
-          allowedRoles: [UserRole.MEDICO],
-        },
+        data: { allowedRoles: [UserRole.MEDICO] },
+      },
+      {
+        path: 'management',
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserRole.ADMIN_CLINICA] },
+        loadComponent: () => import('./management/clinic-management/clinic-management'),
+      },
+      {
+        path: 'settings',
+        loadChildren: () => import('../settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
     ],
   },

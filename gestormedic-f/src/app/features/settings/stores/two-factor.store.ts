@@ -3,7 +3,7 @@ import { pipe, switchMap, tap } from 'rxjs';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-import { TwoFactor } from '@core/services/two-factor';
+import { TwoFactor } from '@core/services/two-factor-service';
 import { NotificationService } from '@core/services/notification';
 import { TwoFAConfirmPayload, TwoFASetupResponse } from '@core/models/two-factor.model';
 

@@ -1,1 +1,98 @@
-<p>doctor-profile works!</p>
+<div class="profile-card">
+  <div class="card-header">
+    <h3>Registro Profesional Médico</h3>
+    <p>Acreditaciones oficiales, especialidades y configuración de honorarios de consulta.</p>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-form">
+    <div class="form-section">
+      <h4>Acreditación y Experiencia</h4>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="license_number">Matrícula Profesional / Licencia</label>
+          <input
+            pInputText
+            id="license_number"
+            formControlName="license_number"
+            placeholder="Ej. CM-12345"
+            fluid
+          />
+        </div>
+        <div class="field-group">
+          <label for="experience_years">Años de Experiencia Clínica</label>
+          <p-inputNumber
+            inputId="experience_years"
+            formControlName="experience_years"
+            [showButtons]="true"
+            [min]="0"
+            [max]="70"
+            fluid
+          />
+        </div>
+        <div class="field-group full-width">
+          <label for="specialty_ids">Especialidades Avaladas</label>
+          <p-multiselect
+            id="specialty_ids"
+            [options]="availableSpecialties()"
+            formControlName="specialty_ids"
+            optionLabel="name"
+            optionValue="id"
+            display="chip"
+            placeholder="Seleccione sus especialidades del catálogo nacional"
+            [filter]="true"
+            appendTo="body"
+            fluid
+          />
+        </div>
+        <div class="field-group full-width">
+          <label for="bio">Biografía Profesional (Visible para pacientes)</label>
+          <textarea
+            pTextarea
+            id="bio"
+            formControlName="bio"
+            rows="4"
+            placeholder="Resumen de su trayectoria, estudios y enfoque médico..."
+            fluid
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Honorarios y Servicios</h4>
+      <div class="form-grid align-end">
+        <div class="field-group">
+          <label for="base_consultation_price">Precio Base de Consulta Privada</label>
+          <p-inputNumber
+            inputId="base_consultation_price"
+            formControlName="base_consultation_price"
+            mode="currency"
+            currency="BOB"
+            locale="es-BO"
+            fluid
+          />
+        </div>
+        <div class="field-group switch-box">
+          <div>
+            <label for="is_telemedicine_enabled">Consultas por Telemedicina</label>
+            <span class="help-text">Habilita la opción de atención remota por videollamada.</span>
+          </div>
+          <p-toggleswitch
+            inputId="is_telemedicine_enabled"
+            formControlName="is_telemedicine_enabled"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <gm-rounded-button
+        type="submit"
+        label="Actualizar Registro Profesional"
+        severity="primary"
+        [loading]="store.isProcessing()"
+        [disabled]="profileForm.invalid || store.isProcessing()"
+      />
+    </div>
+  </form>
+</div>

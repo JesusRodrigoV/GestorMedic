@@ -11,5 +11,10 @@ from .clinic import Clinic
 from .audit_log import AuditLog
 from .associations import ClinicDoctor, DoctorSpecialty, ClinicSpecialty
 
-
+#TODO:Revisar los siguientes modelos
+from .agenda import AppointmentWeeklyBlock
+from .agenda import AppointmentSlotOverride
+from .agenda import Appointment
+from .agenda import RoomDoctorPermission
+from .agenda import RoomSpecialtyPermission
 

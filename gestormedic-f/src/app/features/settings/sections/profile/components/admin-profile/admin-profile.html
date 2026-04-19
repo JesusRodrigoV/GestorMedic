@@ -1,1 +1,33 @@
-<p>admin-profile works!</p>
+<div class="profile-card">
+  <div class="card-header">
+    <h3>Expediente de Personal Administrativo</h3>
+    <p>Credenciales operativas y asignación de cargo en la infraestructura clínica.</p>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-form">
+    
+    <div class="form-section">
+      <h4>Datos Laborales</h4>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="employee_id">Código de Empleado / Legajo</label>
+          <input pInputText id="employee_id" formControlName="employee_id" placeholder="Ej. ADM-001" fluid />
+        </div>
+        <div class="field-group">
+          <label for="position">Cargo o Función Principal</label>
+          <input pInputText id="position" formControlName="position" placeholder="Ej. Gerente de Operaciones" fluid />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <gm-rounded-button 
+        type="submit" 
+        label="Actualizar Ficha Laboral" 
+        severity="primary" 
+        [loading]="store.isProcessing()" 
+        [disabled]="profileForm.invalid || store.isProcessing()" 
+      />
+    </div>
+  </form>
+</div>

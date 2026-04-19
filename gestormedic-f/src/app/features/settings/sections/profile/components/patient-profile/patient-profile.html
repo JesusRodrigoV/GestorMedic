@@ -1,118 +1,101 @@
-<div class="patient-profile-layout">
-  <section class="auth-context-card">
-    <h3>Identidad Central</h3>
-    <p class="context-description">
-      Datos administrados por el sistema de registro civil. Si requiere una corrección legal,
-      contacte a soporte.
-    </p>
+<div class="profile-card">
+  <div class="card-header">
+    <h3>Expediente Clínico Base</h3>
+    <p>Estos datos son vitales para su atención médica y respuesta en emergencias.</p>
+  </div>
 
-    <div class="data-row">
-      <div class="data-group">
-        <span class="data-label">Nombre Completo</span>
-        <p class="data-value">
-          {{ authStore.currentUser()?.first_name }} {{ authStore.currentUser()?.last_name }}
-        </p>
-      </div>
-      <div class="data-group">
-        <span class="data-label">Correo de Acceso</span>
-        <p class="data-value">{{ authStore.currentUser()?.email }}</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="medical-context-card">
-    <h3>Antecedentes y Contacto Médico</h3>
-    <p class="context-description medical-description">
-      Mantenga esta información actualizada para garantizar una atención médica precisa.
-    </p>
-
-    @if (patientStore.isProcessing() && !patientStore.currentProfile()) {
-      <div class="loading-skeleton">Cargando expediente clínico...</div>
-    } @else {
-      <form [formGroup]="patientForm" (ngSubmit)="onSave()" class="profile-form">
-        <div class="form-grid">
-          <div class="field-container">
-            <label for="ci_number">Documento de Identidad (CI)</label>
-            <input pInputText id="ci_number" formControlName="ci_number" fluid />
-          </div>
-
-          <div class="field-container">
-            <label for="date_of_birth">Fecha de Nacimiento</label>
-            <input
-              pInputText
-              type="date"
-              id="date_of_birth"
-              formControlName="date_of_birth"
-              fluid
-            />
-          </div>
-
-          <div class="field-container">
-            <label for="gender">Género Biológico</label>
-            <input pInputText id="gender" formControlName="gender" fluid />
-          </div>
-
-          <div class="field-container">
-            <label for="blood_type">Grupo Sanguíneo</label>
-            <input
-              pInputText
-              id="blood_type"
-              formControlName="blood_type"
-              placeholder="Ej: O+"
-              fluid
-            />
-          </div>
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-form">
+    <div class="form-section">
+      <h4>Identidad y Demografía</h4>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="ci_number">Cédula de Identidad</label>
+          <input pInputText id="ci_number" formControlName="ci_number" fluid />
         </div>
-
-        <p-divider align="left"><b>Información de Contacto</b></p-divider>
-
-        <div class="form-grid">
-          <div class="field-container">
-            <label for="emergency_contact_name">Contacto de Emergencia (Nombre)</label>
-            <input
-              pInputText
-              id="emergency_contact_name"
-              formControlName="emergency_contact_name"
-              fluid
-            />
-          </div>
-
-          <div class="field-container">
-            <label for="emergency_contact_phone">Teléfono de Emergencia</label>
-            <input
-              pInputText
-              id="emergency_contact_phone"
-              formControlName="emergency_contact_phone"
-              fluid
-            />
-          </div>
-
-          <div class="field-container">
-            <label for="occupation">Ocupación / Profesión</label>
-            <input pInputText id="occupation" formControlName="occupation" fluid />
-          </div>
+        <div class="field-group">
+          <label for="date_of_birth">Fecha de Nacimiento</label>
+          <input pInputText type="date" id="date_of_birth" formControlName="date_of_birth" fluid />
         </div>
-
-        <div class="field-container">
-          <label for="allergies">Alergias Conocidas</label>
-          <input
-            pInputText
-            id="allergies"
-            formControlName="allergies"
-            placeholder="Ej: Penicilina, Maní (o dejar en blanco si no tiene)"
+        <div class="field-group">
+          <label for="gender">Género</label>
+          <p-select
+            id="gender"
+            formControlName="gender"
+            [options]="genderOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione"
             fluid
           />
         </div>
+        <div class="field-group">
+          <label for="occupation">Ocupación</label>
+          <input pInputText id="occupation" formControlName="occupation" fluid />
+        </div>
+      </div>
+    </div>
 
-        <div class="form-actions">
-          <gm-rounded-button
-            type="submit"
-            label="Actualizar Expediente"
-            severity="primary"
-            [loading]="patientStore.isProcessing()"
+    <div class="form-section">
+      <h4>Datos Médicos Críticos</h4>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="blood_type">Grupo Sanguíneo</label>
+          <p-select
+            id="blood_type"
+            formControlName="blood_type"
+            [options]="bloodTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione"
+            fluid
           />
         </div>
-      </form>
-    }
-  </section>
+        <div class="field-group full-width">
+          <label for="allergies">Alergias Conocidas</label>
+          <textarea
+            pTextarea
+            id="allergies"
+            formControlName="allergies"
+            rows="3"
+            placeholder="Medicamentos, alimentos, ambientales..."
+            fluid
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Contacto de Emergencia</h4>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="emergency_contact_name">Nombre Completo</label>
+          <input
+            pInputText
+            id="emergency_contact_name"
+            formControlName="emergency_contact_name"
+            fluid
+          />
+        </div>
+        <div class="field-group">
+          <label for="emergency_contact_phone">Teléfono</label>
+          <input
+            pInputText
+            id="emergency_contact_phone"
+            formControlName="emergency_contact_phone"
+            fluid
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <gm-rounded-button
+        type="submit"
+        label="Guardar Expediente"
+        severity="primary"
+        [loading]="store.isProcessing()"
+        [disabled]="profileForm.invalid || store.isProcessing()"
+      />
+    </div>
+  </form>
 </div>

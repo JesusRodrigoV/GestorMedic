@@ -27,14 +27,26 @@
 
           <div class="field-row">
             <div class="field-group">
-              <label for="admin_name">Nombre Completo</label>
+              <label for="firstName">Nombre</label>
               <div class="input-container">
                 <i class="bx bx-user"></i>
                 <input
                   pInputText
-                  id="admin_name"
-                  formControlName="admin_name"
-                  placeholder="Ej. Dr. Carlos Méndez"
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="Ej. Carlos"
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="lastName">Apellidos</label>
+              <div class="input-container">
+                <input
+                  pInputText
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Ej. Méndez"
                 />
               </div>
             </div>
@@ -148,7 +160,7 @@
             />
             <gm-rounded-button
               label="Inicializar Plataforma"
-              type="submit"
+              (onClick)="executeRegistrationFlow()"
               severity="primary"
               [disabled]="registerForm.invalid || isProcessing()"
               [loading]="isProcessing()"

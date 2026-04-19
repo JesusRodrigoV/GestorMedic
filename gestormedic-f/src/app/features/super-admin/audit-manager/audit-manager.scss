@@ -1,0 +1,101 @@
+:host {
+  display: block;
+  background: var(--p-surface-0);
+  border-radius: 12px;
+  border: 1px solid var(--p-surface-200);
+  padding: 1.5rem;
+}
+
+.manager-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.manager-header {
+  h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--p-surface-900);
+  }
+  p {
+    margin: 0;
+    color: var(--p-text-muted-color);
+  }
+}
+
+.toolbar {
+  background: var(--p-surface-50);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--p-surface-200);
+}
+
+.filter-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-inputs {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.field-group {
+  min-width: 200px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.event-badge {
+  background: var(--p-slate-800);
+  color: var(--p-surface-0);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.ip-text {
+  font-family: monospace;
+  color: var(--p-slate-600);
+}
+
+.clinic-badge {
+  background: var(--p-blue-100);
+  color: var(--p-blue-800);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.text-muted {
+  color: var(--p-text-muted-color);
+}
+
+.details-box {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--p-slate-600);
+  background: var(--p-surface-100);
+  padding: 0.5rem;
+  border-radius: 4px;
+  max-height: 60px;
+  overflow-y: auto;
+  word-break: break-all;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--p-text-muted-color);
+}
