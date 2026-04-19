@@ -1,0 +1,147 @@
+@use '../../../shared/styles/design-tokens.scss' as *;
+
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #d5deea;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  padding: 1rem;
+}
+
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: #102a43;
+}
+
+p {
+  color: #45617c;
+}
+
+.form-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+    color: #274868;
+    font-weight: 600;
+  }
+
+  .full {
+    grid-column: 1 / -1;
+  }
+
+  input,
+  textarea {
+    border: 1px solid #d1ddea;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    font: inherit;
+  }
+}
+
+.actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+
+  button {
+    border: none;
+    border-radius: 10px;
+    padding: 0.55rem 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .primary {
+    background: #0f766e;
+    color: #fff;
+  }
+
+  .secondary {
+    background: #1f4f8c;
+    color: #fff;
+  }
+}
+
+.doctor-files-filter {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+
+  input {
+    border: 1px solid #d1ddea;
+    border-radius: 10px;
+    padding: 0.55rem 0.7rem;
+    min-width: 240px;
+  }
+
+  button {
+    border: 1px solid #d2dfee;
+    border-radius: 10px;
+    background: #f2f8ff;
+    color: #1e4f8b;
+    font-weight: 700;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+  }
+}
+
+.entries {
+  margin-top: 0.7rem;
+  display: grid;
+  gap: 0.7rem;
+
+  article {
+    border: 1px solid #dfe7f1;
+    border-radius: 12px;
+    padding: 0.8rem;
+    background: #fbfdff;
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+
+      button {
+        border: 1px solid #d2dfee;
+        border-radius: 8px;
+        background: #f2f8ff;
+        padding: 0.35rem 0.65rem;
+        cursor: pointer;
+      }
+    }
+
+    p {
+      margin: 0.2rem 0;
+    }
+
+    small {
+      color: #4f6279;
+      font-weight: 600;
+    }
+  }
+}
+
+.empty {
+  margin: 0;
+  color: #5a6f85;
+}

@@ -1,29 +1,78 @@
 <main class="page">
   <section class="header card">
     <h2>Historial clinico</h2>
-    <p>Consulta tus atenciones por especialidad, diagnosticos y observaciones medicas.</p>
+    <p>Consulta y administra tu historial por especialidad y doctor sin perder el registro historico.</p>
   </section>
 
   <section class="card">
-    <h3>Linea de atenciones</h3>
-    <div class="events">
-      @for (episode of episodes(); track episode.date) {
-        <article>
-          <span>{{ episode.date }}</span>
-          <div>
-            <h4>{{ episode.specialty }} · {{ episode.doctor }}</h4>
-            <p>{{ episode.diagnosis }}</p>
-          </div>
-        </article>
+    <h3>Mis historiales</h3>
+    <div class="history-tabs">
+      @for (history of histories(); track history.id) {
+        <button
+          type="button"
+          [class.active]="selectedHistoryId() === history.id"
+          (click)="onSelectHistory(history.id)">
+          {{ history.specialty_name }}
+          @if (history.doctor_name) {
+            <small>{{ history.doctor_name }}</small>
+          }
+        </button>
       }
     </div>
   </section>
 
   <section class="card">
-    <h3>Alergias registradas</h3>
-    <div class="chips">
-      @for (item of allergies(); track item) {
-        <span>{{ item }}</span>
+    <h3>Campos base editables por paciente</h3>
+    <div class="form-grid">
+      <label>
+        Tipo de sangre
+        <input [ngModel]="bloodType()" (ngModelChange)="bloodType.set($event)" />
+      </label>
+      <label>
+        Contacto de emergencia
+        <input [ngModel]="emergencyName()" (ngModelChange)="emergencyName.set($event)" />
+      </label>
+      <label>
+        Teléfono emergencia
+        <input [ngModel]="emergencyPhone()" (ngModelChange)="emergencyPhone.set($event)" />
+      </label>
+      <label>
+        Alergias (separadas por coma)
+        <input [ngModel]="allergiesText()" (ngModelChange)="allergiesText.set($event)" />
+      </label>
+      <label>
+        Enfermedades crónicas (coma)
+        <input [ngModel]="conditionsText()" (ngModelChange)="conditionsText.set($event)" />
+      </label>
+      <label>
+        Medicación actual (coma)
+        <input [ngModel]="medicationsText()" (ngModelChange)="medicationsText.set($event)" />
+      </label>
+      <label class="full">
+        Notas generales
+        <textarea rows="4" [ngModel]="notes()" (ngModelChange)="notes.set($event)"></textarea>
+      </label>
+    </div>
+    <button type="button" class="save-btn" [disabled]="isSaving()" (click)="onSaveBasicFields()">
+      {{ isSaving() ? 'Guardando...' : 'Guardar campos base' }}
+    </button>
+  </section>
+
+  <section class="card">
+    <h3>Linea de atenciones</h3>
+    <div class="events">
+      @for (entry of entries(); track entry.id) {
+        <article>
+          <span>{{ formatDate(entry.created_at) }}</span>
+          <div>
+            <h4>{{ entry.specialty_name }} · {{ entry.section_title }}</h4>
+            <p>{{ entry.notes || 'Sin notas adicionales' }}</p>
+            <small>Editable por medico hasta: {{ formatDate(entry.editable_until) }}</small>
+          </div>
+        </article>
+      }
+      @if (!entries().length) {
+        <p class="empty">Aun no hay atenciones registradas para este historial.</p>
       }
     </div>
   </section>

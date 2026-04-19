@@ -1,33 +1,138 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MedicalHistory as MedicalHistoryModel, MedicalHistoryEntry } from '@core/models/medical-records.model';
+import { MedicalRecordsService } from '@core/services/medical-records';
+import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'app-medical-history',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './medical-history.html',
   styleUrl: './medical-history.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MedicalHistory {
-  readonly episodes = signal([
-    {
-      date: '03 Abr 2026',
-      specialty: 'Cardiologia',
-      doctor: 'Dra. Camila Flores',
-      diagnosis: 'Control de hipertension y ajuste de tratamiento',
-    },
-    {
-      date: '18 Mar 2026',
-      specialty: 'Medicina interna',
-      doctor: 'Dr. Daniel Perez',
-      diagnosis: 'Evaluacion de fatiga cronica y plan de analitica',
-    },
-    {
-      date: '05 Feb 2026',
-      specialty: 'Neumologia',
-      doctor: 'Dra. Carla Rojas',
-      diagnosis: 'Seguimiento post infeccion respiratoria',
-    },
-  ]);
+  private recordsService = inject(MedicalRecordsService);
+  private notification = inject(NotificationService);
 
-  readonly allergies = signal(['Penicilina', 'Polen', 'Mariscos']);
+  readonly histories = signal<MedicalHistoryModel[]>([]);
+  readonly selectedHistoryId = signal<string | null>(null);
+  readonly entries = signal<MedicalHistoryEntry[]>([]);
+  readonly isSaving = signal(false);
+
+  readonly bloodType = signal<string>('');
+  readonly allergiesText = signal<string>('');
+  readonly conditionsText = signal<string>('');
+  readonly medicationsText = signal<string>('');
+  readonly emergencyName = signal<string>('');
+  readonly emergencyPhone = signal<string>('');
+  readonly notes = signal<string>('');
+
+  constructor() {
+    this.loadHistories();
+  }
+
+  onSelectHistory(historyId: string): void {
+    this.selectedHistoryId.set(historyId);
+    this.loadDetail(historyId);
+  }
+
+  onSaveBasicFields(): void {
+    const historyId = this.selectedHistoryId();
+    if (!historyId) {
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.recordsService
+      .patchBasicFields(historyId, {
+        blood_type: this.bloodType().trim() || null,
+        allergies: this.parseList(this.allergiesText()),
+        chronic_conditions: this.parseList(this.conditionsText()),
+        current_medications: this.parseList(this.medicationsText()),
+        emergency_contact_name: this.emergencyName().trim() || null,
+        emergency_contact_phone: this.emergencyPhone().trim() || null,
+        notes: this.notes().trim() || null,
+      })
+      .subscribe({
+        next: (updated) => {
+          this.isSaving.set(false);
+          this.applyBasicFields(updated.basic_fields);
+          this.notification
+            .builder()
+            .success()
+            .summary('Historial actualizado')
+            .detail('Tus datos base se guardaron correctamente.')
+            .show();
+        },
+        error: () => {
+          this.isSaving.set(false);
+          this.notification
+            .builder()
+            .warn()
+            .summary('No se pudo guardar')
+            .detail('Intenta nuevamente en unos segundos.')
+            .show();
+        },
+      });
+  }
+
+  formatDate(isoDate: string): string {
+    return new Date(isoDate).toLocaleString();
+  }
+
+  private loadHistories(): void {
+    this.recordsService.listMyHistories().subscribe({
+      next: (rows) => {
+        this.histories.set(rows);
+        const first = rows[0]?.id;
+        if (first) {
+          this.selectedHistoryId.set(first);
+          this.loadDetail(first);
+        }
+      },
+      error: () => {
+        this.notification
+          .builder()
+          .warn()
+          .summary('No se pudo cargar historiales')
+          .detail('Revisa tu conexión e intenta de nuevo.')
+          .show();
+      },
+    });
+  }
+
+  private loadDetail(historyId: string): void {
+    this.recordsService.getMyHistory(historyId).subscribe({
+      next: (result) => {
+        this.entries.set(result.entries);
+        this.applyBasicFields(result.history.basic_fields || {});
+      },
+      error: () => {
+        this.notification
+          .builder()
+          .warn()
+          .summary('No se pudo cargar el detalle')
+          .detail('Intenta de nuevo en unos segundos.')
+          .show();
+      },
+    });
+  }
+
+  private applyBasicFields(fields: MedicalHistoryModel['basic_fields']): void {
+    this.bloodType.set((fields.blood_type as string) || '');
+    this.allergiesText.set(((fields.allergies as string[]) || []).join(', '));
+    this.conditionsText.set(((fields.chronic_conditions as string[]) || []).join(', '));
+    this.medicationsText.set(((fields.current_medications as string[]) || []).join(', '));
+    this.emergencyName.set((fields.emergency_contact_name as string) || '');
+    this.emergencyPhone.set((fields.emergency_contact_phone as string) || '');
+    this.notes.set((fields.notes as string) || '');
+  }
+
+  private parseList(input: string): string[] {
+    return input
+      .split(',')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  }
 }

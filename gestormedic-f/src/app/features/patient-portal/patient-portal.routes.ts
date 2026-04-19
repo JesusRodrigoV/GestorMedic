@@ -14,7 +14,7 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
         { label: 'Citas - Agendar', icon: 'bx-calendar-plus', route: '/portal/citas/agendar' },
         { label: 'Citas - Historial', icon: 'bx-calendar-check', route: '/portal/citas/historial' },
         { label: 'Mi Historial', icon: 'bx-book-heart', route: '/portal/historial' },
-        { label: 'Documentos', icon: 'bx-file', route: '/portal/documentos' },
+        { label: 'Archivos', icon: 'bx-folder-open', route: '/portal/documentos' },
         { label: 'Recetas', icon: 'bx-capsule', route: '/portal/recetas' },
         { label: 'Configuración', icon: 'bx-cog', route: '/portal/settings' },
       ],

@@ -32,6 +32,18 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
           roleIds: [UserRole.ADMIN_CLINICA],
         },
         { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
+        {
+          label: 'Historiales',
+          icon: 'bx-notepad',
+          route: '/app/historiales',
+          roleIds: [UserRole.MEDICO],
+        },
+        {
+          label: 'Historiales Editables',
+          icon: 'bx-time-five',
+          route: '/app/historiales/editables',
+          roleIds: [UserRole.MEDICO],
+        },
         { label: 'Configuración', icon: 'bx-cog', route: '/app/settings' },
       ],
     },
@@ -73,6 +85,22 @@ export const MEDICAL_ADMIN_ROUTES: Routes = [
       {
         path: 'patients',
         loadComponent: () => import('./patient-list/patient-list'),
+      },
+      {
+        path: 'historiales',
+        loadComponent: () => import('./medical-histories/medical-histories'),
+        canActivate: [roleGuard],
+        data: {
+          allowedRoles: [UserRole.MEDICO],
+        },
+      },
+      {
+        path: 'historiales/editables',
+        loadComponent: () => import('./medical-histories/medical-histories'),
+        canActivate: [roleGuard],
+        data: {
+          allowedRoles: [UserRole.MEDICO],
+        },
       },
     ],
   },

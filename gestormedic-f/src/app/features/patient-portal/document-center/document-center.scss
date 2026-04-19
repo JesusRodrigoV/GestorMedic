@@ -31,6 +31,147 @@
   }
 }
 
+.tabs {
+  display: flex;
+  gap: 0.6rem;
+
+  button {
+    border: 1px solid #cfdbe8;
+    border-radius: 999px;
+    background: #f8fbff;
+    color: #163f69;
+    padding: 0.45rem 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  button.active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+  }
+}
+
+input[type='file'] {
+  margin-top: 0.5rem;
+}
+
+.preview-list {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.5rem;
+
+  article {
+    border: 1px solid #dfe7f1;
+    border-radius: 12px;
+    padding: 0.65rem;
+
+    h4 {
+      margin: 0;
+      color: #102a43;
+    }
+
+    p {
+      margin: 0.25rem 0 0;
+      color: #48617c;
+    }
+  }
+}
+
+.primary {
+  margin-top: 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background: #0f766e;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+}
+
+.table-wrap {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #e1e9f3;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    color: #23476b;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+  }
+}
+
+.dicom-stack-actions {
+  margin-bottom: 0.65rem;
+
+  button {
+    border: 1px solid #0f766e;
+    border-radius: 8px;
+    background: #e8faf7;
+    color: #0f766e;
+    font-weight: 700;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.45rem;
+
+  button {
+    border: 1px solid #d3dfec;
+    border-radius: 8px;
+    background: #f7fbff;
+    padding: 0.35rem 0.6rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .danger {
+    border-color: #f3c2c2;
+    color: #9e1c1c;
+    background: #fff5f5;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 22, 33, 0.45);
+  z-index: 40;
+}
+
+.viewer-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, 94vw);
+  max-height: 90vh;
+  z-index: 50;
+  overflow: auto;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+  }
+
+}
+
 .folder-list {
   margin-top: 0.7rem;
   display: grid;
