@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = 'HS256'
     API_V1_STR: str = '/api/v1'
     CORS_ORIGINS: str = 'http://localhost:4200'
+    HISTORIES_SERVICE_URL: str | None = None
+    HISTORIES_INTERNAL_API_KEY: str | None = None
 
     @property
     def cors_origins_list(self) -> List[str]:

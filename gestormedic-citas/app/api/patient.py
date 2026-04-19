@@ -11,6 +11,7 @@ from app.models.enums import AppointmentStatus
 from app.models.external import DoctorProfile, Room, Specialty, User
 from app.schemas.common import AppointmentOut, ReserveAppointmentIn
 from app.services.scheduling import generate_slots_for_doctor
+from app.services.histories_client import bootstrap_appointment_history
 
 
 router = APIRouter(prefix='/patient', tags=['Patient'])
@@ -103,6 +104,14 @@ async def reserve_appointment(
     )
     db.add(appointment)
     await db.flush()
+
+    await bootstrap_appointment_history(
+        appointment_id=appointment.id,
+        patient_user_id=current_user.id,
+        doctor_profile_id=appointment.doctor_id,
+        specialty_id=appointment.specialty_id,
+        specialty_name=slot['specialty_name'],
+    )
 
     doctor_name = (
         await db.execute(

@@ -1,0 +1,60 @@
+.dicom-wrapper {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.dicom-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+
+  .left-tools,
+  .right-tools {
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  button {
+    border: 1px solid #d2dfee;
+    border-radius: 8px;
+    background: #f7fbff;
+    padding: 0.35rem 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button.active {
+    background: #0f766e;
+    color: #fff;
+    border-color: #0f766e;
+  }
+}
+
+.loading {
+  margin: 0;
+  color: #415d79;
+}
+
+.viewport {
+  width: 100%;
+  min-height: 70vh;
+  border: 1px solid #d6e0ec;
+  border-radius: 10px;
+  background: #0b0f15;
+}
+
+.stack-controls {
+  display: grid;
+  gap: 0.35rem;
+
+  p {
+    margin: 0;
+    color: #385875;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+  }
+}

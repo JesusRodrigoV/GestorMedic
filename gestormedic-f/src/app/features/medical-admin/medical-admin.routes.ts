@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { pendingChangesGuard } from '@core/guards/pending-changes.guard';
-import { roleGuard } from '@core/guards/role-guard';
+import { roleGuard } from '@core/guards/role.guard';
 import { UserRole } from '@core/models/role.model';
 import { AuthStore } from '@features/auth/stores/auth.store';
 
@@ -18,15 +18,23 @@ const getDynamicMenu = () => {
 
   if ([UserRole.MEDICO, UserRole.ADMIN_CLINICA, UserRole.RECEPCIONISTA].includes(user.role_id)) {
     baseMenu.push(
-      { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/weekly-agenda' },
-      { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendar' },
-      { label: 'Citas', icon: 'bx-calendar-event', route: '/app/appointments' },
+      { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/agenda-semanal' },
+      { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendario' },
+      { label: 'Citas', icon: 'bx-calendar-event', route: '/app/citas' },
+    );
+  }
+
+  // Rutas exclusivas del médico (Agregadas por el otro desarrollador)
+  if (user.role_id === UserRole.MEDICO) {
+    baseMenu.push(
+      { label: 'Historiales', icon: 'bx-notepad', route: '/app/historiales' },
+      { label: 'Historiales Editables', icon: 'bx-time-five', route: '/app/historiales/editables' }
     );
   }
 
   if (user.role_id === UserRole.ADMIN_CLINICA) {
     baseMenu.push(
-      { label: 'Consultorios', icon: 'bx-building-house', route: '/app/consulting-rooms' },
+      { label: 'Consultorios', icon: 'bx-building-house', route: '/app/consultorios' },
       { label: 'Gestión de Clínica', icon: 'bx-buildings', route: '/app/management' },
     );
   }
@@ -54,20 +62,20 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
         loadComponent: () => import('./dashboard/dashboard'),
       },
       {
-        path: 'weekly-agenda',
+        path: 'agenda-semanal',
         loadComponent: () => import('./weekly-agenda/weekly-agenda'),
         canDeactivate: [pendingChangesGuard],
       },
       {
-        path: 'calendar',
+        path: 'calendario',
         loadComponent: () => import('./agenda-calendar/agenda-calendar'),
       },
       {
-        path: 'appointments',
+        path: 'citas',
         loadComponent: () => import('./appointments/appointments'),
       },
       {
-        path: 'consulting-rooms',
+        path: 'consultorios',
         loadComponent: () => import('./consulting-rooms/consulting-rooms'),
         canActivate: [roleGuard],
         data: { allowedRoles: [UserRole.ADMIN_CLINICA] },
@@ -75,6 +83,18 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
       {
         path: 'patients',
         loadComponent: () => import('./patient-list/patient-list'),
+      },
+      {
+        path: 'historiales',
+        loadComponent: () => import('./medical-histories/medical-histories'),
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserRole.MEDICO] },
+      },
+      {
+        path: 'historiales/editables',
+        loadComponent: () => import('./medical-histories/medical-histories'),
+        canActivate: [roleGuard],
+        data: { allowedRoles: [UserRole.MEDICO] },
       },
       {
         path: 'management',

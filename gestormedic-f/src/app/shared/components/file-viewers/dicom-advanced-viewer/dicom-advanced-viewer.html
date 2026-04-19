@@ -1,0 +1,30 @@
+<section class="dicom-wrapper">
+  <header class="dicom-toolbar">
+    <div class="left-tools">
+      <button type="button" [class.active]="currentTool() === 'wl'" (click)="useTool('wl')">Window/Level</button>
+      <button type="button" [class.active]="currentTool() === 'zoom'" (click)="useTool('zoom')">Zoom</button>
+      <button type="button" [class.active]="currentTool() === 'pan'" (click)="useTool('pan')">Pan</button>
+    </div>
+    <div class="right-tools">
+      <button type="button" (click)="zoomIn()">+</button>
+      <button type="button" (click)="zoomOut()">-</button>
+      <button type="button" (click)="resetView()">Reset</button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <p class="loading">Cargando estudio DICOM...</p>
+  }
+
+  <div class="viewport" #dicomViewport></div>
+
+  <footer class="stack-controls">
+    <p>Slice {{ currentIndex() + 1 }} / {{ totalImages() || 1 }}</p>
+    <input
+      type="range"
+      min="0"
+      [max]="maxStackIndex"
+      [value]="currentIndex()"
+      (input)="goToIndex(+$any($event.target).value)" />
+  </footer>
+</section>

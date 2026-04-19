@@ -1,0 +1,93 @@
+<main class="page">
+  <section class="card">
+    <h2>Historiales clínicos de pacientes</h2>
+    <p>Registrar nueva entrada al finalizar consulta y editar solo dentro de la ventana de 3 días.</p>
+  </section>
+
+  <section class="card">
+    <h3>Nueva entrada de consulta</h3>
+    <div class="form-grid">
+      <label>
+        ID de cita
+        <input [ngModel]="appointmentId()" (ngModelChange)="appointmentId.set($event)" placeholder="Ej. 451" />
+      </label>
+      <label>
+        ID usuario paciente
+        <input [ngModel]="patientUserId()" (ngModelChange)="patientUserId.set($event)" placeholder="Ej. 128" />
+      </label>
+      <label>
+        ID especialidad
+        <input [ngModel]="specialtyId()" (ngModelChange)="specialtyId.set($event)" placeholder="Ej. 7" />
+      </label>
+      <label>
+        Nombre especialidad
+        <input [ngModel]="specialtyName()" (ngModelChange)="specialtyName.set($event)" placeholder="Cardiología" />
+      </label>
+      <label class="full">
+        Título sección
+        <input [ngModel]="sectionTitle()" (ngModelChange)="sectionTitle.set($event)" placeholder="Evaluación inicial" />
+      </label>
+      <label class="full">
+        Notas clínicas
+        <textarea rows="5" [ngModel]="notes()" (ngModelChange)="notes.set($event)"></textarea>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="primary" (click)="onCreateEntry()">Guardar nueva entrada</button>
+      @if (selectedEntryId()) {
+        <button type="button" class="secondary" (click)="onPatchSelected()">Actualizar entrada seleccionada</button>
+      }
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Entradas que aún puedes modificar</h3>
+    <div class="entries">
+      @for (entry of editableEntries(); track entry.id) {
+        <article>
+          <header>
+            <h4>{{ entry.specialty_name }} · Cita #{{ entry.appointment_id }}</h4>
+            <button type="button" (click)="startEdit(entry)">Editar</button>
+          </header>
+          <p><strong>Paciente:</strong> {{ entry.patient_user_id }}</p>
+          <p><strong>Sección:</strong> {{ entry.section_title }}</p>
+          <p>{{ entry.notes || 'Sin notas' }}</p>
+          <small>Editable hasta: {{ formatDate(entry.editable_until) }}</small>
+        </article>
+      }
+      @if (!editableEntries().length) {
+        <p class="empty">No tienes entradas disponibles para editar.</p>
+      }
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Archivos de paciente</h3>
+    <p>Consulta archivos de pacientes con los que tienes citas registradas.</p>
+    <div class="doctor-files-filter">
+      <input
+        [ngModel]="selectedPatientFilesUserId()"
+        (ngModelChange)="selectedPatientFilesUserId.set($event)"
+        placeholder="ID de usuario paciente" />
+      <button type="button" (click)="loadPatientFiles()">Cargar archivos</button>
+    </div>
+
+    <div class="entries">
+      @for (file of patientFiles(); track file.id) {
+        <article>
+          <header>
+            <h4>{{ file.original_name }}</h4>
+            <button type="button" (click)="openPatientFile(file)">Ver</button>
+          </header>
+          <p><strong>Tipo:</strong> {{ file.content_type }}</p>
+          <p><strong>Tamaño:</strong> {{ (file.size_bytes / 1024 / 1024).toFixed(2) }} MB</p>
+          <small>Subido: {{ formatDate(file.uploaded_at) }}</small>
+        </article>
+      }
+      @if (!patientFiles().length) {
+        <p class="empty">No hay archivos cargados para el paciente seleccionado.</p>
+      }
+    </div>
+  </section>
+</main>

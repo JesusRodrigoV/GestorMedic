@@ -28,6 +28,7 @@ from app.core import email_service
 from app.schemas.user import UserCreate, UserOut
 from app.models.user import User
 from app.schemas.user import GoogleAuthRequest 
+from app.core.histories_client import bootstrap_patient_history
 
 router = APIRouter()
 
@@ -71,11 +72,13 @@ async def register(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
     
-    return await crud_user.create_public_user(
+    user = await crud_user.create_public_user(
         db, 
         user_in=payload, 
         role_name=UserRole.PACIENTE.value 
     )
+    await bootstrap_patient_history(user.id)
+    return user
 
 @router.post("/login", response_model=Union[TokenResponse, LoginStep2Response])
 @limiter.limit("5/minute")
@@ -141,6 +144,7 @@ async def login_google(
             password=None
         )
         user = await crud_user.create_public_user(db, user_in=user_in, role_name=UserRole.PACIENTE.value)
+        await bootstrap_patient_history(user.id)
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Cuenta desactivada")
