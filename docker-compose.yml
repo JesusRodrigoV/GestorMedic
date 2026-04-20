@@ -50,12 +50,6 @@ services:
     container_name: gm-notifications-api
     env_file:
       - ./gestormedic-notification/.env_do
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/system/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     depends_on:
       gm-notifications-db:
         condition: service_healthy
@@ -87,9 +81,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/openapi.json > /dev/null || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+      timeout: 10s
+      retries: 6
+      start_period: 120s
     depends_on:
       gm-backend-db:
         condition: service_healthy
@@ -103,10 +97,11 @@ services:
       context: ./gestormedic-citas
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - "4200:4200"
+    env_file:
+      - ./gestormedic-b/.env_do
+    # ports removed: frontend serves on 4200
     volumes:
-      - ./gestormedic-f:/app
+      - ./gestormedic-citas:/app
       - /app/node_modules
     depends_on:
       gm-backend-db:
@@ -130,17 +125,18 @@ services:
     networks:
       - gm-network
 
-  # gm-frontend:
-  #   build: 
-  #     context: ./gestormedic-f 
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   ports:
-  #     - "4200:80"
-  #   depends_on:
-  #     - api-gateway
-  #   networks:
-  #     - gm-network
+  gm-frontend:
+    build: 
+      context: ./gestormedic-f 
+      dockerfile: Dockerfile
+    container_name: gm-frontend
+    restart: always
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api-gateway
+    networks:
+      - gm-network
 
 volumes:
   gm-notifications-data:
