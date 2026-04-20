@@ -111,6 +111,34 @@ async def get_report(
     )
 
 
+@router.get('/internal/appointments/{appointment_id}/can-rate')
+async def can_rate_appointment(
+    appointment_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Endpoint interno para que el microservicio de ranking verifique si una cita es calificable.
+    """
+    stmt = select(Appointment).where(Appointment.id == appointment_id)
+    appointment = (await db.execute(stmt)).scalar_one_or_none()
+    if not appointment:
+        return {"can_rate": False, "detail": "Cita no encontrada"}
+
+    # Verificar que exista el informe
+    report = (
+        await db.execute(select(AppointmentReport).where(AppointmentReport.appointment_id == appointment_id))
+    ).scalar_one_or_none()
+    
+    if not report:
+        return {"can_rate": False, "detail": "No existe informe médico para esta cita"}
+
+    return {
+        "can_rate": True, 
+        "doctor_id": appointment.doctor_id, 
+        "patient_id": appointment.patient_user_id
+    }
+
+
 @router.post('/patient/appointments/{appointment_id}/rating', response_model=AppointmentRatingOut, status_code=status.HTTP_201_CREATED)
 async def post_rating(
     appointment_id: int,

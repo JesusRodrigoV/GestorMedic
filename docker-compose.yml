@@ -10,9 +10,10 @@ services:
       - gm-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d notifications_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   gm-notifications-redis:
     image: redis:8.6-alpine
@@ -33,13 +34,56 @@ services:
       - gm-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d gestormedic_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   gm-backend-redis:
     image: redis:8.6-alpine
     container_name: gm-backend-redis
+    networks:
+      - gm-network
+
+  gm-ranking-db:
+    image: postgres:15-alpine
+    container_name: gm-ranking-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ranking_db
+    networks:
+      - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ranking_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  gm-ranking-api:
+    build:
+      context: ./gestormedic-ranking
+      dockerfile: Dockerfile
+    container_name: gm-ranking-api
+    env_file:
+      - ./gestormedic-ranking/.env_do
+    depends_on:
+      gm-ranking-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
+  gm-historiales:
+    build:
+      context: ./historiales-medicos
+      dockerfile: Dockerfile
+    container_name: gm-historiales
+    env_file:
+      - ./historiales-medicos/.env_do
+    depends_on:
+      gm-backend-db:
+        condition: service_healthy
     networks:
       - gm-network
 
@@ -122,6 +166,8 @@ services:
       - gm-backend
       - gm-citas
       - gm-notifications-api
+      - gm-ranking-api
+      - gm-historiales
     networks:
       - gm-network
 
