@@ -1,48 +1,66 @@
-@use '../../../shared/styles/design-tokens.scss' as *;
+@use '../../../shared/styles/design-tokens.scss' as tokens;
+@use '../../../shared/styles/card-system.scss' as card;
+@use '../../../shared/styles/button-system.scss' as button;
+
+:host {
+  display: block;
+  padding: tokens.$spacing-md;
+  background-color: var(--p-surface-50);
+}
 
 .rooms-page {
   display: grid;
-  gap: 1rem;
+  gap: tokens.$spacing-lg;
 
   header {
-    border: 1px solid $color-border-default;
-    border-radius: $border-radius-xl;
-    background: white;
-    padding: 1rem;
+    @include card.card-elevated();
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    align-items: end;
+    gap: tokens.$spacing-md;
+    align-items: flex-end;
 
     .eyebrow {
       margin: 0;
-      font-size: 0.72rem;
+      font-size: tokens.$font-size-xs;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: $color-primary;
-      font-weight: 700;
+      color: tokens.$color-primary;
+      font-weight: tokens.$font-weight-bold;
     }
 
     h2 {
-      margin: 0.25rem 0;
+      margin: tokens.$spacing-xs 0;
+      font-size: tokens.$font-size-xl;
+      font-weight: tokens.$font-weight-bold;
     }
 
     p {
       margin: 0;
-      color: $color-text-secondary;
+      color: tokens.$color-text-secondary;
+      font-size: tokens.$font-size-sm;
     }
 
     label {
       display: grid;
-      gap: 0.25rem;
-      font-size: 0.85rem;
-      color: $color-text-secondary;
+      gap: tokens.$spacing-xs;
+      font-size: tokens.$font-size-xs;
+      color: tokens.$color-text-secondary;
+      font-weight: tokens.$font-weight-medium;
 
       select {
-        border: 1px solid $color-border-default;
-        border-radius: $border-radius-md;
-        padding: 0.42rem;
+        border: 1px solid tokens.$color-border-default;
+        border-radius: tokens.$border-radius-md;
+        padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
         font: inherit;
+        color: tokens.$color-text-primary;
+        transition: border-color tokens.$transition-base tokens.$ease-in-out;
+        background-color: white;
+
+        &:focus {
+          outline: none;
+          border-color: tokens.$color-primary;
+          box-shadow: tokens.$shadow-focus-primary;
+        }
       }
     }
   }
@@ -50,57 +68,88 @@
 
 .grid {
   display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: tokens.$spacing-lg;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .panel {
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-lg;
-  background: white;
-  padding: 0.9rem;
+  @include card.card-elevated($padding: tokens.$spacing-lg);
 
   h3 {
-    margin: 0;
+    margin: 0 0 tokens.$spacing-md 0;
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-text-primary;
+    border-bottom: 1px solid tokens.$color-border-default;
+    padding-bottom: tokens.$spacing-sm;
   }
 
   label {
-    margin-top: 0.6rem;
+    margin-top: tokens.$spacing-md;
     display: grid;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-    color: $color-text-secondary;
+    gap: tokens.$spacing-xs;
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-text-secondary;
+    font-weight: tokens.$font-weight-medium;
 
     input,
     select {
-      border: 1px solid $color-border-default;
-      border-radius: $border-radius-md;
-      padding: 0.42rem;
+      border: 1px solid tokens.$color-border-default;
+      border-radius: tokens.$border-radius-md;
+      padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
       font: inherit;
+      color: tokens.$color-text-primary;
+      background-color: white;
+      transition: all tokens.$transition-base tokens.$ease-in-out;
+
+      &:focus {
+        outline: none;
+        border-color: tokens.$color-primary;
+        box-shadow: tokens.$shadow-focus-primary;
+      }
     }
   }
 
   button {
-    margin-top: 0.7rem;
-    border: 0;
-    border-radius: $border-radius-full;
-    background: var(--p-yale-500);
-    color: white;
-    padding: 0.42rem 0.9rem;
-    cursor: pointer;
+    margin-top: tokens.$spacing-lg;
+    @include button.button-primary();
+    @include button.button-size-sm();
+    width: 100%;
   }
 
   ul {
-    margin: 0.8rem 0 0;
-    padding-left: 1rem;
-    color: $color-text-secondary;
+    margin: tokens.$spacing-lg 0 0;
+    padding: 0;
+    list-style: none;
+    color: tokens.$color-text-secondary;
     display: grid;
-    gap: 0.35rem;
+    gap: tokens.$spacing-sm;
+
+    li {
+      padding: tokens.$spacing-sm;
+      background-color: tokens.$color-bg-secondary;
+      border-radius: tokens.$border-radius-md;
+      font-size: tokens.$font-size-sm;
+      border: 1px solid transparent;
+      transition: all tokens.$transition-base tokens.$ease-in-out;
+
+      &:hover {
+        border-color: tokens.$color-border-default;
+        background-color: tokens.$color-bg-hover;
+      }
+
+      strong {
+        color: tokens.$color-text-primary;
+        font-weight: tokens.$font-weight-semibold;
+      }
+    }
   }
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: tokens.$spacing-md;
 }
+
+

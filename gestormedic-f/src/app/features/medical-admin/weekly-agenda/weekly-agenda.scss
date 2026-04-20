@@ -1,134 +1,166 @@
-@use '../../../shared/styles/design-tokens.scss' as *;
+@use '../../../shared/styles/design-tokens.scss' as tokens;
+@use '../../../shared/styles/card-system.scss' as card;
+@use '../../../shared/styles/button-system.scss' as button;
+
+:host {
+  display: block;
+  padding: tokens.$spacing-md;
+  background-color: var(--p-surface-50);
+}
 
 .weekly-page {
   display: grid;
-  gap: 1rem;
+  gap: tokens.$spacing-lg;
 
   header {
+    @include card.card-elevated();
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    align-items: end;
-    border: 1px solid $color-border-default;
-    border-radius: $border-radius-xl;
-    padding: 1rem;
-    background: white;
+    gap: tokens.$spacing-md;
+    align-items: flex-end;
 
     .eyebrow {
       margin: 0;
-      color: $color-primary;
+      color: tokens.$color-primary;
       text-transform: uppercase;
-      font-size: 0.72rem;
-      font-weight: 700;
+      font-size: tokens.$font-size-xs;
+      font-weight: tokens.$font-weight-bold;
       letter-spacing: 0.08em;
     }
 
     h2 {
-      margin: 0.25rem 0;
+      margin: tokens.$spacing-xs 0;
+      font-size: tokens.$font-size-xl;
+      font-weight: tokens.$font-weight-bold;
     }
 
     p {
       margin: 0;
-      color: $color-text-secondary;
+      color: tokens.$color-text-secondary;
+      font-size: tokens.$font-size-sm;
     }
 
     .save {
-      border: 0;
-      border-radius: $border-radius-full;
-      background: var(--p-yale-500);
-      color: white;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
+      @include button.button-primary();
+      @include button.button-size-sm();
     }
   }
 }
 
 .days {
   display: flex;
-  gap: 0.45rem;
+  gap: tokens.$spacing-sm;
   flex-wrap: wrap;
+  padding: tokens.$spacing-xs;
+  background-color: tokens.$color-bg-secondary;
+  border-radius: tokens.$border-radius-full;
+  width: fit-content;
 
   button {
-    border: 1px solid $color-border-default;
-    border-radius: $border-radius-full;
-    background: white;
-    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: tokens.$border-radius-full;
+    background: transparent;
+    padding: tokens.$spacing-xs tokens.$spacing-md;
     cursor: pointer;
+    font-size: tokens.$font-size-xs;
+    font-weight: tokens.$font-weight-medium;
+    color: tokens.$color-text-secondary;
+    transition: all tokens.$transition-base tokens.$ease-in-out;
 
     &.active {
-      background: var(--p-energy-500);
+      background: tokens.$color-primary;
       color: white;
-      border-color: transparent;
+      box-shadow: tokens.$shadow-subtle;
+    }
+
+    &:hover:not(.active) {
+      background-color: tokens.$color-bg-hover;
     }
   }
 }
 
 .blocks {
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-xl;
-  background: white;
-  padding: 1rem;
+  @include card.card-elevated();
+  display: grid;
+  gap: tokens.$spacing-md;
 
   .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid tokens.$color-border-default;
+    padding-bottom: tokens.$spacing-sm;
 
     h3 {
       margin: 0;
+      font-size: tokens.$font-size-lg;
+      font-weight: tokens.$font-weight-bold;
+      color: tokens.$color-text-primary;
     }
 
     button {
-      border: 1px solid $color-border-default;
-      border-radius: $border-radius-full;
-      background: white;
-      padding: 0.35rem 0.8rem;
-      cursor: pointer;
+      @include button.button-secondary();
+      @include button.button-size-sm();
     }
   }
 }
 
 .block-row {
-  margin-top: 0.8rem;
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-lg;
-  padding: 0.8rem;
+  @include card.card-minimal();
+  @include card.card-hover-lift();
+  padding: tokens.$spacing-md;
   display: grid;
-  gap: 0.6rem;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: tokens.$spacing-md;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: end;
 
   label {
     display: grid;
-    gap: 0.2rem;
-    font-size: 0.84rem;
-    color: $color-text-secondary;
+    gap: tokens.$spacing-xs;
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-text-secondary;
+    font-weight: tokens.$font-weight-medium;
 
     input,
     select {
-      border: 1px solid $color-border-default;
-      border-radius: $border-radius-md;
-      padding: 0.42rem;
+      border: 1px solid tokens.$color-border-default;
+      border-radius: tokens.$border-radius-md;
+      padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
       font: inherit;
-      color: $color-text-primary;
+      color: tokens.$color-text-primary;
       background: white;
+      transition: all tokens.$transition-base tokens.$ease-in-out;
+
+      &:focus {
+        outline: none;
+        border-color: tokens.$color-primary;
+        box-shadow: tokens.$shadow-focus-primary;
+      }
     }
   }
 
   .remove {
-    border: 0;
-    border-radius: $border-radius-full;
-    padding: 0.4rem 0.8rem;
-    background: #fee2e2;
-    color: #b91c1c;
-    cursor: pointer;
-    align-self: end;
+    @include button.button-ghost();
+    @include button.button-size-sm();
+    color: tokens.$color-error;
+    background-color: #fff1f2;
+    border-color: tokens.$color-error-light;
+    
+    &:hover {
+      background-color: tokens.$color-error-light;
+      color: darkred;
+    }
   }
 }
 
 .empty {
-  margin-top: 0.8rem;
-  border: 1px dashed $color-border-default;
-  border-radius: $border-radius-md;
-  padding: 0.8rem;
-  color: $color-text-secondary;
+  @include card.card-minimal();
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: tokens.$spacing-xl;
+  color: tokens.$color-text-muted;
+  border-style: dashed;
+  font-style: italic;
 }
+
+

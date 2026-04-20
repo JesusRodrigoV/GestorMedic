@@ -1,87 +1,117 @@
-@use '../../../shared/styles/design-tokens.scss' as *;
+@use '../../../shared/styles/design-tokens.scss' as tokens;
+@use '../../../shared/styles/card-system.scss' as card;
+@use '../../../shared/styles/button-system.scss' as button;
+
+:host {
+  display: block;
+  padding: tokens.$spacing-md;
+  background-color: var(--p-surface-50);
+}
 
 .calendar-page {
   display: grid;
-  gap: 1rem;
+  gap: tokens.$spacing-lg;
 
   header {
-    border: 1px solid $color-border-default;
-    border-radius: $border-radius-xl;
-    background: white;
-    padding: 1rem;
+    @include card.card-elevated();
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    align-items: end;
+    gap: tokens.$spacing-md;
+    align-items: flex-end;
 
     .eyebrow {
       margin: 0;
-      font-size: 0.72rem;
-      color: $color-primary;
+      font-size: tokens.$font-size-xs;
+      color: tokens.$color-primary;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-weight: 700;
+      font-weight: tokens.$font-weight-bold;
     }
 
     h2 {
-      margin: 0.25rem 0;
+      margin: tokens.$spacing-xs 0;
+      font-size: tokens.$font-size-xl;
+      font-weight: tokens.$font-weight-bold;
     }
 
     p {
       margin: 0;
-      color: $color-text-secondary;
+      color: tokens.$color-text-secondary;
+      font-size: tokens.$font-size-sm;
     }
   }
 }
 
 .view-switch {
   display: inline-flex;
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-full;
+  border: 1px solid tokens.$color-border-default;
+  border-radius: tokens.$border-radius-full;
   overflow: hidden;
+  background-color: tokens.$color-bg-secondary;
+  padding: tokens.$spacing-xs;
+  gap: tokens.$spacing-xs;
 
   button {
     border: 0;
     background: transparent;
-    padding: 0.35rem 0.8rem;
+    padding: tokens.$spacing-xs tokens.$spacing-md;
+    border-radius: tokens.$border-radius-full;
     cursor: pointer;
+    font-size: tokens.$font-size-xs;
+    font-weight: tokens.$font-weight-medium;
+    color: tokens.$color-text-secondary;
+    transition: all tokens.$transition-base tokens.$ease-in-out;
 
     &.active {
-      background: var(--p-yale-500);
+      background: tokens.$color-secondary;
       color: white;
+      box-shadow: tokens.$shadow-subtle;
+    }
+
+    &:hover:not(.active) {
+      background-color: tokens.$color-bg-hover;
     }
   }
 }
 
 .calendar-grid {
   display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: tokens.$spacing-md;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .day-card {
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-lg;
-  background: white;
-  padding: 0.8rem;
-
+  @include card.card-elevated($padding: tokens.$spacing-md);
+  
   h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: tokens.$font-size-base;
+    font-weight: tokens.$font-weight-semibold;
+    color: tokens.$color-text-primary;
+    border-bottom: 1px solid tokens.$color-border-default;
+    padding-bottom: tokens.$spacing-sm;
+    margin-bottom: tokens.$spacing-md;
   }
 }
 
 .slots {
-  margin-top: 0.7rem;
   display: grid;
-  gap: 0.5rem;
+  gap: tokens.$spacing-sm;
 
   button {
     border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: $border-radius-md;
+    border-radius: tokens.$border-radius-md;
     text-align: left;
-    padding: 0.55rem;
+    padding: tokens.$spacing-sm;
     cursor: pointer;
+    transition: all tokens.$transition-base tokens.$ease-in-out;
+    box-shadow: tokens.$shadow-subtle;
+
+    &:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: tokens.$shadow-medium;
+      filter: brightness(0.95);
+    }
 
     strong,
     span,
@@ -89,91 +119,108 @@
       display: block;
     }
 
+    strong {
+      font-size: tokens.$font-size-sm;
+      color: tokens.$color-text-primary;
+    }
+
     span,
     small {
-      color: #334155;
+      color: tokens.$color-text-secondary;
+      font-size: tokens.$font-size-xs;
     }
 
     &.disabled {
-      opacity: 0.6;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 }
 
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.35);
-  z-index: 998;
+  @include card.overlay-backdrop();
 }
 
 .modal {
+  @include card.card-elevated($padding: tokens.$spacing-lg);
   position: fixed;
-  z-index: 999;
+  z-index: tokens.$z-index-modal;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(520px, 90vw);
-  border: 1px solid $color-border-default;
-  border-radius: $border-radius-xl;
-  background: white;
-  padding: 1rem;
   display: grid;
-  gap: 0.55rem;
+  gap: tokens.$spacing-md;
+  animation: cardSlideIn tokens.$animation-subtle tokens.$ease-out;
 
   h3 {
-    margin: 0 0 0.2rem;
+    margin: 0 0 tokens.$spacing-xs;
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-bold;
   }
 
   label {
     display: grid;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-    color: $color-text-secondary;
+    gap: tokens.$spacing-xs;
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-text-secondary;
+    font-weight: tokens.$font-weight-medium;
 
     input,
     select,
     textarea {
-      border: 1px solid $color-border-default;
-      border-radius: $border-radius-md;
-      padding: 0.45rem;
+      border: 1px solid tokens.$color-border-default;
+      border-radius: tokens.$border-radius-md;
+      padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
       font: inherit;
-      color: $color-text-primary;
+      color: tokens.$color-text-primary;
       background: white;
+      transition: all tokens.$transition-base tokens.$ease-in-out;
+
+      &:focus {
+        outline: none;
+        border-color: tokens.$color-primary;
+        box-shadow: tokens.$shadow-focus-primary;
+      }
     }
 
     textarea {
-      min-height: 64px;
+      min-height: 80px;
       resize: vertical;
     }
   }
 
   .checkbox {
     display: flex;
-    gap: 0.45rem;
+    gap: tokens.$spacing-sm;
     align-items: center;
+    cursor: pointer;
+
+    input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
   }
 
   footer {
     display: flex;
-    justify-content: end;
-    gap: 0.5rem;
+    justify-content: flex-end;
+    gap: tokens.$spacing-sm;
+    margin-top: tokens.$spacing-md;
 
     button {
-      border: 0;
-      border-radius: $border-radius-full;
-      padding: 0.4rem 0.85rem;
-      cursor: pointer;
-    }
+      &.ghost {
+        @include button.button-secondary();
+        @include button.button-size-sm();
+      }
 
-    .ghost {
-      border: 1px solid $color-border-default;
-      background: white;
-    }
-
-    .primary {
-      background: var(--p-yale-500);
-      color: white;
+      &.primary {
+        @include button.button-primary();
+        @include button.button-size-sm();
+      }
     }
   }
 }
+
+

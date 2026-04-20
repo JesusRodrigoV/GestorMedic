@@ -1,18 +1,30 @@
+@use '../../../shared/styles/design-tokens.scss' as tokens;
+@use '../../../shared/styles/card-system.scss' as card;
+
 :host {
   display: block;
-  padding: 1rem;
+  padding: tokens.$spacing-md;
+  background-color: var(--p-surface-50);
 }
 
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: tokens.$spacing-lg;
 }
 
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: tokens.$spacing-lg;
+}
+
+.metric-card {
+  ::ng-deep .p-card {
+    @include card.card-elevated();
+    @include card.card-hover-lift();
+    padding: 0;
+  }
 }
 
 .metric-content {
@@ -27,39 +39,45 @@
 }
 
 .metric-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  font-size: tokens.$font-size-sm;
+  color: tokens.$color-text-secondary;
+  font-weight: tokens.$font-weight-medium;
+  margin-bottom: tokens.$spacing-xs;
 }
 
 .metric-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: tokens.$font-size-3xl;
+  font-weight: tokens.$font-weight-bold;
+  color: tokens.$color-text-primary;
 }
 
 .metric-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: tokens.$border-radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f1f5f9;
-  color: #64748b;
+  background-color: tokens.$color-bg-secondary;
+  color: tokens.$color-text-secondary;
   font-size: 1.5rem;
+  transition: all tokens.$transition-base tokens.$ease-in-out;
 }
 
 .main-content-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: tokens.$spacing-lg;
 }
 
 .timeline-section {
   width: 100%;
   min-width: 300px;
+
+  ::ng-deep .p-card {
+    @include card.card-elevated();
+    height: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -69,17 +87,19 @@
 }
 
 .timeline-event-content {
-  padding-bottom: 1.5rem;
-  font-size: 0.9rem;
+  padding-bottom: tokens.$spacing-lg;
+  font-size: tokens.$font-size-sm;
   
   strong {
-    color: #1e293b;
+    color: tokens.$color-text-primary;
+    font-weight: tokens.$font-weight-semibold;
   }
   
   .time-text {
-    color: #64748b;
-    font-size: 0.8rem;
-    margin: 0.25rem 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-xs;
+    margin: tokens.$spacing-xs 0;
     display: inline-block;
   }
 }
+
