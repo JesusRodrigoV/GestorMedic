@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, Injector, runInInjectionContext } from '@angular/core';
 import { AdminHeader } from './components/admin-header';
 import { Sidebar } from '@shared/components/sidebar';
 import { MenuItem } from '@shared/models/menu-item';
 import { ActivatedRoute, Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import * as AuthStoreModule from '@features/auth/stores/auth.store';
 
 @Component({
   selector: 'app-admin-layout',
@@ -13,12 +14,13 @@ import { ActivatedRoute, Router, NavigationEnd, RouterOutlet } from '@angular/ro
 })
 export default class AdminLayout {
   private route = inject(ActivatedRoute);
-  private authStore = inject(AuthStore);
+  private authStore = inject(AuthStoreModule.AuthStore);
 
   isSidebarCollapsed = signal(false);
   menuItems = signal<MenuItem[]>(this.findMenuItems());
 
   private router = inject(Router);
+  private injector = inject(Injector);
 
   // initialize reactive watcher for route changes
   private _init = (() => {
@@ -42,20 +44,23 @@ export default class AdminLayout {
   private findMenuItems(): MenuItem[] {
     try {
       const snapshots: any[] = (this.route.snapshot as any).pathFromRoot || [];
-      // Debug: log snapshots to help find where the menu data is attached
-      console.debug('AdminLayout: route snapshots for menu discovery', snapshots.map(s => ({ path: s.routeConfig?.path, data: s.data })));
+      const user = this.authStore.currentUser();
       for (const sn of snapshots) {
         if (sn && sn.data && sn.data['menu']) {
-          const menu = sn.data['menu'] as MenuItem[];
-          console.debug('AdminLayout: found menu in snapshot', sn.routeConfig?.path, menu);
+          const rawMenu = sn.data['menu'];
+          const menu = typeof rawMenu === 'function'
+            ? (rawMenu as Function)(user) as MenuItem[]
+            : (rawMenu as MenuItem[]);
           return this.ensureRanking(menu);
         }
       }
     } catch (_e) {
       // ignore
     }
-    const fallback = (this.route.snapshot.data['menu'] || []) as MenuItem[];
-    console.debug('AdminLayout: fallback menu', fallback);
+    const rawFallback = this.route.snapshot.data['menu'] || [];
+    const fallback = typeof rawFallback === 'function'
+      ? (rawFallback as Function)(this.authStore.currentUser()) as MenuItem[]
+      : (rawFallback as MenuItem[]);
     return this.ensureRanking(fallback);
   }
 

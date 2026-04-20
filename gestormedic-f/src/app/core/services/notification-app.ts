@@ -1,48 +1,54 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { AppNotification } from '@core/models/app-notification.model';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationApp {
-  _notifications = signal<AppNotification[]>([
-    {
-      id: '1',
-      title: 'Resultado de Laboratorio',
-      description: 'Los análisis del paciente Roberto Gómez ya están disponibles.',
-      timestamp: new Date(),
-      type: 'success',
-      isRead: false,
-    },
-    {
-      id: '2',
-      title: 'Alerta de Quirófano',
-      description: 'La Sala 03 requiere validación de equipo técnico.',
-      timestamp: new Date(Date.now() - 3600000),
-      type: 'critical',
-      isRead: false,
-    },
-    {
-      id: '3',
-      title: 'Actualización de Agenda',
-      description: 'El Dr. Mendoza ha reprogramado 3 citas para la tarde.',
-      timestamp: new Date(Date.now() - 7200000),
-      type: 'info',
-      isRead: true,
-    },
-  ]);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/notifications`;
 
+  _notifications = signal<AppNotification[]>([]);
   notifications = this._notifications.asReadonly();
+  unreadCount = signal(0);
 
-  unreadCount = computed(() => this._notifications().filter((n) => !n.isRead).length);
+  constructor() {
+    this.refresh();
+  }
+
+  public refresh(): void {
+    this.http.get<{ items: any[], unread_count: number }>(`${this.apiUrl}/me`).subscribe({
+      next: (res) => {
+        const mapped: AppNotification[] = res.items.map(item => ({
+          id: item.id.toString(),
+          title: item.title,
+          description: item.message,
+          timestamp: new Date(item.created_at),
+          type: 'info',
+          isRead: item.is_read
+        }));
+        this._notifications.set(mapped);
+        this.unreadCount.set(res.unread_count);
+      },
+      error: (err) => console.error('Error cargando notificaciones:', err)
+    });
+  }
 
   public markAsRead(id: string): void {
-    this._notifications.update((list) =>
-      list.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
-    );
+    this.http.patch(`${this.apiUrl}/${id}/read`, {}).subscribe(() => {
+      this._notifications.update((list) =>
+        list.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+      );
+      this.unreadCount.update(c => Math.max(0, c - 1));
+    });
   }
 
   public markAllAsRead(): void {
-    this._notifications.update((list) => list.map((n) => ({ ...n, isRead: true })));
+    this.http.post(`${this.apiUrl}/mark-all-read`, {}).subscribe(() => {
+      this._notifications.update((list) => list.map((n) => ({ ...n, isRead: true })));
+      this.unreadCount.set(0);
+    });
   }
 }

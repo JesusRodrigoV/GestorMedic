@@ -6,6 +6,12 @@
       <p>Busca doctores del sistema y reserva desde sus horarios disponibles.</p>
     </div>
     <div class="actions">
+      <gm-rounded-button 
+        label="Gestionar mis citas" 
+        severity="secondary" 
+        routerLink="/portal/citas/historial"
+        style="margin-right: 1rem;"
+      />
       <button type="button" [class.active]="mode() === 'cards'" (click)="mode.set('cards')">Cards</button>
       <button type="button" [class.active]="mode() === 'calendar'" (click)="mode.set('calendar')">Calendario</button>
     </div>

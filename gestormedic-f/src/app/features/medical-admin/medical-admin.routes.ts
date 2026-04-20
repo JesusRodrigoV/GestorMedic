@@ -5,10 +5,7 @@ import { roleGuard } from '@core/guards/role-guard';
 import { UserRole } from '@core/models/role.model';
 import { AuthStore } from '@features/auth/stores/auth.store';
 
-const getDynamicMenu = () => {
-  const authStore = inject(AuthStore);
-  const user = authStore.currentUser();
-
+const getDynamicMenu = (user: any) => {
   if (!user) return [];
 
   const baseMenu = [
@@ -43,14 +40,7 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
     canActivate: [roleGuard],
     data: {
       allowedRoles: [UserRole.MEDICO, UserRole.ADMIN_CLINICA],
-      menu: [
-        { label: 'Panel de Control', icon: 'bx-grid-alt', route: '/app/dashboard' },
-        { label: 'Gestión de Pacientes', icon: 'bxs-user-detail', route: '/app/patients' },
-        { label: 'Ranking', icon: 'bx-heart', route: '/app/ranking' },
-        { label: 'Agenda y Citas', icon: 'bx-calendar-event', route: '/app/appointments' },
-        { label: 'Historiales Clínicos', icon: 'bx-folder-open', route: '/app/medical-records' },
-        { label: 'Configuración', icon: 'bx-cog', route: '/app/settings' },
-      ],
+      menu: getDynamicMenu,
     },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -84,6 +74,10 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
       {
         path: 'ranking',
         loadComponent: () => import('../public/ranking').then((m) => m.default),
+      },
+      {
+        path: 'settings',
+        loadChildren: () => import('../settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
       },
     ],
   },

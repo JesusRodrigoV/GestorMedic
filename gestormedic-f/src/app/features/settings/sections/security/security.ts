@@ -5,6 +5,7 @@ import { TwoFactorStore } from '@features/settings/stores/two-factor.store';
 import { RoundedButton } from '@shared/ui/rounded-button';
 import { InputTextModule } from 'primeng/inputtext';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'gm-security',
@@ -18,6 +19,7 @@ export default class Security implements OnInit {
   protected twoFactorStore = inject(TwoFactorStore);
   protected authStore = inject(AuthStore);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   protected is2FAEnabled = this.authStore.currentUser()?.is_totp_enabled;
 
@@ -41,5 +43,16 @@ export default class Security implements OnInit {
       code: this.verificationForm.getRawValue().code,
       secret: secret,
     });
+  }
+
+  openAppointments(): void {
+    try {
+      this.router.navigate(['/portal/citas/historial']);
+    } catch (_e) {
+      // fallback to direct navigation if router fails
+      if (typeof window !== 'undefined') {
+        window.location.href = '/portal/citas/historial';
+      }
+    }
   }
 }

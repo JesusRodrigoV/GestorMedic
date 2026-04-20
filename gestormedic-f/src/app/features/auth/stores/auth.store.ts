@@ -52,13 +52,36 @@ export const AuthStore = signalStore(
       notification = inject(NotificationService),
     ) => {
       const redirectByUserRole = (user: User) => {
-        let route = '/portal/';
-        if (user.is_admin || user.role_id === 1) {
-          route = '/control/';
-        } else if (user.role_id === 2 || user.role_id === 3) {
-          route = '/app/';
+        try {
+          const currentUrl = (router && router.url) || (typeof window !== 'undefined' ? window.location.pathname : '/');
+          // Only auto-redirect when on auth pages or root
+          if (
+            currentUrl.startsWith('/auth') ||
+            currentUrl === '/' ||
+            currentUrl === '' ||
+            currentUrl === '/login' ||
+            currentUrl === '/auth/login'
+          ) {
+            let route = '/portal/';
+            if (user.is_admin || user.role_id === 1) {
+              route = '/control/';
+            } else if (user.role_id === 2 || user.role_id === 3) {
+              route = '/app/';
+            }
+            router.navigate([route]);
+          } else {
+            console.debug('AuthStore: preserving current route after fetchUser', currentUrl);
+          }
+        } catch (_e) {
+          // fallback to default redirect if something goes wrong
+          let route = '/portal/';
+          if (user.is_admin || user.role_id === 1) {
+            route = '/control/';
+          } else if (user.role_id === 2 || user.role_id === 3) {
+            route = '/app/';
+          }
+          router.navigate([route]);
         }
-        router.navigate([route]);
       };
 
       const clearLocalState = () => {

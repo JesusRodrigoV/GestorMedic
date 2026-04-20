@@ -7,13 +7,15 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { DoctorCard, SlotItem, SlotsByDay } from '@core/models/appointment.model';
 import { AppointmentsService } from '@core/services/appointments';
 import { NotificationService } from '@core/services/notification';
+import { RoundedButton } from '@shared/ui/rounded-button';
 
 @Component({
   selector: 'app-appointment-booking',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink, RoundedButton],
   templateUrl: './appointment-booking.html',
   styleUrl: './appointment-booking.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,26 +56,30 @@ export default class AppointmentBooking {
 
     effect(() => {
       const doctor = this.selectedDoctor();
-      if (!doctor) return;
+      if (doctor) {
+        this.refreshAgenda(doctor.doctor_id);
+      }
+    });
+  }
 
-      const now = new Date();
-      const from = now.toISOString().slice(0, 10);
-      const toDate = new Date(now);
-      toDate.setDate(toDate.getDate() + 14);
-      const to = toDate.toISOString().slice(0, 10);
+  refreshAgenda(doctorId: number): void {
+    const now = new Date();
+    const from = now.toISOString().slice(0, 10);
+    const toDate = new Date(now);
+    toDate.setDate(toDate.getDate() + 14);
+    const to = toDate.toISOString().slice(0, 10);
 
-      this.appointmentsService.getDoctorAvailability(doctor.doctor_id, from, to).subscribe({
-        next: (items) => this.slotsByDay.set(items),
-        error: () => {
-          this.slotsByDay.set([]);
-          this.notification
-            .builder()
-            .warn()
-            .summary('No se pudo cargar la agenda')
-            .detail('Intente nuevamente en unos segundos.')
-            .show();
-        },
-      });
+    this.appointmentsService.getDoctorAvailability(doctorId, from, to).subscribe({
+      next: (items) => this.slotsByDay.set(items),
+      error: () => {
+        this.slotsByDay.set([]);
+        this.notification
+          .builder()
+          .warn()
+          .summary('No se pudo cargar la agenda')
+          .detail('Intente nuevamente en unos segundos.')
+          .show();
+      },
     });
   }
 
@@ -168,17 +174,13 @@ export default class AppointmentBooking {
             .show();
 
           this.closeReserveModal();
-          const refreshed = this.slotsByDay().map((bucket) => ({
-            ...bucket,
-            slots: bucket.slots.map((item) =>
-              item.starts_at === slot.starts_at ? { ...item, is_available: false } : item,
-            ),
-          }));
-          this.slotsByDay.set(refreshed);
+          this.refreshAgenda(doctor.doctor_id);
         },
         error: (err) => {
           const message = err?.error?.detail || 'No se pudo reservar el horario seleccionado.';
           this.notification.builder().error().summary('Reserva no realizada').detail(message).show();
+          this.closeReserveModal();
+          this.refreshAgenda(doctor.doctor_id);
         },
       });
   }

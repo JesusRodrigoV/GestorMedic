@@ -7,6 +7,7 @@ export interface DoctorProfile {
   bio: string;
   experience_years: number;
   signature_url: string;
+  photo_url?: string;
   base_consultation_price: number;
   is_telemedicine_enabled: boolean;
   clinics: number[];
@@ -18,6 +19,7 @@ export interface UpdateDoctorProfilePayload {
   bio: string;
   experience_years: number;
   signature_url: string;
+  photo_url?: string;
   base_consultation_price: number;
   is_telemedicine_enabled: boolean;
   specialty_ids: number[];

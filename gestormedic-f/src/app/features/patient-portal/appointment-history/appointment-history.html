@@ -1,35 +1,112 @@
 <main class="page">
   <section class="portal-hero">
     <div>
-      <span>Citas</span>
-      <h2>Historial de citas</h2>
-      <p>Revisa tus citas pasadas y futuras con filtros por estado.</p>
+      <span>Portal del Paciente</span>
+      <h2>Historial de Citas</h2>
+      <p>Revisa tus consultas pasadas y descarga tus informes médicos.</p>
     </div>
 
-    <select [ngModel]="status()" (ngModelChange)="onStatusChange($event)">
-      <option value="">Todos los estados</option>
-      <option value="CONFIRMED">Confirmadas</option>
-      <option value="PENDING">Pendientes</option>
-      <option value="COMPLETED">Completadas</option>
-      <option value="CANCELLED">Canceladas</option>
-    </select>
+    <div class="filters">
+      <select [ngModel]="status()" (ngModelChange)="onStatusChange($event)">
+        <option value="">Todos los estados</option>
+        <option value="CONFIRMED">Confirmadas</option>
+        <option value="PENDING">Pendientes</option>
+        <option value="COMPLETED">Completadas</option>
+        <option value="CANCELLED">Canceladas</option>
+      </select>
+    </div>
   </section>
 
   <section class="panel">
-    <h3>Resultados</h3>
     <div class="history-list">
       @for (item of appointments(); track item.id) {
-        <article>
-          <span>{{ formatWindow(item) }}</span>
-          <div>
-            <h4>{{ item.specialty_name }} · {{ item.doctor_name }}</h4>
-            <p>Consultorio: {{ item.room_name }}</p>
-            <small>{{ item.status }}</small>
+        <article class="appointment-card">
+          <div class="appointment-info">
+            <span class="date-badge">{{ formatWindow(item) }}</span>
+            <h4>{{ item.specialty_name }}</h4>
+            <p class="doctor-name"><i class="bx bx-user-voice"></i> {{ item.doctor_name }}</p>
+            <p class="room-info"><i class="bx bx-building"></i> Consultorio: {{ item.room_name }}</p>
+          </div>
+          
+          <div class="status-container">
+            <p-tag [value]="item.status" [severity]="getSeverity(item.status)"></p-tag>
+          </div>
+
+          <div class="actions">
+            <p-button 
+              *ngIf="item.status === 'COMPLETED'"
+              label="Ver Informe y Calificar" 
+              icon="bx bx-file" 
+              size="small"
+              (onClick)="openReport(item.id)"
+            ></p-button>
+            <span *ngIf="item.status !== 'COMPLETED' && item.status !== 'CANCELLED'" class="pending-msg">
+              Pendiente de atención
+            </span>
+            <span *ngIf="item.status === 'CANCELLED'" class="cancelled-msg">
+              Cita cancelada
+            </span>
           </div>
         </article>
       } @empty {
-        <article class="empty-row">No hay citas para el filtro seleccionado.</article>
+        <div class="empty-state">
+          <i class="bx bx-calendar-x"></i>
+          <p>No se encontraron citas para el filtro seleccionado.</p>
+        </div>
       }
     </div>
   </section>
+
+  <!-- Modal de Informe y Calificación -->
+  <p-dialog 
+    [(visible)]="showReportModal" 
+    header="Informe Médico" 
+    [modal]="true" 
+    [style]="{width: '600px'}"
+    [draggable]="false" 
+    [resizable]="false"
+  >
+    <div class="report-content" *ngIf="selectedReport()">
+      <div class="report-section">
+        <label>Diagnóstico</label>
+        <div class="report-value highlight">{{ selectedReport().diagnosis || 'No especificado' }}</div>
+      </div>
+
+      <div class="report-section">
+        <label>Detalles de la Consulta</label>
+        <div class="report-value">{{ selectedReport().report_text }}</div>
+      </div>
+
+      <div class="report-section" *ngIf="selectedReport().prescription">
+        <label>Prescripción Médica</label>
+        <div class="report-value prescription">{{ selectedReport().prescription }}</div>
+      </div>
+
+      <div class="report-section" *ngIf="selectedReport().follow_up">
+        <label>Seguimiento</label>
+        <div class="report-value follow-up">{{ selectedReport().follow_up }}</div>
+      </div>
+
+      <hr class="my-4" />
+
+      <div class="rating-section">
+        <h3>¿Cómo fue tu experiencia?</h3>
+        <p>Tu opinión ayuda a mejorar el servicio médico.</p>
+        <div class="flex justify-center my-4">
+          <p-rating [(ngModel)]="ratingValue" stars="3"></p-rating>
+        </div>
+        <p-button 
+          label="Enviar Calificación" 
+          icon="bx bx-star" 
+          (onClick)="submitRating()" 
+          [loading]="submittingRating()"
+          styleClass="w-full"
+        ></p-button>
+      </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+      <p-button label="Cerrar" (onClick)="closeReport()" severity="secondary"></p-button>
+    </ng-template>
+  </p-dialog>
 </main>

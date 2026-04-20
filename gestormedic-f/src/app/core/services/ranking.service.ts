@@ -1,10 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 import type { Professional } from '@core/models/professional.model';
+import { environment } from '@env/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RankingService {
   private storageKey = 'gm:professionals:v1';
   private professionals: Professional[] = [];
+  private http = inject(HttpClient);
+  private apiUrl = environment.appointmentsApiUrl;
 
   constructor() {
     const saved = localStorage.getItem(this.storageKey);
@@ -122,5 +127,46 @@ export class RankingService {
     if (rating < 1 || rating > 3) return;
     p.ratings.push(rating);
     this.save();
+  }
+
+  // Fetch ranking from backend and adapt to local Professional shape. Falls back to local seed on error.
+  async fetchRemoteAll(filters: { specialty_id?: number; min_experience?: number; page?: number; page_size?: number } = {}): Promise<Professional[]> {
+    try {
+      const params = { ...(filters as Record<string, any>) };
+      const resp = await lastValueFrom(
+        this.http.get<{ items: any[]; meta: any }>(`${this.apiUrl}/public/ranking`, {
+          params: params as any,
+          withCredentials: true,
+        }),
+      );
+
+      const pros: Professional[] = (resp.items || []).map((item: any) => {
+        const positive = item.positive_count || 0;
+        const total = item.total_count || 0;
+        const avg = item.avg_rating || 0;
+        const ratings: number[] = [];
+        for (let i = 0; i < positive; i++) ratings.push(3);
+        const fillVal = Math.max(1, Math.round(avg || 1));
+        for (let i = positive; i < total; i++) ratings.push(fillVal);
+
+        return {
+          id: item.doctor_id,
+          name: item.doctor_name,
+          specialty: (item.specialties && item.specialties.length && item.specialties[0]) || '',
+          photo: item.photo_url || `https://i.pravatar.cc/150?img=${(item.doctor_id % 70) + 1}`,
+          ratings: ratings,
+          totalPatients: item.total_count || 0,
+          country: item.country || '',
+          department: item.department || '',
+          yearsOfExperience: item.experience_years || 0,
+        } as Professional;
+      });
+
+      this.professionals = pros;
+      this.save();
+      return pros;
+    } catch (_e) {
+      return this.professionals;
+    }
   }
 }

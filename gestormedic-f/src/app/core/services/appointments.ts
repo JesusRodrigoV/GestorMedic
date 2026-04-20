@@ -94,6 +94,18 @@ export class AppointmentsService {
     });
   }
 
+  postDoctorReport(appointmentId: number, payload: { report_text: string; diagnosis?: string; prescription?: string; follow_up?: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/doctor/appointments/${appointmentId}/report`, payload, this.httpOptions);
+  }
+
+  getMyAppointmentReport(appointmentId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/patient/appointments/${appointmentId}/report`, this.httpOptions);
+  }
+
+  postAppointmentRating(appointmentId: number, payload: { rating: number; comment?: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/patient/appointments/${appointmentId}/rating`, payload, this.httpOptions);
+  }
+
   listClinicRooms(): Observable<{ id: number; name: string; is_active: boolean }[]> {
     return this.http.get<{ id: number; name: string; is_active: boolean }[]>(`${this.apiUrl}/admin/rooms`, this.httpOptions);
   }
@@ -102,8 +114,19 @@ export class AppointmentsService {
     return this.http.get<{ doctor_id: number; name: string; email: string }[]>(`${this.apiUrl}/admin/doctors`, this.httpOptions);
   }
 
-  listSpecialties(): Observable<{ id: number; name: string }[]> {
+  // Admin-scoped specialties (requires admin role)
+  listAdminSpecialties(): Observable<{ id: number; name: string }[]> {
     return this.http.get<{ id: number; name: string }[]>(`${this.apiUrl}/admin/specialties`, this.httpOptions);
+  }
+
+  // Public specialties served by backend service (used by doctor pages)
+  listPublicSpecialties(): Observable<{ id: number; name: string }[]> {
+    return this.http.get<{ id: number; name: string }[]>(`${environment.apiUrl}/specialties`, this.httpOptions);
+  }
+
+  // Kept for backward compatibility: points to admin route
+  listSpecialties(): Observable<{ id: number; name: string }[]> {
+    return this.listAdminSpecialties();
   }
 
   addDoctorRoomPermission(roomId: number, payload: RoomPermissionPayload): Observable<{ ok: boolean }> {

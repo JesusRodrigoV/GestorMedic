@@ -45,7 +45,6 @@ export default class Login {
   }
 
   protected onLogin(): void {
-    alert('Boton presionado!');
     console.log('Intento de login...', this.loginForm.value);
     if (this.loginForm.invalid) {
       console.warn('Formulario inválido:', this.loginForm.errors);

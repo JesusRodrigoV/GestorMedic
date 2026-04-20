@@ -34,7 +34,20 @@ export default class Ranking {
   public experienceMax = 0;
 
   constructor() {
+    this.loadInitialData();
+  }
+
+  private async loadInitialData() {
+    // Show local/cached data first for immediate display
     this.updateList();
+    
+    // Then fetch remote and update again
+    try {
+      await this.rankingService.fetchRemoteAll();
+      this.updateList();
+    } catch (e) {
+      console.error('Error loading ranking:', e);
+    }
   }
 
   public updateList(): void {
@@ -61,16 +74,17 @@ export default class Ranking {
     this.experienceMax = maxExp;
 
     this.filteredProfessionals = all.filter((p) => {
-      if (this.filterSpecialty && this.filterSpecialty !== 'all' && p.specialty !== this.filterSpecialty) return false;
-      if (this.filterCountry && this.filterCountry !== 'all' && ((p as any).country || '') !== this.filterCountry) return false;
-      if (this.filterDepartment && this.filterDepartment !== 'all' && ((p as any).department || '') !== this.filterDepartment) return false;
+      if (this.filterSpecialty && p.specialty !== this.filterSpecialty) return false;
+      if (this.filterCountry && ((p as any).country || '') !== this.filterCountry) return false;
+      if (this.filterDepartment && ((p as any).department || '') !== this.filterDepartment) return false;
       if (this.minExperience && ((p as any).yearsOfExperience || 0) < this.minExperience) return false;
       return true;
     });
 
+    // We keep up to 10 for the main list
     this.topThree = this.filteredProfessionals.slice(0, 3);
+    this.rest = this.filteredProfessionals.slice(3, 10);
     this.topOne = this.topThree[0];
-    this.rest = this.filteredProfessionals.slice(3);
   }
 
   protected avg(p: Professional): number {

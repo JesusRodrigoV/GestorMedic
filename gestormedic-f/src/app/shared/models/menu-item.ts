@@ -4,4 +4,5 @@ export interface MenuItem {
   route: string;
   roles?: string[];
   roleIds?: number[];
+  children?: MenuItem[];
 }

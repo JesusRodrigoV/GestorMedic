@@ -39,6 +39,7 @@ export class DoctorProfile implements OnInit {
     experience_years: [0, [Validators.required, Validators.min(0)]],
     base_consultation_price: [0, [Validators.required, Validators.min(0)]],
     signature_url: [''],
+    photo_url: [''],
     is_telemedicine_enabled: [false],
     specialty_ids: [[] as number[]],
   });
@@ -53,8 +54,9 @@ export class DoctorProfile implements OnInit {
           experience_years: profile.experience_years,
           base_consultation_price: profile.base_consultation_price,
           signature_url: profile.signature_url,
+          photo_url: profile.photo_url || '',
           is_telemedicine_enabled: profile.is_telemedicine_enabled,
-          specialty_ids: profile.specialties ? profile.specialties.map((s) => s.id) : [],
+          specialty_ids: profile.specialties ? profile.specialties.map((s: any) => s.id) : [],
         });
       }
     });
@@ -71,11 +73,19 @@ export class DoctorProfile implements OnInit {
 
   protected onSave(): void {
     if (this.profileForm.invalid) return;
-    const payload = this.profileForm.getRawValue();
-    if (!this.store.currentProfile()) {
-      this.store.createProfile(payload);
+    
+    const rawValue = this.profileForm.getRawValue();
+    const currentProfile = this.store.currentProfile();
+    
+    // Safety check: if form has no specialties but the profile did, preserve them
+    if (rawValue.specialty_ids.length === 0 && currentProfile?.specialties?.length) {
+       rawValue.specialty_ids = currentProfile.specialties.map(s => s.id);
+    }
+
+    if (!currentProfile) {
+      this.store.createProfile(rawValue);
     } else {
-      this.store.updateProfile(payload);
+      this.store.updateProfile(rawValue);
     }
   }
 }

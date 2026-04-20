@@ -35,6 +35,11 @@ export const AUTH_ROUTES: Routes = [
         path: 'verify-2fa',
         loadComponent: () => import('./verify2fa/verify2fa'),
       },
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
     ],
   },
 ];

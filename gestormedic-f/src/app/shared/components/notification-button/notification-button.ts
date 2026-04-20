@@ -14,6 +14,10 @@ import { NotificationItem } from '../notification-item/notification-item';
 export class NotificationButton {
   service = inject(NotificationApp);
 
+  protected onOpen(): void {
+    this.service.refresh();
+  }
+
   protected onMarkRead(id: string): void {
     this.service.markAsRead(id);
   }
