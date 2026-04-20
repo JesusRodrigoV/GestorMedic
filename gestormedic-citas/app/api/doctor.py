@@ -157,23 +157,35 @@ async def appointments_by_day(
     db: AsyncSession = Depends(get_db),
 ):
     doctor_id = ensure_doctor_profile(current_user)
+    print(f"DEBUG: Fetching appointments for doctor_id={doctor_id} on day={day}")
 
-    rows = (
-        await db.execute(
-            select(Appointment, User.username.label('patient_name'), Specialty.name.label('specialty_name'), Room.name.label('room_name'))
-            .join(User, User.id == Appointment.patient_user_id)
-            .join(Specialty, Specialty.id == Appointment.specialty_id)
-            .join(Room, Room.id == Appointment.room_id)
-            .where(
-                and_(
-                    Appointment.doctor_id == doctor_id,
-                    Appointment.starts_at >= datetime.combine(day, datetime.min.time()),
-                    Appointment.starts_at <= datetime.combine(day, datetime.max.time()),
-                )
-            )
-            .order_by(Appointment.starts_at)
+    day_start = datetime.combine(day, datetime.min.time())
+    day_end = datetime.combine(day, datetime.max.time())
+    
+    print(f"DEBUG: Filtering from {day_start} to {day_end}")
+
+    stmt = (
+        select(
+            Appointment, 
+            User.username.label('patient_name'), 
+            Specialty.name.label('specialty_name'), 
+            Room.name.label('room_name')
         )
-    ).all()
+        .outerjoin(User, User.id == Appointment.patient_user_id)
+        .outerjoin(Specialty, Specialty.id == Appointment.specialty_id)
+        .outerjoin(Room, Room.id == Appointment.room_id)
+        .where(
+            and_(
+                Appointment.doctor_id == doctor_id,
+                Appointment.starts_at >= day_start,
+                Appointment.starts_at <= day_end,
+            )
+        )
+        .order_by(Appointment.starts_at)
+    )
+    
+    rows = (await db.execute(stmt)).all()
+    print(f"DEBUG: Found {len(rows)} appointments")
 
     doctor_name = (
         await db.execute(
@@ -187,9 +199,9 @@ async def appointments_by_day(
             'doctor_id': doctor_id,
             'doctor_name': doctor_name,
             'patient_user_id': row.Appointment.patient_user_id,
-            'patient_name': row.patient_name,
-            'specialty_name': row.specialty_name,
-            'room_name': row.room_name,
+            'patient_name': row.patient_name or 'Paciente Desconocido',
+            'specialty_name': row.specialty_name or 'General',
+            'room_name': row.room_name or 'N/A',
             'starts_at': row.Appointment.starts_at,
             'ends_at': row.Appointment.ends_at,
             'status': row.Appointment.status.value,

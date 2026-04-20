@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 
 from fastapi import HTTPException, status
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.appointments import (
@@ -137,6 +137,7 @@ async def list_doctors(
             User.email,
             DoctorProfile.bio,
             DoctorProfile.experience_years,
+            DoctorProfile.photo_url,
             Specialty.name.label('specialty_name'),
         )
         .join(User, User.id == DoctorProfile.user_id)
@@ -168,6 +169,7 @@ async def list_doctors(
                 'email': row.email,
                 'bio': row.bio,
                 'experience_years': row.experience_years,
+                'photo_url': row.photo_url,
                 'specialties': [],
             }
         if row.specialty_name not in doctor_map[row.doctor_id]['specialties']:
@@ -227,7 +229,7 @@ async def generate_slots_for_doctor(
                 Appointment.doctor_id == doctor_id,
                 Appointment.starts_at >= datetime.combine(date_from, time.min),
                 Appointment.starts_at <= datetime.combine(date_to, time.max),
-                Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.PENDING]),
+                cast(Appointment.status, String).in_([AppointmentStatus.CONFIRMED.value, AppointmentStatus.PENDING.value]),
             )
         )
     ).all()

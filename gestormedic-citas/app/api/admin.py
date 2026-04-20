@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import CurrentUser, require_admin
+from app.api.deps import CurrentUser, require_admin, require_doctor
 from app.db.session import get_db
 from app.models.appointments import RoomDoctorPermission, RoomSpecialtyPermission
 from app.models.external import ClinicDoctor, DoctorProfile, Room, Specialty, User
@@ -14,7 +14,7 @@ router = APIRouter(prefix='/admin', tags=['Admin'])
 
 @router.get('/rooms')
 async def list_clinic_rooms(
-    current_user: CurrentUser = Depends(require_admin),
+    current_user: CurrentUser = Depends(require_doctor),
     db: AsyncSession = Depends(get_db),
 ):
     if not current_user.clinic_id:
@@ -29,7 +29,7 @@ async def list_clinic_rooms(
 
 @router.get('/doctors')
 async def list_clinic_doctors(
-    current_user: CurrentUser = Depends(require_admin),
+    current_user: CurrentUser = Depends(require_doctor),
     db: AsyncSession = Depends(get_db),
 ):
     if not current_user.clinic_id:
