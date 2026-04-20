@@ -1,0 +1,218 @@
+@use '../../../../shared/styles/design-tokens.scss' as tokens;
+@use '../../../../shared/styles/card-system.scss' as card;
+@use '../../../../shared/styles/button-system.scss' as button;
+
+:host {
+  display: block;
+  padding: tokens.$spacing-xl;
+  background-color: var(--p-surface-50);
+  min-height: 100vh;
+}
+
+.management-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-xl;
+}
+
+.management-header {
+  margin-bottom: tokens.$spacing-lg;
+
+  h1 {
+    margin: 0;
+    font-size: tokens.$font-size-3xl;
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-text-primary;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: tokens.$spacing-xs 0 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-lg;
+  }
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: tokens.$spacing-xl;
+}
+
+.section-card {
+  @include card.card-elevated();
+  padding: tokens.$card-padding-lg;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &.full-width { grid-column: span 12; }
+  &.half-width { grid-column: span 6; }
+  &.third-width { grid-column: span 4; }
+
+  @media (max-width: 1024px) {
+    &.half-width, &.third-width { grid-column: span 12; }
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: tokens.$spacing-xl;
+    padding-bottom: tokens.$spacing-md;
+    border-bottom: 1px solid tokens.$color-border-default;
+
+    h2 {
+      margin: 0;
+      font-size: tokens.$font-size-xl;
+      font-weight: tokens.$font-weight-bold;
+      color: tokens.$color-text-primary;
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-sm;
+
+      i {
+        color: tokens.$color-primary;
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Clinic Profile Specifics
+.clinic-profile-content {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: tokens.$spacing-2xl;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: tokens.$spacing-md;
+
+    .clinic-logo {
+      width: 180px;
+      height: 180px;
+      border-radius: tokens.$border-radius-lg;
+      object-fit: cover;
+      border: 2px solid tokens.$color-border-default;
+      padding: tokens.$spacing-xs;
+      background: white;
+    }
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: tokens.$spacing-lg;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-xs;
+
+  label {
+    font-size: tokens.$font-size-xs;
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .field-value {
+    font-size: tokens.$font-size-base;
+    color: tokens.$color-text-primary;
+    padding: tokens.$spacing-sm tokens.$spacing-md;
+    background: tokens.$color-bg-secondary;
+    border-radius: tokens.$border-radius-md;
+    border: 1px solid tokens.$color-border-default;
+  }
+}
+
+// Table Consistency
+::ng-deep .gm-table {
+  .p-datatable-header {
+    background: transparent;
+    padding: 0 0 tokens.$spacing-md 0;
+    border: none;
+  }
+
+  .p-datatable-thead > tr > th {
+    background: tokens.$color-bg-secondary;
+    color: tokens.$color-text-secondary;
+    font-weight: tokens.$font-weight-bold;
+    text-transform: uppercase;
+    font-size: tokens.$font-size-xs;
+    padding: tokens.$spacing-md;
+    border-bottom: 2px solid tokens.$color-border-default;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: background-color tokens.$transition-base tokens.$ease-out;
+    
+    &:hover {
+      background-color: var(--p-surface-100);
+    }
+
+    > td {
+      padding: tokens.$spacing-lg tokens.$spacing-md;
+      color: tokens.$color-text-primary;
+      border-bottom: 1px solid tokens.$color-border-subtle;
+    }
+  }
+}
+
+// Plan Card Specifics
+.plan-highlight {
+  text-align: center;
+  padding: tokens.$spacing-xl;
+  background: linear-gradient(135deg, tokens.$color-primary-light 0%, rgba(255,255,255,1) 100%);
+  border-radius: tokens.$border-radius-lg;
+  border: 1px solid tokens.$color-primary-light;
+
+  .plan-name {
+    font-size: tokens.$font-size-4xl;
+    font-weight: tokens.$font-weight-black;
+    color: tokens.$color-primary;
+    margin-bottom: tokens.$spacing-xs;
+  }
+
+  .plan-status {
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-text-secondary;
+  }
+}
+
+.avatar-info {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-md;
+
+  .name-email {
+    display: flex;
+    flex-direction: column;
+    
+    .full-name {
+      font-weight: tokens.$font-weight-bold;
+      color: tokens.$color-text-primary;
+    }
+    
+    .email {
+      font-size: tokens.$font-size-xs;
+      color: tokens.$color-text-muted;
+    }
+  }
+}

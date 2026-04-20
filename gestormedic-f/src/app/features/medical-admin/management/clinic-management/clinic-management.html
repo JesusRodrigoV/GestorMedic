@@ -1,1 +1,207 @@
-<p>clinic-management works!</p>
+<div class="management-container">
+  <!-- Header -->
+  <header class="management-header">
+    <h1>Gestión de Clínica</h1>
+    <p>Administración institucional, infraestructura y personal médico.</p>
+  </header>
+
+  <div class="management-grid">
+    <!-- SECTION 1: Clinic Profile Detail -->
+    <section class="section-card full-width">
+      <div class="card-header">
+        <h2><i class="pi pi-building"></i> Perfil de la Clínica</h2>
+        <p-button label="Editar Perfil" icon="pi pi-pencil" [text]="true" size="small"></p-button>
+      </div>
+
+      <div class="clinic-profile-content" *ngIf="clinic() as data">
+        <div class="logo-section">
+          <img [src]="data.logo_url" [alt]="data.name" class="clinic-logo">
+          <p-button label="Cambiar Logo" icon="pi pi-image" [outlined]="true" size="small"></p-button>
+        </div>
+
+        <div class="details-grid">
+          <div class="field-group">
+            <label>Nombre de la Institución</label>
+            <div class="field-value">{{ data.name }}</div>
+          </div>
+          <div class="field-group">
+            <label>NIT / RUC</label>
+            <div class="field-value">{{ data.nit_ruc }}</div>
+          </div>
+          <div class="field-group">
+            <label>Dirección</label>
+            <div class="field-value">{{ data.address }}</div>
+          </div>
+          <div class="field-group">
+            <label>Teléfono de Contacto</label>
+            <div class="field-value">{{ data.phone }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Consulting Rooms Management -->
+    <section class="section-card half-width">
+      <div class="card-header">
+        <h2><i class="pi pi-map-marker"></i> Consultorios e Infraestructura</h2>
+        <p-button icon="pi pi-plus" [rounded]="true" [text]="true" pTooltip="Agregar Consultorio"></p-button>
+      </div>
+
+      <p-table [value]="rooms()" class="gm-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-room>
+          <tr>
+            <td><strong>{{ room.name }}</strong></td>
+            <td>{{ room.description }}</td>
+            <td class="text-center">
+              <p-tag [value]="room.is_active ? 'Activo' : 'Inactivo'" 
+                     [severity]="room.is_active ? 'success' : 'secondary'">
+              </p-tag>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <!-- SECTION 3: Medical Specialties Catalog -->
+    <section class="section-card half-width">
+      <div class="card-header">
+        <h2><i class="pi pi-briefcase"></i> Especialidades Médicas</h2>
+        <p-button icon="pi pi-cog" [rounded]="true" [text]="true" pTooltip="Configurar Servicios"></p-button>
+      </div>
+
+      <p-table [value]="specialties()" class="gm-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Especialidad</th>
+            <th>Descripción</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-specialty>
+          <tr>
+            <td><strong>{{ specialty.name }}</strong></td>
+            <td>{{ specialty.description }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <!-- SECTION 4: Doctor Directory & Configuration -->
+    <section class="section-card full-width">
+      <div class="card-header">
+        <h2><i class="pi pi-users"></i> Directorio Médico y Configuración</h2>
+        <div class="flex gap-2">
+          <p-button label="Vincular Doctor" icon="pi pi-user-plus" size="small"></p-button>
+        </div>
+      </div>
+
+      <p-table [value]="doctors()" class="gm-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Doctor</th>
+            <th>Licencia</th>
+            <th>Experiencia</th>
+            <th>Costo Base</th>
+            <th class="text-center">Telemedicina</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-doc>
+          <tr>
+            <td>
+              <div class="avatar-info">
+                <p-avatar [image]="doc.user.photo_url || ''" 
+                          [label]="!doc.user.photo_url ? doc.user.first_name?.[0] : ''" 
+                          shape="circle" size="large">
+                </p-avatar>
+                <div class="name-email">
+                  <span class="full-name">{{ doc.user.first_name }} {{ doc.user.last_name }}</span>
+                  <span class="email">{{ doc.user.email }}</span>
+                </div>
+              </div>
+            </td>
+            <td><code>{{ doc.license_number }}</code></td>
+            <td>{{ doc.experience_years }} años</td>
+            <td><strong>{{ doc.base_consultation_price | currency }}</strong></td>
+            <td class="text-center">
+              <p-toggleswitch [(ngModel)]="doc.is_telemedicine_enabled" [disabled]="true"></p-toggleswitch>
+            </td>
+            <td>
+              <p-button icon="pi pi-ellipsis-v" [text]="true" [rounded]="true" severity="secondary"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <!-- SECTION 5: Administrative Access & Roles -->
+    <section class="section-card eight-width" style="grid-column: span 8;">
+      <div class="card-header">
+        <h2><i class="pi pi-shield"></i> Accesos y Roles Administrativos</h2>
+        <p-button label="Nuevo Usuario" icon="pi pi-plus" [text]="true" size="small"></p-button>
+      </div>
+
+      <p-table [value]="users()" class="gm-table">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>
+              <div class="avatar-info">
+                <div class="name-email">
+                  <span class="full-name">{{ user.first_name }} {{ user.last_name }}</span>
+                  <span class="email">@{{ user.username }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <p-tag [value]="getRoleLabel(user.role_id)" [severity]="getRoleSeverity(user.role_id)"></p-tag>
+            </td>
+            <td>
+              <p-tag [value]="user.status || 'ACTIVE'" [severity]="getStatusSeverity(user.status || 'ACTIVE')" [rounded]="true"></p-tag>
+            </td>
+            <td>
+              <p-button icon="pi pi-lock-open" [text]="true" severity="help" pTooltip="Gestionar Permisos"></p-button>
+              <p-button icon="pi pi-trash" [text]="true" severity="danger"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </section>
+
+    <!-- SECTION 6: Service Plan Overview -->
+    <section class="section-card fourth-width" style="grid-column: span 4;">
+      <div class="card-header">
+        <h2><i class="pi pi-star"></i> Plan de Servicio</h2>
+      </div>
+
+      <div class="plan-highlight" *ngIf="clinic() as data">
+        <div class="plan-name">{{ data.plan }}</div>
+        <div class="plan-status">
+          Estado: <p-tag [value]="data.is_active ? 'Suscripción Activa' : 'Inactiva'" 
+                        [severity]="data.is_active ? 'success' : 'danger'">
+                 </p-tag>
+        </div>
+        <div class="mt-4 text-xs text-secondary">
+          Miembro desde: {{ data.created_at | date:'mediumDate' }}
+        </div>
+      </div>
+
+      <div class="mt-auto pt-4">
+        <p-button label="Mejorar Plan" icon="pi pi-arrow-up-right" class="w-full" styleClass="p-button-primary w-full"></p-button>
+      </div>
+    </section>
+  </div>
+</div>
