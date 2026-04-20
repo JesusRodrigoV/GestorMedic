@@ -17,6 +17,7 @@ class DoctorProfile(Base):
     bio: Mapped[Optional[str]] = mapped_column(Text)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
     signature_url: Mapped[Optional[str]] = mapped_column(String(2048))
+    photo_url: Mapped[Optional[str]] = mapped_column(String(2048))
     base_consultation_price: Mapped[float] = mapped_column(Float, default=0.0)
     is_telemedicine_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 

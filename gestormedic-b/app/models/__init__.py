@@ -9,6 +9,7 @@ from .insurance_profile import InsuranceProfile
 from .doctor_profile import DoctorProfile
 from .clinic import Clinic
 from .audit_log import AuditLog
+from .notification import Notification
 from .associations import ClinicDoctor, DoctorSpecialty, ClinicSpecialty
 
 #TODO:Revisar los siguientes modelos

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, BackgroundTasks, Cookie
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional, Union
 import pyotp
@@ -32,10 +33,20 @@ from app.schemas.user import GoogleAuthRequest
 router = APIRouter()
 
 async def _issue_tokens(db: AsyncSession, user: User, response: Response, request: Request):
+    doctor_profile_id = None
+    if user.role.name.lower() == 'medico':
+        from app.models.doctor_profile import DoctorProfile
+        result = await db.execute(
+            select(DoctorProfile.id).where(DoctorProfile.user_id == user.id)
+        )
+        doctor_profile_id = result.scalar_one_or_none()
+
     access_token = create_access_token(
         subject=user.email, 
         role=user.role.name, 
-        clinic_id=getattr(user, 'clinic_id', None)
+        user_id=user.id,
+        clinic_id=getattr(user, 'clinic_id', None),
+        doctor_profile_id=doctor_profile_id
     )
     
     rt_data = create_refresh_token(subject=user.email)

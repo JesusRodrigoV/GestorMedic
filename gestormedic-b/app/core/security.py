@@ -17,7 +17,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(
     subject: str, 
     role: str, 
+    user_id: Optional[int] = None,
     clinic_id: Optional[int] = None, 
+    doctor_profile_id: Optional[int] = None,
     expires_minutes: int | None = None
 ) -> str:
     now = datetime.now(timezone.utc)
@@ -25,10 +27,12 @@ def create_access_token(
     
     payload = {
         "sub": str(subject),
+        "user_id": user_id,
         "iat": now,
         "exp": expires,
         "role": role,
         "clinic_id": clinic_id,
+        "doctor_profile_id": doctor_profile_id,
         "type": "access"
     }
     

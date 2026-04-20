@@ -10,7 +10,7 @@ from app.scripts.seeds import init_db
 from app.api.v1 import (
     auth, 
     users,
-    clinics, specialties, audit
+    clinics, specialties, audit, notifications
 )
 from app.api.v1 import (
     patients_profile, doctor_profile, staff_profile, insurance
@@ -64,5 +64,6 @@ app.include_router(patients_profile.router, prefix="/api/v1/profiles/patients", 
 app.include_router(doctor_profile.router, prefix="/api/v1/profiles/doctors", tags=["Perfiles - Doctores"])
 app.include_router(staff_profile.router, prefix="/api/v1/profiles/staff", tags=["Perfiles - Personal"])
 app.include_router(insurance.router, prefix="/api/v1/profiles/insurances", tags=["Perfiles - Seguros"])
+app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["Notificaciones Internas"])
 
 add_pagination(app)
