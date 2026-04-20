@@ -1,1 +1,148 @@
-<p>subscription-plans works!</p>
+<main class="plans-admin-page">
+	<header>
+		<div>
+			<p class="eyebrow">Super Admin</p>
+			<h2>Freemium, Suscripciones y Economía</h2>
+			<p>Visión integral de usuarios por plan, cobros simulados y billetera virtual.</p>
+		</div>
+		<button type="button" (click)="reloadAll()">Actualizar</button>
+	</header>
+
+	<section class="summary-grid">
+		<article>
+			<h4>Ingresos acumulados</h4>
+			<p>
+				{{ (summary()?.total_revenue_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}
+			</p>
+		</article>
+		<article>
+			<h4>Ingresos del mes</h4>
+			<p>{{ (summary()?.month_revenue_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+		</article>
+		<article>
+			<h4>Pagos procesados</h4>
+			<p>{{ summary()?.total_payments ?? 0 }}</p>
+		</article>
+		<article>
+			<h4>Billetera virtual</h4>
+			<p>
+				{{ (summary()?.wallet_balance_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}
+			</p>
+		</article>
+	</section>
+
+	<section class="stats-grid">
+		<article>
+			<h3>Usuarios activos por plan</h3>
+			<div class="chips">
+				@for (item of stats()?.active_by_plan | keyvalue; track item.key) {
+					  <span class="chip">{{ $any(item.key) | uppercase }}: {{ item.value }}</span>
+				} @empty {
+					<span class="chip empty">Sin datos</span>
+				}
+			</div>
+		</article>
+		<article>
+			<h3>Usuarios activos por rol</h3>
+			<div class="chips">
+				@for (item of stats()?.active_by_role | keyvalue; track item.key) {
+					  <span class="chip">{{ $any(item.key) | titlecase }}: {{ item.value }}</span>
+				} @empty {
+					<span class="chip empty">Sin datos</span>
+				}
+			</div>
+		</article>
+	</section>
+
+	<section class="table-panel">
+		<header class="table-header">
+			<h3>Usuarios y sus planes</h3>
+			<input
+				type="text"
+				placeholder="Filtrar por usuario o correo"
+				[ngModel]="usersFilter()"
+				(ngModelChange)="onUsersFilterChange($event)"
+			/>
+		</header>
+		<div class="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th (click)="onUsersSortChange('username')">Usuario</th>
+						<th (click)="onUsersSortChange('email')">Correo</th>
+						<th>Rol</th>
+						<th>Plan</th>
+						<th>Ciclo</th>
+						<th>Estado</th>
+						<th>Próximo cobro</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (item of users(); track item.user_id) {
+						<tr>
+							<td>{{ item.username }}</td>
+							<td>{{ item.email }}</td>
+							<td>{{ item.role_name | titlecase }}</td>
+							<td><span class="plan-badge">{{ item.plan_code | uppercase }}</span></td>
+							<td>{{ item.billing_cycle | titlecase }}</td>
+							<td>{{ item.subscription_status | titlecase }}</td>
+							<td>{{ item.next_billing_at ? (item.next_billing_at | date: 'short') : '-' }}</td>
+						</tr>
+					} @empty {
+						<tr>
+							<td colspan="7" class="empty">No se encontraron resultados.</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<footer>
+			<button type="button" (click)="prevUsersPage()">Anterior</button>
+			<span>Página {{ usersPage() }} · Total {{ usersTotal() }}</span>
+			<button type="button" (click)="nextUsersPage()">Siguiente</button>
+		</footer>
+	</section>
+
+	<section class="table-panel">
+		<header class="table-header simple">
+			<h3>Pagos simulados</h3>
+		</header>
+		<div class="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Usuario</th>
+						<th>Monto</th>
+						<th>Estado</th>
+						<th>Proveedor</th>
+						<th>Referencia</th>
+						<th>Fecha</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (pay of payments(); track pay.id) {
+						<tr>
+							<td>{{ pay.id }}</td>
+							<td>{{ pay.user_id }}</td>
+							<td>{{ pay.amount_cents / 100 | currency: pay.currency : 'symbol' : '1.2-2' }}</td>
+							<td>{{ pay.status | titlecase }}</td>
+							<td>{{ pay.provider }}</td>
+							<td>{{ pay.provider_ref }}</td>
+							<td>{{ pay.paid_at | date: 'short' }}</td>
+						</tr>
+					} @empty {
+						<tr>
+							<td colspan="7" class="empty">No hay pagos registrados.</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<footer>
+			<button type="button" (click)="prevPaymentsPage()">Anterior</button>
+			<span>Página {{ paymentsPage() }}</span>
+			<button type="button" (click)="nextPaymentsPage()">Siguiente</button>
+		</footer>
+	</section>
+</main>

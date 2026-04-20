@@ -126,6 +126,22 @@ services:
     networks:
       - gm-network
 
+  gm-freemiun-api:
+    build:
+      context: ./gestormedic-freemiun
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:admin@gm-backend-db:5432/gestormedic_db
+      SECRET_KEY: ${GM_SECRET_KEY:-change-me-in-production}
+      ALGORITHM: HS256
+      API_V1_STR: /api/v1
+      CORS_ORIGINS: http://localhost:4200
+    depends_on:
+      gm-backend-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
   api-gateway:
     build:
       context: ./gestormedic-gateway
@@ -138,6 +154,7 @@ services:
       - gm-citas
       - gm-notifications-api
       - gm-historiales
+      - gm-freemiun-api
     networks:
       - gm-network
 

@@ -1,0 +1,34 @@
+<main class="subscriptions-page">
+  <header>
+    <div>
+      <p class="eyebrow">Super Admin</p>
+      <h2>Estado de suscripciones</h2>
+      <p>Distribución actual de usuarios activos por plan y por rol.</p>
+    </div>
+    <button type="button" (click)="reload()">Actualizar</button>
+  </header>
+
+  <section class="grid">
+    <article>
+      <h3>Activos por plan</h3>
+      <div class="chips">
+        @for (item of stats()?.active_by_plan | keyvalue; track item.key) {
+          <span class="chip">{{ $any(item.key) | uppercase }}: {{ item.value }}</span>
+        } @empty {
+          <span class="chip empty">Sin datos</span>
+        }
+      </div>
+    </article>
+
+    <article>
+      <h3>Activos por rol</h3>
+      <div class="chips">
+        @for (item of stats()?.active_by_role | keyvalue; track item.key) {
+          <span class="chip">{{ $any(item.key) | titlecase }}: {{ item.value }}</span>
+        } @empty {
+          <span class="chip empty">Sin datos</span>
+        }
+      </div>
+    </article>
+  </section>
+</main>

@@ -1,0 +1,155 @@
+.freemium-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.freemium-header,
+.current-subscription,
+.entitlements,
+.plans {
+  border: 1px solid #d5deea;
+  border-radius: 14px;
+  background: #fff;
+  padding: 1rem;
+}
+
+.freemium-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    color: #0f766e;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  h2 {
+    margin: 0.25rem 0;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+
+  button {
+    border: 1px solid #d5deea;
+    border-radius: 999px;
+    background: #fff;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+}
+
+.subscription-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+  span {
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+
+  strong {
+    display: block;
+    color: #0f172a;
+    margin-top: 0.25rem;
+  }
+}
+
+.usage-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.usage-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem;
+
+  h4 {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: #334155;
+
+    small {
+      display: block;
+      color: #64748b;
+      margin-top: 0.2rem;
+    }
+  }
+
+  button {
+    margin-top: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #f8fafc;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+  }
+}
+
+.plans-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.plan-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.5rem;
+
+  h4 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    color: #475569;
+  }
+
+  .price {
+    color: #0f172a;
+    font-weight: 700;
+
+    small {
+      color: #64748b;
+      font-weight: 500;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+    color: #334155;
+    font-size: 0.9rem;
+  }
+
+  button {
+    border: 1px solid #0f766e;
+    background: #0f766e;
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    cursor: pointer;
+  }
+}
+
+.empty {
+  color: #64748b;
+}

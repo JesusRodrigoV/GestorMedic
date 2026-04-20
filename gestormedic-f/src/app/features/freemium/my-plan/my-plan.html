@@ -1,0 +1,80 @@
+<main class="freemium-page">
+  <header class="freemium-header">
+    <div>
+      <p class="eyebrow">Freemium Service</p>
+      <h2>Mi suscripción y límites</h2>
+      <p>Gestiona tu plan, revisa consumo mensual y amplía capacidades cuando lo necesites.</p>
+    </div>
+    <button type="button" (click)="reloadAll()" [disabled]="loading()">Actualizar</button>
+  </header>
+
+  <section class="current-subscription" [ngClass]="subscription()?.plan_code">
+    <h3>Suscripción actual</h3>
+    @if (subscription(); as sub) {
+      <div class="subscription-grid">
+        <div>
+          <span>Plan</span>
+          <strong>{{ sub.plan_code | uppercase }}</strong>
+        </div>
+        <div>
+          <span>Ciclo</span>
+          <strong>{{ sub.billing_cycle | titlecase }}</strong>
+        </div>
+        <div>
+          <span>Estado</span>
+          <strong>{{ sub.status | titlecase }}</strong>
+        </div>
+        <div>
+          <span>Próxima renovación</span>
+          <strong>{{ sub.next_billing_at | date: 'short' }}</strong>
+        </div>
+      </div>
+    } @else {
+      <p class="empty">No hay una suscripción activa.</p>
+    }
+  </section>
+
+  <section class="entitlements">
+    <h3>Límites de uso mensual</h3>
+    @if (entitlements(); as ent) {
+      <div class="usage-grid">
+        @for (item of ent.limits | keyvalue; track item.key) {
+          <article class="usage-card">
+            <h4>{{ $any(item.key) }}</h4>
+            <p>
+              {{ ent.usage[$any(item.key)] ?? 0 }} / {{ item.value }}
+              <small>Restante: {{ ent.remaining[$any(item.key)] ?? item.value }}</small>
+            </p>
+            <button type="button" (click)="consumeFeature($any(item.key))">Consumir 1</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="empty">Aún no hay métricas de consumo para mostrar.</p>
+    }
+  </section>
+
+  <section class="plans">
+    <h3>Planes disponibles para tu rol</h3>
+    <div class="plans-grid">
+      @for (plan of plans(); track plan.id) {
+        <article class="plan-card">
+          <h4>{{ plan.display_name }}</h4>
+          <p>{{ plan.description }}</p>
+          <div class="price">
+            {{ plan.price_cents / 100 | currency: plan.currency : 'symbol' : '1.2-2' }}
+            <small>/ {{ plan.billing_cycle === 'annual' ? 'año' : 'mes' }}</small>
+          </div>
+          <ul>
+            @for (limit of plan.limits_json | keyvalue; track limit.key) {
+              <li>{{ limit.key }}: {{ limit.value }}</li>
+            }
+          </ul>
+          <button type="button" (click)="simulatePayment(plan.id, plan.display_name)">
+            Activar con pago simulado
+          </button>
+        </article>
+      }
+    </div>
+  </section>
+</main>

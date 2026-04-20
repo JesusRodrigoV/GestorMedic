@@ -14,6 +14,8 @@ export const SUPER_ADMIN_ROUTES: Routes = [
         { label: 'Gestión de usuarios', icon: 'bx-buildings', route: '/control/users' },
         { label: 'Catálogo de Especialidades', icon: 'bx-list-ul', route: '/control/specialties' },
         { label: 'Planes de Suscripción', icon: 'bx-credit-card-front', route: '/control/plans' },
+        { label: 'Economía del Sistema', icon: 'bx-line-chart', route: '/control/economy' },
+        { label: 'Estado de Suscripciones', icon: 'bx-pie-chart-alt-2', route: '/control/subscriptions' },
         { label: 'Auditoría y Seguridad', icon: 'bx-shield-quarter', route: '/control/audit' },
         { label: 'Configuración del Sistema', icon: 'bx-cog', route: '/control/settings' },
       ],
@@ -39,6 +41,14 @@ export const SUPER_ADMIN_ROUTES: Routes = [
       {
         path: 'plans',
         loadComponent: () => import('./subscription-plans/subscription-plans'),
+      },
+      {
+        path: 'economy',
+        loadComponent: () => import('./economy-dashboard/economy-dashboard'),
+      },
+      {
+        path: 'subscriptions',
+        loadComponent: () => import('./subscriptions-overview/subscriptions-overview'),
       },
       {
         path: 'audit',
