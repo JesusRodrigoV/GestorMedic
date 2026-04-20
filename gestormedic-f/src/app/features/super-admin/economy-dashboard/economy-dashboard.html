@@ -1,0 +1,70 @@
+<main class="economy-page">
+  <header>
+    <div>
+      <p class="eyebrow">Super Admin</p>
+      <h2>Economía del sistema</h2>
+      <p>Visión financiera consolidada y movimientos de pagos simulados.</p>
+    </div>
+    <button type="button" (click)="reload()">Actualizar</button>
+  </header>
+
+  <section class="cards">
+    <article>
+      <h4>Ingresos acumulados</h4>
+      <p>{{ (summary()?.total_revenue_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+    </article>
+    <article>
+      <h4>Ingresos del mes</h4>
+      <p>{{ (summary()?.month_revenue_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+    </article>
+    <article>
+      <h4>Billetera virtual</h4>
+      <p>{{ (summary()?.wallet_balance_cents ?? 0) / 100 | currency: 'USD' : 'symbol' : '1.2-2' }}</p>
+    </article>
+    <article>
+      <h4>Pagos procesados</h4>
+      <p>{{ summary()?.total_payments ?? 0 }}</p>
+    </article>
+  </section>
+
+  <section class="table-panel">
+    <h3>Movimientos de pago</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Proveedor</th>
+            <th>Referencia</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pay of payments(); track pay.id) {
+            <tr>
+              <td>{{ pay.id }}</td>
+              <td>{{ pay.user_id }}</td>
+              <td>{{ pay.amount_cents / 100 | currency: pay.currency : 'symbol' : '1.2-2' }}</td>
+              <td>{{ pay.status }}</td>
+              <td>{{ pay.provider }}</td>
+              <td>{{ pay.provider_ref }}</td>
+              <td>{{ pay.paid_at | date: 'short' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty">No hay movimientos disponibles.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <footer>
+      <button type="button" (click)="prevPage()">Anterior</button>
+      <span>Página {{ page() }}</span>
+      <button type="button" (click)="nextPage()">Siguiente</button>
+    </footer>
+  </section>
+</main>

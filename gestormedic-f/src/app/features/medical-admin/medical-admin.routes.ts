@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { pendingChangesGuard } from '@core/guards/pending-changes.guard';
-import { roleGuard } from '@core/guards/role.guard';
+import { roleGuard } from '@core/guards/role-guard';
 import { UserRole } from '@core/models/role.model';
 import { AuthStore } from '@features/auth/stores/auth.store';
 
@@ -40,6 +40,7 @@ const getDynamicMenu = () => {
   }
 
   baseMenu.push({ label: 'Configuración Personal', icon: 'bx-cog', route: '/app/settings' });
+  baseMenu.push({ label: 'Mi Suscripción', icon: 'bx-credit-card-front', route: '/app/plan' });
 
   return baseMenu;
 };
@@ -105,6 +106,10 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
       {
         path: 'settings',
         loadChildren: () => import('../settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
+      },
+      {
+        path: 'plan',
+        loadComponent: () => import('../freemium/my-plan/my-plan'),
       },
     ],
   },

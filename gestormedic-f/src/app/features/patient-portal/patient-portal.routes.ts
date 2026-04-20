@@ -16,6 +16,7 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
         { label: 'Mi Historial', icon: 'bx-book-heart', route: '/portal/historial' },
         { label: 'Archivos', icon: 'bx-folder-open', route: '/portal/documentos' },
         { label: 'Recetas', icon: 'bx-capsule', route: '/portal/recetas' },
+        { label: 'Mi Suscripción', icon: 'bx-credit-card-front', route: '/portal/plan' },
         { label: 'Configuración', icon: 'bx-cog', route: '/portal/settings' },
       ],
     },
@@ -53,6 +54,10 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       {
         path: 'recetas',
         loadComponent: () => import('./prescriptions/prescriptions'),
+      },
+      {
+        path: 'plan',
+        loadComponent: () => import('../freemium/my-plan/my-plan'),
       },
       {
         path: 'facturacion',
