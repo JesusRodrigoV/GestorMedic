@@ -3,10 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
-import { RoundedButton } from '@shared/ui/rounded-button';
+import { RoundedButton } from '@shared/ui/rounded-button/rounded-button';
 import { CurrencyPipe, NgOptimizedImage, CommonModule } from '@angular/common';
 import { Doctor } from '@core/models/doctor.model';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store';
 import { SocialService } from '@core/services/social.service';
 import { NotificationService } from '@core/services/notification';
 
@@ -31,14 +31,14 @@ import { NotificationService } from '@core/services/notification';
   },
 })
 export default class Search {
-  private authService = inject(AuthService);
+  private authStore = inject(AuthStore);
   private socialService = inject(SocialService);
   private notification = inject(NotificationService);
 
   specialty = input<string>('');
   location = input<string>('');
 
-  protected readonly currentUser = this.authService.currentUser;
+  protected readonly currentUser = this.authStore.currentUser;
   protected readonly maxPrice = signal<number>(500);
   protected readonly selectedModalities = signal<string[]>([]);
 
@@ -105,18 +105,33 @@ export default class Search {
   protected onRequestConnection(doctorId: string): void {
     const user = this.currentUser();
     if (!user) {
-      this.notification.builder().warn().summary('Inicia sesión').detail('Debes ser un paciente para enviar solicitudes.').show();
+      this.notification
+        .builder()
+        .warn()
+        .summary('Identificación requerida')
+        .detail('Debe iniciar sesión como paciente para establecer una conexión médica.')
+        .show();
       return;
     }
 
     const docId = parseInt(doctorId, 10);
     this.socialService.sendRequest(docId, user.id).subscribe({
       next: () => {
-        this.notification.builder().success().summary('Solicitud enviada').detail('El doctor revisará tu perfil e historial.').show();
+        this.notification
+          .builder()
+          .success()
+          .summary('Solicitud enviada')
+          .detail('El profesional médico evaluará su perfil para autorizar la conexión.')
+          .show();
       },
       error: () => {
-        this.notification.builder().warn().summary('Error').detail('Ya existe una solicitud pendiente o activa.').show();
-      }
+        this.notification
+          .builder()
+          .warn()
+          .summary('Operación duplicada')
+          .detail('Ya existe un proceso de vinculación activo con este profesional.')
+          .show();
+      },
     });
   }
 }

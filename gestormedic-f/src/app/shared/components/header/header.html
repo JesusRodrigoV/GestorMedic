@@ -20,7 +20,7 @@
           <i class="bx bx-search"></i>
           <input
             type="text"
-            placeholder="Buscar pacientes, citas o historial... (⌘K)"
+            placeholder="Buscar pacientes, citas o historial..."
             aria-label="Buscador global"
           />
         </div>
@@ -30,12 +30,7 @@
             <a
               [routerLink]="link.route"
               routerLinkActive="active-link"
-              [routerLinkActiveOptions]="{
-                paths: 'exact',
-                queryParams: 'ignored',
-                fragment: 'ignored',
-                matrixParams: 'ignored',
-              }"
+              [routerLinkActiveOptions]="{ paths: 'exact' }"
             >
               {{ link.label }}
             </a>
@@ -46,10 +41,9 @@
 
     <div class="gm-header-section gm-header-actions">
       @if (isLoading()) {
-        <div style="width: 200px"></div>
+        <div class="header-skeleton-actions"></div>
       } @else if (isLoggedIn()) {
         <div class="action-group">
-          
           <gm-rounded-button
             label="Ir al Panel"
             icon="bx bx-grid-alt"
@@ -80,8 +74,8 @@
               <span class="user-name">{{ userName() }}</span>
               <span class="user-role">{{ userRoleName() }}</span>
             </div>
-            <p-avatar [image]="userAvatar()" shape="circle" size="normal" />
-            <button class="logout-btn" (click)="onLogout()">
+            <p-avatar [image]="userAvatar()" shape="circle" size="normal"></p-avatar>
+            <button class="logout-btn" (click)="onLogout()" title="Cerrar sesión">
               <i class="bx bx-log-out"></i>
             </button>
           </div>

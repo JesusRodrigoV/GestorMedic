@@ -1,13 +1,13 @@
 from enum import Enum
 
 class UserRole(str, Enum):
-    SUPERADMIN = "SUPERADMIN"
-    ADMIN_CLINICA = "ADMIN_CLINICA"
-    MEDICO = "MEDICO"
-    RECEPCIONISTA = "RECEPCIONISTA"
-    PACIENTE = "PACIENTE"
-    ASEGURADORA = "ASEGURADORA"
-    VISITANTE = "VISITANTE"
+    SUPERADMIN = "superadmin"
+    ADMIN_CLINICA = "admin_clinica"
+    MEDICO = "medico"
+    RECEPCIONISTA = "recepcionista"
+    PACIENTE = "paciente"
+    ASEGURADORA = "aseguradora"
+    VISITANTE = "visitante"
 
 
 class PlanType(str, Enum):

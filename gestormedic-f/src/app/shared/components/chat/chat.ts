@@ -1,12 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  OnInit,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocialService, ChatMessage } from '@core/services/social.service';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store';
 
 @Component({
   selector: 'gm-chat',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
@@ -15,15 +22,15 @@ import { AuthService } from '@core/services/auth.service';
 export class ChatComponent implements OnInit, OnDestroy {
   connectionId = input.required<number>();
   receiverId = input.required<number>();
-  
+
   private socialService = inject(SocialService);
-  private authService = inject(AuthService);
-  
+  private authStore = inject(AuthStore);
+
   readonly messages = signal<ChatMessage[]>([]);
   newMessage = '';
 
   ngOnInit(): void {
-    const user = this.authService.currentUser();
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.connectChat(user.id);
       this.socialService.onMessage().subscribe((msg) => {
@@ -38,20 +45,24 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   send(): void {
     if (!this.newMessage.trim()) return;
-    
-    const user = this.authService.currentUser();
+
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.sendMessage(this.connectionId(), this.receiverId(), this.newMessage);
-      this.messages.update((prev) => [...prev, {
-        sender_id: user.id,
-        content: this.newMessage,
-        timestamp: new Date().toISOString()
-      }]);
+      this.messages.update((prev) => [
+        ...prev,
+        {
+          sender_id: user.id,
+          content: this.newMessage,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
       this.newMessage = '';
     }
   }
 
   isMyMessage(senderId: number): boolean {
-    return senderId === this.authService.currentUser()?.id;
+    const user = this.authStore.currentUser();
+    return senderId === user?.id;
   }
 }

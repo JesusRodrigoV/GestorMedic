@@ -1,14 +1,14 @@
-services:
-  gm-citas:
-    ports: []
-  gm-frontend:
-    build:
-      context: ./gestormedic-f
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "4200:4200"
-    depends_on:
-      - api-gateway
-    networks:
-      - gm-network
+# services:
+#   gm-citas:
+#     ports: []
+#   gm-frontend:
+#     build:
+#       context: ./gestormedic-f
+#       dockerfile: Dockerfile
+#     restart: always
+#     ports:
+#       - "4200:4200"
+#     depends_on:
+#       - api-gateway
+#     networks:
+#       - gm-network

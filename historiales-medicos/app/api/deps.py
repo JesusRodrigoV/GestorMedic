@@ -43,6 +43,7 @@ async def get_current_user(
             .where(User.email == email)
         )
     ).first()
+    
     if not user_row:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Usuario no encontrado')
 
@@ -50,11 +51,17 @@ async def get_current_user(
         await db.execute(select(DoctorProfile.id).where(DoctorProfile.user_id == user_row.id))
     ).scalar_one_or_none()
 
+    raw_role = user_row.name
+    if hasattr(raw_role, 'value'):
+        role_str = str(raw_role.value).lower()
+    else:
+        role_str = str(raw_role).lower()
+
     return CurrentUser(
         id=user_row.id,
         email=user_row.email,
         username=user_row.username,
-        role_name=(str(user_row.name).lower() if user_row.name else ''),
+        role_name=role_str,
         doctor_profile_id=doctor_profile_id,
     )
 

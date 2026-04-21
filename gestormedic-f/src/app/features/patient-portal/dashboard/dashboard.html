@@ -1,37 +1,61 @@
 <gm-main-container>
-  <main class="page">
-    <header class="top-banner">
-      <div>
-        <p class="eyebrow">Portal de Paciente</p>
-        <h2>Resumen general de tu salud</h2>
-        <p>Accede rapidamente a tus proximas acciones: citas, resultados, recetas y documentos.</p>
+  <div class="gm-dashboard-layout">
+    <header class="gm-banner">
+      <div class="banner-content">
+        <p class="eyebrow">Portal de Salud Personal</p>
+        <h2>Resumen General de Actividad</h2>
+        <p>
+          Gestione sus citas, consulte resultados clínicos y acceda a su historial médico de manera
+          integrada.
+        </p>
       </div>
-      <a routerLink="/portal/citas">Gestionar mis citas</a>
+      <div class="banner-action">
+        <a routerLink="/portal/citas/agendar">
+          <i class="bx bx-plus-circle"></i> &nbsp; Agendar Nueva Cita
+        </a>
+      </div>
     </header>
 
-    <section class="kpi-grid">
+    <section class="gm-kpi-grid">
       @for (item of highlights(); track item.label) {
-        <article class="card">
-          <small>{{ item.label }}</small>
-          <h3>{{ item.value }}</h3>
-          <p>{{ item.detail }}</p>
+        <article class="gm-kpi-card">
+          <div class="icon-box">
+            <i class="bx" [ngClass]="item.icon"></i>
+          </div>
+          <div class="info">
+            <small>{{ item.label }}</small>
+            <h3>{{ item.value }}</h3>
+            <p>{{ item.detail }}</p>
+          </div>
         </article>
       }
     </section>
 
-    <section class="card timeline-card">
-      <h3>Actividad reciente</h3>
-      <div class="timeline">
-        @for (event of timeline(); track event.title) {
-          <article>
-            <span>{{ event.date }}</span>
-            <div>
+    <section class="gm-activity-card">
+      <h3>Historial de Actividad Reciente</h3>
+
+      <div class="gm-timeline">
+        @for (event of recentActivity(); track event.title) {
+          <article class="activity-item">
+            <span class="date">{{ event.date }}</span>
+            <div class="content">
               <h4>{{ event.title }}</h4>
-              <p>{{ event.status }}</p>
+              <p>Profesional: {{ event.doctor }}</p>
             </div>
+            <span class="status-tag" [attr.data-status]="event.status">
+              {{ event.statusLabel }}
+            </span>
           </article>
+        } @empty {
+          <div
+            class="gm-empty-state"
+            style="text-align: center; padding: 2rem; color: var(--p-slate-400)"
+          >
+            <i class="bx bx-history" style="font-size: 2rem"></i>
+            <p>No se registran eventos médicos en su cronología reciente.</p>
+          </div>
         }
       </div>
     </section>
-  </main>
+  </div>
 </gm-main-container>

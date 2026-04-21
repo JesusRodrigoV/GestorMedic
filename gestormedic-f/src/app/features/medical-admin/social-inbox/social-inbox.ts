@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SocialService, SocialConnection } from '@core/services/social.service';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store'; 
 import { NotificationService } from '@core/services/notification';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -18,7 +18,7 @@ import { environment } from '@env/environment';
 })
 export default class SocialInbox {
   private socialService = inject(SocialService);
-  private authService = inject(AuthService);
+  private authStore = inject(AuthStore); 
   private notification = inject(NotificationService);
   private http = inject(HttpClient);
 
@@ -32,7 +32,7 @@ export default class SocialInbox {
   }
 
   loadRequests(): void {
-    const user = this.authService.currentUser();
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.getPendingRequests(user.id).subscribe({
         next: (data) => this.requests.set(data),
@@ -43,29 +43,40 @@ export default class SocialInbox {
   viewHistory(patientId: number): void {
     this.loadingHistory.set(true);
     this.showHistoryModal.set(true);
-    
-    // Consultar el historial médico del paciente vía Gateway -> Historiales
+
     const historialesUrl = environment.apiUrl.replace('/api/v1', '/historiales/api/v1');
-    this.http.get(`${historialesUrl}/patient/${patientId}/history`, { withCredentials: true }).subscribe({
-      next: (history) => {
-        this.selectedPatientHistory.set(history);
-        this.loadingHistory.set(false);
-      },
-      error: () => {
-        this.notification.builder().warn().summary('Error').detail('No se pudo cargar el historial del paciente.').show();
-        this.showHistoryModal.set(false);
-        this.loadingHistory.set(false);
-      }
-    });
+    this.http
+      .get(`${historialesUrl}/patient/${patientId}/history`, { withCredentials: true })
+      .subscribe({
+        next: (history) => {
+          this.selectedPatientHistory.set(history);
+          this.loadingHistory.set(false);
+        },
+        error: () => {
+          this.notification
+            .builder()
+            .warn()
+            .summary('Error')
+            .detail('No se pudo cargar el historial del paciente.')
+            .show();
+          this.showHistoryModal.set(false);
+          this.loadingHistory.set(false);
+        },
+      });
   }
 
   respondRequest(connectionId: number, status: 'ACCEPTED' | 'REJECTED'): void {
     this.socialService.updateRequestStatus(connectionId, status).subscribe({
       next: () => {
-        this.notification.builder().success().summary('Éxito').detail(`Solicitud ${status === 'ACCEPTED' ? 'aceptada' : 'rechazada'}.`).show();
+        this.notification
+          .builder()
+          .success()
+          .summary('Éxito')
+          .detail(`Solicitud ${status === 'ACCEPTED' ? 'aceptada' : 'rechazada'}.`)
+          .show();
         this.loadRequests();
         this.showHistoryModal.set(false);
-      }
+      },
     });
   }
 }
