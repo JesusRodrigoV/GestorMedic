@@ -5,10 +5,10 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from typing import Optional, List
 
+from app.models.user import User
 from app.models.doctor_profile import DoctorProfile
 from app.models.specialty import Specialty
 from app.schemas.doctor_profile import DoctorProfileCreate, DoctorProfileUpdate
-
 
 async def get_doctor_by_id(db: AsyncSession, profile_id: int) -> Optional[DoctorProfile]:
     stmt = (
@@ -27,7 +27,6 @@ async def get_doctor_profile_by_user_id(db: AsyncSession, user_id: int) -> Optio
     )
     result = await db.execute(stmt)
     return result.unique().scalar_one_or_none()
-
 
 async def create_doctor(db: AsyncSession, profile_in: DoctorProfileCreate) -> DoctorProfile:
     existing = await get_doctor_profile_by_user_id(db, user_id=profile_in.user_id)
@@ -48,6 +47,15 @@ async def create_doctor(db: AsyncSession, profile_in: DoctorProfileCreate) -> Do
 
     db.add(db_profile)
     try:
+        # Si se envía una foto durante la creación del perfil, la replicamos al User base.
+        if "photo_url" in obj_in_data and obj_in_data["photo_url"]:
+            user_stmt = select(User).where(User.id == profile_in.user_id)
+            user_result = await db.execute(user_stmt)
+            base_user = user_result.scalar_one_or_none()
+            if base_user:
+                base_user.photo_url = obj_in_data["photo_url"]
+                db.add(base_user)
+
         await db.commit()
         await db.refresh(db_profile)
     except IntegrityError:
@@ -63,7 +71,7 @@ async def update_doctor_profile(
     db_obj: DoctorProfile, 
     obj_in: DoctorProfileUpdate
 ) -> DoctorProfile:
-    """Actualiza los datos del perfil y sincroniza la lista de especialidades."""
+    """Actualiza los datos del perfil y sincroniza la lista de especialidades y la foto con User."""
     update_data = obj_in.model_dump(exclude_unset=True, exclude={"specialty_ids"})
     
     for field, value in update_data.items():
@@ -76,6 +84,15 @@ async def update_doctor_profile(
         db_obj.specialties = list(specialties)
 
     try:
+        # Sincronización DoctorProfile -> User
+        if "photo_url" in update_data:
+            user_stmt = select(User).where(User.id == db_obj.user_id)
+            user_result = await db.execute(user_stmt)
+            base_user = user_result.scalar_one_or_none()
+            if base_user:
+                base_user.photo_url = update_data["photo_url"]
+                db.add(base_user)
+
         await db.commit()
         await db.refresh(db_obj)
     except IntegrityError:
@@ -86,29 +103,20 @@ async def update_doctor_profile(
         )
     return db_obj
 
-async def add_specialty_to_doctor(
-    db: AsyncSession, 
-    doctor_profile: DoctorProfile, 
-    specialty: Specialty
-) -> DoctorProfile:
+async def add_specialty_to_doctor(db: AsyncSession, doctor_profile: DoctorProfile, specialty: Specialty) -> DoctorProfile:
     if specialty not in doctor_profile.specialties:
         doctor_profile.specialties.append(specialty)
         await db.commit()
         await db.refresh(doctor_profile)
     return doctor_profile
 
-async def remove_specialty_from_doctor(
-    db: AsyncSession, 
-    doctor_profile: DoctorProfile, 
-    specialty: Specialty
-) -> DoctorProfile:
+async def remove_specialty_from_doctor(db: AsyncSession, doctor_profile: DoctorProfile, specialty: Specialty) -> DoctorProfile:
     """Remueve una especialidad específica del perfil."""
     if specialty in doctor_profile.specialties:
         doctor_profile.specialties.remove(specialty)
         await db.commit()
         await db.refresh(doctor_profile)
     return doctor_profile
-
 
 async def delete_doctor(db: AsyncSession, profile_id: int) -> bool:
     """Elimina físicamente el perfil del doctor."""

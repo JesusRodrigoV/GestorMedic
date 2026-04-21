@@ -8,46 +8,30 @@ from typing import List, Optional
 from app.models.user import User
 from app.models.role import Role
 from app.models.associations import ClinicDoctor
+from app.models.doctor_profile import DoctorProfile
 from app.schemas.user import UserCreate, AdminUserCreate, AdminUserUpdate, UserUpdateProfile
-from app.core.security import get_password_hash
 from app.schemas.admin import UserAdminUpdate
+from app.core.security import get_password_hash
 
 async def get_user(db: AsyncSession, user_id: int) -> Optional[User]:
-    stmt = (
-        select(User)
-        .options(joinedload(User.role))
-        .where(User.id == user_id)
-    )
+    stmt = select(User).options(joinedload(User.role)).where(User.id == user_id)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
 
 async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
     normalized_email = email.strip().lower()
-    stmt = (
-        select(User)
-        .options(joinedload(User.role))
-        .where(User.email == normalized_email)
-    )
+    stmt = select(User).options(joinedload(User.role)).where(User.email == normalized_email)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
 
-def get_users_query(
-    role_id: Optional[int] = None, 
-    is_active: Optional[bool] = None,
-    clinic_id: Optional[int] = None,
-    search: Optional[str] = None
-):
+def get_users_query(role_id: Optional[int] = None, is_active: Optional[bool] = None, clinic_id: Optional[int] = None, search: Optional[str] = None):
     stmt = select(User).options(joinedload(User.role))
-    
     if role_id is not None:
         stmt = stmt.where(User.role_id == role_id)
-        
     if is_active is not None:
         stmt = stmt.where(User.is_active == is_active)
-        
     if clinic_id is not None:
         stmt = stmt.join(User.clinics).where(ClinicDoctor.clinic_id == clinic_id)
-        
     if search:
         search_filter = f"%{search}%"
         stmt = stmt.where(
@@ -58,7 +42,6 @@ def get_users_query(
                 User.last_name.ilike(search_filter)
             )
         )
-        
     return stmt.order_by(User.id)
 
 async def create_public_user(db: AsyncSession, user_in: UserCreate, role_name: str = "paciente") -> User:
@@ -91,14 +74,7 @@ async def create_public_user(db: AsyncSession, user_in: UserCreate, role_name: s
         raise HTTPException(status_code=409, detail="El email o usuario ya existen.")
     return user
 
-async def create_user_by_google(
-    db: AsyncSession, 
-    email: str, 
-    username: str, 
-    google_id: str, 
-    first_name: Optional[str] = None, 
-    last_name: Optional[str] = None
-) -> User:
+async def create_user_by_google(db: AsyncSession, email: str, username: str, google_id: str, first_name: Optional[str] = None, last_name: Optional[str] = None) -> User:
     role_stmt = select(Role.id).where(Role.name == "paciente")
     role_result = await db.execute(role_stmt)
     role_id = role_result.scalar_one_or_none()
@@ -120,10 +96,7 @@ async def create_user_by_google(
         await db.refresh(user)
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Esta cuenta de Google ya está vinculada a otro usuario."
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Esta cuenta de Google ya está vinculada a otro usuario.")
     return user
 
 async def create_user_by_admin(db: AsyncSession, user_in: AdminUserCreate) -> User:
@@ -156,6 +129,15 @@ async def update_user_by_admin(db: AsyncSession, db_user: User, user_in: AdminUs
         setattr(db_user, field, value)
 
     try:
+        # Sincronizar foto si el admin la actualiza desde la base
+        if "photo_url" in update_data:
+            stmt = select(DoctorProfile).where(DoctorProfile.user_id == db_user.id)
+            result = await db.execute(stmt)
+            doc_profile = result.scalar_one_or_none()
+            if doc_profile:
+                doc_profile.photo_url = update_data["photo_url"]
+                db.add(doc_profile)
+
         await db.commit()
         await db.refresh(db_user)
     except IntegrityError:
@@ -167,7 +149,6 @@ async def delete_user_by_admin(db: AsyncSession, user_id: int) -> bool:
     user = await get_user(db, user_id)
     if not user:
         return False
-    
     await db.delete(user)
     await db.commit()
     return True
@@ -180,17 +161,21 @@ async def update_own_profile(db: AsyncSession, db_user: User, user_in: UserUpdat
             setattr(db_user, field, value)
         
     try:
+        # Sincronización User -> DoctorProfile
+        if "photo_url" in update_data:
+            stmt = select(DoctorProfile).where(DoctorProfile.user_id == db_user.id)
+            result = await db.execute(stmt)
+            doc_profile = result.scalar_one_or_none()
+            if doc_profile:
+                doc_profile.photo_url = update_data["photo_url"]
+                db.add(doc_profile)
+
         await db.commit()
         await db.refresh(db_user)
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=409, detail="Los datos ya están siendo usados.")
     return db_user
-
-#async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
-#    stmt = select(User).where(User.id == user_id)
-#    result = await db.execute(stmt)
-#    return result.scalars().first()
 
 async def get_user_by_id(db: AsyncSession, user_id: int):
     stmt = (
@@ -200,10 +185,6 @@ async def get_user_by_id(db: AsyncSession, user_id: int):
     )
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
-
-
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 
 async def admin_update_user(db: AsyncSession, db_user: User, user_in: UserAdminUpdate):
     update_data = user_in.model_dump(exclude_unset=True)
@@ -218,13 +199,20 @@ async def admin_update_user(db: AsyncSession, db_user: User, user_in: UserAdminU
         else:
             setattr(db_user, field, value)
 
+    # Sincronización User -> DoctorProfile (Admin Edition)
+    if "photo_url" in update_data:
+        stmt = select(DoctorProfile).where(DoctorProfile.user_id == db_user.id)
+        result = await db.execute(stmt)
+        doc_profile = result.scalar_one_or_none()
+        if doc_profile:
+            doc_profile.photo_url = update_data["photo_url"]
+            db.add(doc_profile)
+
     await db.commit()
+    
     stmt = (
         select(User)
-        .options(
-            selectinload(User.role),
-            selectinload(User.clinic)
-        )
+        .options(selectinload(User.role), selectinload(User.clinic))
         .where(User.id == db_user.id)
     )
     result = await db.execute(stmt)

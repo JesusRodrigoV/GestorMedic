@@ -2,6 +2,7 @@ from sqlalchemy import select
 from app.db.session import AsyncSessionLocal
 from app.models.role import Role
 from app.core.enums import UserRole
+from app.scripts.seed_specialties import seed_specialties
 
 
 async def init_db():
@@ -37,6 +38,9 @@ async def init_db():
                     db.add(nuevo_rol)
 
             await db.commit()
+
+            print("2. Verificando Catálogo de Especialidades...")
+            await seed_specialties(db)
             print("--- Datos cargados exitosamente ---")
 
         except Exception as e:

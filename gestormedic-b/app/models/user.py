@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Enum as SQLEnum, ForeignKey, select
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, Enum as SQLEnum, ForeignKey, select,Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utils import EncryptedType
@@ -29,7 +29,7 @@ class User(Base):
         EncryptedType(String(100), settings.SECRET_KEY, AesEngine, 'pkcs5')
     )
     clinic_id: Mapped[Optional[int]] = mapped_column(ForeignKey("clinics.id"), nullable=True)
-    photo_url: Mapped[Optional[str]] = mapped_column(String(2048))
+    photo_url: Mapped[Optional[str]] = mapped_column(Text)
 
     hashed_password: Mapped[Optional[str]] = mapped_column(String(200))
     google_id: Mapped[Optional[str]] = mapped_column(String(255), unique=True, index=True)
