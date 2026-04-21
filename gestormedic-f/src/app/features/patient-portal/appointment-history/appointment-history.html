@@ -108,7 +108,11 @@
           <h3>Evaluación del Servicio Clínico</h3>
           <p>Su retroalimentación nos permite optimizar la calidad de nuestra atención médica.</p>
           <div class="gm-rating-stars">
-            <p-rating [(ngModel)]="ratingValue" [stars]="3"></p-rating>
+            <p-rating 
+              [ngModel]="ratingValue()" 
+              (ngModelChange)="ratingValue.set($event)" 
+              [stars]="3">
+            </p-rating>
           </div>
           <p-button 
             label="Registrar Evaluación" 

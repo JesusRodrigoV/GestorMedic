@@ -24,8 +24,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   receiverId = input.required<number>();
 
   private socialService = inject(SocialService);
-  private authStore = inject(AuthStore);
-
+  protected authStore = inject(AuthStore);
+  
   readonly messages = signal<ChatMessage[]>([]);
   newMessage = '';
 
@@ -45,7 +45,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   send(): void {
     if (!this.newMessage.trim()) return;
-
     const user = this.authStore.currentUser();
     if (user) {
       this.socialService.sendMessage(this.connectionId(), this.receiverId(), this.newMessage);

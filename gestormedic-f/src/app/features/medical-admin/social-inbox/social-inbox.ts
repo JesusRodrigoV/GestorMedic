@@ -18,7 +18,7 @@ import { environment } from '@env/environment';
 })
 export default class SocialInbox {
   private socialService = inject(SocialService);
-  private authStore = inject(AuthStore); 
+  protected authStore = inject(AuthStore);
   private notification = inject(NotificationService);
   private http = inject(HttpClient);
 
