@@ -57,6 +57,18 @@ p {
     grid-column: 1 / -1;
   }
 
+  .date-with-action {
+    display: flex;
+    gap: tokens.$spacing-sm;
+    align-items: center;
+
+    button.secondary {
+      @include button.button-secondary();
+      @include button.button-size-sm();
+      white-space: nowrap;
+    }
+  }
+
   input,
   textarea {
     border: 1px solid tokens.$color-border-default;
@@ -73,6 +85,11 @@ p {
       box-shadow: tokens.$shadow-focus-primary;
     }
   }
+
+}
+
+:host ::ng-deep .p-select {
+  width: 100%;
 }
 
 .actions {
@@ -99,6 +116,11 @@ p {
   display: flex;
   gap: tokens.$spacing-sm;
   flex-wrap: wrap;
+
+  .patient-file-select {
+    min-width: 300px;
+    flex: 1;
+  }
 
   input {
     border: 1px solid tokens.$color-border-default;

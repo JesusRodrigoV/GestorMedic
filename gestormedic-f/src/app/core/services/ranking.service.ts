@@ -10,6 +10,7 @@ export class RankingService {
   private professionals: Professional[] = [];
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl.replace('/api/v1', '/ranking/api/v1');
+  private citasApiUrl = environment.apiUrl.replace('/api/v1', '/citas/api/v1');
 
   constructor() {
     const saved = localStorage.getItem(this.storageKey);
@@ -17,73 +18,13 @@ export class RankingService {
       try {
         this.professionals = JSON.parse(saved);
       } catch (_e) {
-        this.professionals = this.seed();
+        this.professionals = [];
         this.save();
       }
     } else {
-      this.professionals = this.seed();
+      this.professionals = [];
       this.save();
     }
-  }
-
-  private seed(): Professional[] {
-    return [
-      {
-        id: 1,
-        name: 'Dra. Ana López',
-        specialty: 'Cardiología',
-        photo: 'https://i.pravatar.cc/150?img=12',
-        ratings: [3, 3, 3, 2, 3, 3, 3],
-        totalPatients: 120,
-        country: 'Colombia',
-        department: 'Bogotá',
-        yearsOfExperience: 12,
-      },
-      {
-        id: 2,
-        name: 'Dr. Miguel Torres',
-        specialty: 'Medicina General',
-        photo: 'https://i.pravatar.cc/150?img=5',
-        ratings: [1, 1, 1, 1, 1, 1, 1, 1, 1],
-        totalPatients: 200,
-        country: 'México',
-        department: 'Ciudad de México',
-        yearsOfExperience: 15,
-      },
-      {
-        id: 3,
-        name: 'Dra. Carla Gómez',
-        specialty: 'Pediatría',
-        photo: 'https://i.pravatar.cc/150?img=20',
-        ratings: [3, 3, 3, 3, 3],
-        totalPatients: 5,
-        country: 'Perú',
-        department: 'Lima',
-        yearsOfExperience: 4,
-      },
-      {
-        id: 4,
-        name: 'Dr. Jorge Ruiz',
-        specialty: 'Dermatología',
-        photo: 'https://i.pravatar.cc/150?img=8',
-        ratings: [2, 2, 3, 2],
-        totalPatients: 40,
-        country: 'Chile',
-        department: 'Santiago',
-        yearsOfExperience: 8,
-      },
-      {
-        id: 5,
-        name: 'Dra. Isabel Martínez',
-        specialty: 'Ginecología',
-        photo: 'https://i.pravatar.cc/150?img=18',
-        ratings: [3],
-        totalPatients: 1,
-        country: 'Argentina',
-        department: 'Buenos Aires',
-        yearsOfExperience: 1,
-      },
-    ];
   }
 
   private save() {
@@ -129,38 +70,41 @@ export class RankingService {
     this.save();
   }
 
-  // Fetch ranking from backend and update local scores.
+  // Fetch ranking from backend and update local cache without hardcoded seed data.
   async fetchRemoteAll(filters: { specialty_id?: number; min_experience?: number; page?: number; page_size?: number } = {}): Promise<Professional[]> {
     try {
-      const resp = await lastValueFrom(
+      const rankingResp = await lastValueFrom(
         this.http.get<any[]>(`${this.apiUrl}/top-doctors`, {
+          params: {
+            limit: filters.page_size ?? 50,
+          },
           withCredentials: true,
         }),
       );
 
-      // Update our local seed/storage with real scores from the microservice
-      if (resp && Array.isArray(resp)) {
-        resp.forEach(item => {
-          const pro = this.professionals.find(p => p.id === item.doctor_id);
-          if (pro) {
-            // Convert score (1-5) to our internal 1-3 heart representation if needed, 
-            // or just map it directly. Here we'll just store the count to show it's "connected"
-            const total = item.total_ratings || 0;
-            const avg = item.average_score || 0;
-            
-            // Re-generate a representative ratings array for our Wilson formula
-            const ratings: number[] = [];
-            const positiveCount = Math.round((avg / 5) * total); // approximation
-            for(let i=0; i<positiveCount; i++) ratings.push(3);
-            for(let i=positiveCount; i<total; i++) ratings.push(1);
-            
-            pro.ratings = ratings;
-            pro.totalPatients = total;
-          }
+      if (rankingResp && Array.isArray(rankingResp)) {
+        this.professionals = rankingResp.map((item) => {
+          const total = Number(item.total_ratings) || 0;
+          const avg = Number(item.average_score) || 0;
+
+          const ratings: number[] = [];
+          const positiveCount = Math.max(0, Math.min(total, Math.round((avg / 5) * total)));
+          for (let i = 0; i < positiveCount; i++) ratings.push(3);
+          for (let i = positiveCount; i < total; i++) ratings.push(1);
+
+          return {
+            id: item.doctor_id,
+            name: item.doctor_name || `Doctor #${item.doctor_id}`,
+            specialty: (item.specialties && item.specialties[0]) || 'Especialidad no disponible',
+            photo: item.photo || `https://i.pravatar.cc/150?u=doctor-${item.doctor_id}`,
+            ratings,
+            totalPatients: total,
+            yearsOfExperience: item.experience_years || 0,
+          } as Professional;
         });
         this.save();
       }
-      
+
       return this.getAll();
     } catch (_e) {
       console.error('Error fetching remote ranking', _e);

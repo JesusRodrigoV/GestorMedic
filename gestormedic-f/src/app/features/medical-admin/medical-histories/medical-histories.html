@@ -8,16 +8,53 @@
     <h3>Nueva entrada de consulta</h3>
     <div class="form-grid">
       <label>
-        ID de cita
-        <input [ngModel]="appointmentId()" (ngModelChange)="appointmentId.set($event)" placeholder="Ej. 451" />
+        Día de citas
+        <div class="date-with-action">
+          <input type="date" [ngModel]="selectedDay()" (ngModelChange)="selectedDay.set($event)" />
+          <button type="button" class="secondary" (click)="loadSelectionData()">Cargar opciones</button>
+        </div>
       </label>
       <label>
-        ID usuario paciente
-        <input [ngModel]="patientUserId()" (ngModelChange)="patientUserId.set($event)" placeholder="Ej. 128" />
+        Cita
+        <p-select
+          [options]="appointmentOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          filterBy="label"
+          [ngModel]="appointmentId()"
+          (ngModelChange)="onAppointmentSelected($event)"
+          placeholder="Busca por paciente, especialidad o ID"
+          appendTo="body"
+        ></p-select>
       </label>
       <label>
-        ID especialidad
-        <input [ngModel]="specialtyId()" (ngModelChange)="specialtyId.set($event)" placeholder="Ej. 7" />
+        Paciente
+        <p-select
+          [options]="patientOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          filterBy="label"
+          [ngModel]="patientUserId()"
+          (ngModelChange)="patientUserId.set($event)"
+          placeholder="Selecciona paciente"
+          appendTo="body"
+        ></p-select>
+      </label>
+      <label>
+        Especialidad
+        <p-select
+          [options]="specialtyOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          filterBy="label"
+          [ngModel]="specialtyId()"
+          (ngModelChange)="onSpecialtySelected($event)"
+          placeholder="Selecciona especialidad"
+          appendTo="body"
+        ></p-select>
       </label>
       <label>
         Nombre especialidad
@@ -66,10 +103,18 @@
     <h3>Archivos de paciente</h3>
     <p>Consulta archivos de pacientes con los que tienes citas registradas.</p>
     <div class="doctor-files-filter">
-      <input
+      <p-select
+        class="patient-file-select"
+        [options]="patientOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [filter]="true"
+        filterBy="label"
         [ngModel]="selectedPatientFilesUserId()"
         (ngModelChange)="selectedPatientFilesUserId.set($event)"
-        placeholder="ID de usuario paciente" />
+        placeholder="Selecciona paciente"
+        appendTo="body"
+      ></p-select>
       <button type="button" (click)="loadPatientFiles()">Cargar archivos</button>
     </div>
 

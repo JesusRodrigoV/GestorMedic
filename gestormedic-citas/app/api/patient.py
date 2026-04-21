@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import and_, select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import ProgrammingError
 
 from app.api.deps import CurrentUser, require_patient
 from app.db.session import get_db
@@ -57,11 +58,15 @@ async def my_appointments(
 
     from app.models.reports import AppointmentRating
 
-    rating_stmt = select(AppointmentRating).where(
-        AppointmentRating.patient_user_id == current_user.id
-    )
-    rating_result = await db.execute(rating_stmt)
-    local_ratings = {r.appointment_id: r.rating for r in rating_result.scalars().all()}
+    try:
+        rating_stmt = select(AppointmentRating).where(
+            AppointmentRating.patient_user_id == current_user.id
+        )
+        rating_result = await db.execute(rating_stmt)
+        local_ratings = {r.appointment_id: r.rating for r in rating_result.scalars().all()}
+    except ProgrammingError:
+        # Compatibilidad temporal cuando la migracion de ratings aun no fue aplicada.
+        local_ratings = {}
 
     return [
         AppointmentOut(
