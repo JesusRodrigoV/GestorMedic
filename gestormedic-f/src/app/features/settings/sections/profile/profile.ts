@@ -4,10 +4,11 @@ import { UserRole } from '@core/models/role.model';
 import { AdminProfile } from './components/admin-profile';
 import { DoctorProfile } from './components/doctor-profile';
 import { PatientProfile } from './components/patient-profile';
+import { SuperadminProfile } from './components/superadmin-profile';
 
 @Component({
   selector: 'gm-profile',
-  imports: [PatientProfile, DoctorProfile, AdminProfile],
+  imports: [PatientProfile, DoctorProfile, AdminProfile, SuperadminProfile],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

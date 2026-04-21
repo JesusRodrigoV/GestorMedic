@@ -12,7 +12,18 @@ class Role(Base):
     __tablename__ = 'roles'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(SQLEnum(name='userrole'))
+    name: Mapped[str] = mapped_column(
+        SQLEnum(
+            "SUPERADMIN", 
+            "ADMIN_CLINICA", 
+            "MEDICO", 
+            "RECEPCIONISTA", 
+            "PACIENTE", 
+            "ASEGURADORA", 
+            "VISITANTE",
+            name='userrole'
+        )
+    )
 
 
 class User(Base):

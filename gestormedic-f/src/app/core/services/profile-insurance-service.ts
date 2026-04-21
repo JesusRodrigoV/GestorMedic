@@ -16,18 +16,18 @@ export class ProfileInsuranceService {
   };
 
   getMyProfile(): Observable<InsuranceProfile> {
-    return this.http.get<InsuranceProfile>(`${this.apiUrl}/me`, this.httpOptions);
+    return this.http.get<InsuranceProfile>(`${this.apiUrl}/me/`, this.httpOptions);
   }
 
   updateMyProfile(payload: UpdateInsuranceProfilePayload): Observable<InsuranceProfile> {
-    return this.http.put<InsuranceProfile>(`${this.apiUrl}/me`, payload, this.httpOptions);
+    return this.http.put<InsuranceProfile>(`${this.apiUrl}/me/`, payload, this.httpOptions);
   }
 
   getProfileByUserId(userId: number): Observable<InsuranceProfile> {
-    return this.http.get<InsuranceProfile>(`${this.apiUrl}/${userId}`, this.httpOptions);
+    return this.http.get<InsuranceProfile>(`${this.apiUrl}/${userId}/`, this.httpOptions);
   }
 
   updateProfileByUserId(userId: number, payload: UpdateInsuranceProfilePayload): Observable<InsuranceProfile> {
-    return this.http.put<InsuranceProfile>(`${this.apiUrl}/${userId}`, payload, this.httpOptions);
+    return this.http.put<InsuranceProfile>(`${this.apiUrl}/${userId}/`, payload, this.httpOptions);
   }
 }

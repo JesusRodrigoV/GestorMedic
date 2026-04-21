@@ -16,6 +16,9 @@
         @case (UserRole.ADMIN_CLINICA) {
           <gm-admin-profile />
         }
+        @case (UserRole.SUPERADMIN) {
+          <gm-superadmin-profile />
+        }
         @default {
           <div class="alert alert-warning">
             El perfil para este nivel de acceso no está configurado.

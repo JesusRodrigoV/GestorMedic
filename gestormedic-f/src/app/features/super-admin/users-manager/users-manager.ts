@@ -4,10 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { User } from '@core/models/auth.model';
 import { NotificationService } from '@core/services/notification';
 import { UsersAdminService } from '@core/services/users-admin';
+import { MainContainer } from '@core/layouts/main-container';
+import { TableModule } from 'primeng/table';
+import { RoundedButton } from '@shared/ui/rounded-button';
+import { ROLE_DICTIONARY } from '@core/models/role.model';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'gm-users-manager',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, MainContainer, TableModule, RoundedButton, InputTextModule],
   templateUrl: './users-manager.html',
   styleUrl: './users-manager.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +20,8 @@ import { UsersAdminService } from '@core/services/users-admin';
 export default class UsersManager {
   private usersAdmin = inject(UsersAdminService);
   private notification = inject(NotificationService);
+
+  roleDictionary = ROLE_DICTIONARY;
 
   rows = signal<User[]>([]);
   page = signal(1);

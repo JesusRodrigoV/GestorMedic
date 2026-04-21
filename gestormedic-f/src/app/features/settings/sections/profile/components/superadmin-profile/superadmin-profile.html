@@ -1,0 +1,78 @@
+<div class="gm-superadmin-profile">
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="gm-profile-form">
+    <fieldset class="gm-form-section">
+      <legend><i class="bx bx-user-circle"></i> Perfil</legend>
+
+      <div class="gm-form-row">
+        <div class="gm-field-group">
+          <label for="first_name">Nombre(s) Legal(es)</label>
+          <div class="gm-input-container">
+            <i class="bx bx-user"></i>
+            <input
+              pInputText
+              id="first_name"
+              formControlName="first_name"
+              placeholder="Ingrese nombre legal"
+            />
+          </div>
+        </div>
+
+        <div class="gm-field-group">
+          <label for="last_name">Apellidos</label>
+          <div class="gm-input-container">
+            <input
+              pInputText
+              id="last_name"
+              formControlName="last_name"
+              placeholder="Ingrese apellidos"
+            />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="gm-form-section">
+      <legend><i class="bx bx-id-card"></i> Credenciales de Acceso</legend>
+
+      <div class="gm-form-row">
+        <div class="gm-field-group">
+          <label for="email">Correo Institucional</label>
+          <div class="gm-input-container">
+            <i class="bx bx-envelope"></i>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              readonly
+            />
+          </div>
+        </div>
+
+        <div class="gm-field-group">
+          <label for="username">Identificador de Usuario</label>
+          <div class="gm-input-container">
+            <i class="bx bx-barcode"></i>
+            <input
+              pInputText
+              id="username"
+              formControlName="username"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="gm-form-actions">
+      <gm-rounded-button
+        (onClick)="onSave()"
+        label="Actualizar Registro"
+        severity="primary"
+        icon="bx bx-save"
+        [disabled]="profileForm.invalid || isProcessing()"
+        [loading]="isProcessing()"
+      />
+    </div>
+  </form>
+</div>

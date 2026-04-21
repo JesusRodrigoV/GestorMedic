@@ -1,114 +1,121 @@
-<section class="appointments-page" [class.with-detail]="sidebarOpen()">
-  <header class="hero">
-    <div>
-      <p class="eyebrow">Citas</p>
-      <h2>Agendar consulta</h2>
-      <p>Busca doctores del sistema y reserva desde sus horarios disponibles.</p>
-    </div>
-    <div class="actions">
-      <button type="button" [class.active]="mode() === 'cards'" (click)="mode.set('cards')">Cards</button>
-      <button type="button" [class.active]="mode() === 'calendar'" (click)="mode.set('calendar')">Calendario</button>
-    </div>
-  </header>
+<gm-main-container>
+  <section class="appointments-page" [class.with-detail]="sidebarOpen()">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Citas</p>
+        <h2>Agendar consulta</h2>
+        <p>Busca doctores del sistema y reserva desde sus horarios disponibles.</p>
+      </div>
+      <div class="actions">
+        <button type="button" [class.active]="mode() === 'cards'" (click)="mode.set('cards')">
+          Cards
+        </button>
+        <button type="button" [class.active]="mode() === 'calendar'" (click)="mode.set('calendar')">
+          Calendario
+        </button>
+      </div>
+    </header>
 
-  <section class="layout-shell" [style.--detail-width.%]="rightPaneWidth()">
-    <div class="main-list">
-      <div class="search-row">
-        <input
-          type="text"
-          placeholder="Buscar por nombre, correo o especialidad"
-          [ngModel]="query()"
-          (ngModelChange)="onSearchChange($event)"
-        />
+    <section class="layout-shell" [style.--detail-width.%]="rightPaneWidth()">
+      <div class="main-list">
+        <div class="search-row">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, correo o especialidad"
+            [ngModel]="query()"
+            (ngModelChange)="onSearchChange($event)"
+          />
+        </div>
+
+        <div class="doctor-grid">
+          @for (doctor of filteredDoctors(); track doctor.doctor_id) {
+            <article class="doctor-card" (click)="openDoctor(doctor)">
+              <h3>{{ doctor.doctor_name }}</h3>
+              <p class="meta">{{ doctor.email }}</p>
+              <p class="bio">{{ doctor.bio || 'Sin biografia cargada.' }}</p>
+              <div class="chips">
+                @for (sp of doctor.specialties; track sp) {
+                  <span>{{ sp }}</span>
+                }
+              </div>
+            </article>
+          } @empty {
+            <article class="empty-state">No se encontraron doctores para el filtro actual.</article>
+          }
+        </div>
       </div>
 
-      <div class="doctor-grid">
-        @for (doctor of filteredDoctors(); track doctor.doctor_id) {
-          <article class="doctor-card" (click)="openDoctor(doctor)">
-            <h3>{{ doctor.doctor_name }}</h3>
-            <p class="meta">{{ doctor.email }}</p>
-            <p class="bio">{{ doctor.bio || 'Sin biografia cargada.' }}</p>
-            <div class="chips">
-              @for (sp of doctor.specialties; track sp) {
-                <span>{{ sp }}</span>
+      @if (sidebarOpen() && selectedDoctor()) {
+        <div class="splitter" (mousedown)="onStartResize($event)"></div>
+
+        <aside class="detail-pane">
+          <header>
+            <div>
+              <h3>{{ selectedDoctor()?.doctor_name }}</h3>
+              <p>{{ selectedDoctor()?.specialties?.join(', ') }}</p>
+            </div>
+            <button type="button" (click)="closeDetail()">Cerrar</button>
+          </header>
+
+          @if (mode() === 'cards') {
+            <div class="slots-cards">
+              @for (slot of availableSlots(); track slot.starts_at) {
+                <article class="slot-card">
+                  <strong>{{ formatSlot(slot) }}</strong>
+                  <p>{{ slot.specialty_name }} - {{ slot.room_name }}</p>
+                  <button type="button" (click)="openReserveModal(slot)">Reservar</button>
+                </article>
+              } @empty {
+                <p class="empty-inline">No hay horarios disponibles en este rango.</p>
               }
             </div>
-          </article>
-        } @empty {
-          <article class="empty-state">No se encontraron doctores para el filtro actual.</article>
-        }
-      </div>
-    </div>
-
-    @if (sidebarOpen() && selectedDoctor()) {
-      <div class="splitter" (mousedown)="onStartResize($event)"></div>
-
-      <aside class="detail-pane">
-        <header>
-          <div>
-            <h3>{{ selectedDoctor()?.doctor_name }}</h3>
-            <p>{{ selectedDoctor()?.specialties?.join(', ') }}</p>
-          </div>
-          <button type="button" (click)="closeDetail()">Cerrar</button>
-        </header>
-
-        @if (mode() === 'cards') {
-          <div class="slots-cards">
-            @for (slot of availableSlots(); track slot.starts_at) {
-              <article class="slot-card">
-                <strong>{{ formatSlot(slot) }}</strong>
-                <p>{{ slot.specialty_name }} - {{ slot.room_name }}</p>
-                <button type="button" (click)="openReserveModal(slot)">Reservar</button>
-              </article>
-            } @empty {
-              <p class="empty-inline">No hay horarios disponibles en este rango.</p>
-            }
-          </div>
-        } @else {
-          <div class="slots-calendar">
-            @for (bucket of slotsByDay(); track bucket.day) {
-              <section>
-                <h4>{{ bucket.day }}</h4>
-                <div class="grid">
-                  @for (slot of bucket.slots; track slot.starts_at) {
-                    <button
-                      type="button"
-                      [disabled]="!slot.is_available"
-                      [class.disabled]="!slot.is_available"
-                      (click)="openReserveModal(slot)"
-                    >
-                      {{ formatSlot(slot) }}
-                    </button>
-                  }
-                </div>
-              </section>
-            }
-          </div>
-        }
-      </aside>
-    }
+          } @else {
+            <div class="slots-calendar">
+              @for (bucket of slotsByDay(); track bucket.day) {
+                <section>
+                  <h4>{{ bucket.day }}</h4>
+                  <div class="grid">
+                    @for (slot of bucket.slots; track slot.starts_at) {
+                      <button
+                        type="button"
+                        [disabled]="!slot.is_available"
+                        [class.disabled]="!slot.is_available"
+                        (click)="openReserveModal(slot)"
+                      >
+                        {{ formatSlot(slot) }}
+                      </button>
+                    }
+                  </div>
+                </section>
+              }
+            </div>
+          }
+        </aside>
+      }
+    </section>
   </section>
-</section>
 
-@if (isReserveModalOpen() && selectedSlot()) {
-  <div class="overlay" (click)="closeReserveModal()"></div>
-  <section class="modal" role="dialog" aria-modal="true">
-    <h3>Confirmar reserva</h3>
-    <p>
-      ¿Deseas reservar el horario
-      <strong>{{ formatSlot(selectedSlot()!) }}</strong>
-      con
-      <strong>{{ selectedDoctor()?.doctor_name }}</strong>?
-    </p>
+  @if (isReserveModalOpen() && selectedSlot()) {
+    <div class="overlay" (click)="closeReserveModal()"></div>
+    <section class="modal" role="dialog" aria-modal="true">
+      <h3>Confirmar reserva</h3>
+      <p>
+        ¿Deseas reservar el horario
+        <strong>{{ formatSlot(selectedSlot()!) }}</strong>
+        con
+        <strong>{{ selectedDoctor()?.doctor_name }}</strong
+        >?
+      </p>
 
-    <label>
-      Nota opcional
-      <textarea [ngModel]="reserveNotes()" (ngModelChange)="reserveNotes.set($event)"></textarea>
-    </label>
+      <label>
+        Nota opcional
+        <textarea [ngModel]="reserveNotes()" (ngModelChange)="reserveNotes.set($event)"></textarea>
+      </label>
 
-    <footer>
-      <button type="button" class="ghost" (click)="closeReserveModal()">Cancelar</button>
-      <button type="button" class="primary" (click)="confirmReservation()">Confirmar cita</button>
-    </footer>
-  </section>
-}
+      <footer>
+        <button type="button" class="ghost" (click)="closeReserveModal()">Cancelar</button>
+        <button type="button" class="primary" (click)="confirmReservation()">Confirmar cita</button>
+      </footer>
+    </section>
+  }
+</gm-main-container>

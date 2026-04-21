@@ -1,50 +1,86 @@
-<main class="management-page">
-  <header>
-    <div>
-      <p class="eyebrow">Super Admin</p>
-      <h2>Usuarios del sistema</h2>
-      <p>Paginación server-side con orden y filtro.</p>
+<gm-main-container>
+  <div class="manager-layout">
+    <header class="manager-header">
+      <h2>Usuarios del Sistema</h2>
+      <p>Registro nacional de identidades, niveles de acceso y estado operativo.</p>
+    </header>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="bx bx-search"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Filtrar por usuario o correo..."
+          [ngModel]="filter()"
+          (ngModelChange)="onFilterChange($event)"
+        />
+      </div>
     </div>
-    <input
-      type="text"
-      placeholder="Filtrar por usuario o correo"
-      [ngModel]="filter()"
-      (ngModelChange)="onFilterChange($event)"
-    />
-  </header>
 
-  <section class="table-wrap">
-    <table>
-      <thead>
+    <p-table [value]="rows()" styleClass="p-datatable-sm p-datatable-striped">
+      <ng-template pTemplate="header">
         <tr>
-          <th (click)="onSortChange('username')">Usuario</th>
-          <th (click)="onSortChange('email')">Correo</th>
-          <th>Rol</th>
-          <th (click)="onSortChange('is_active')">Estado</th>
-          <th (click)="onSortChange('created_at')">Creado</th>
+          <th (click)="onSortChange('username')" style="cursor: pointer">
+            Usuario <i class="bx bx-sort"></i>
+          </th>
+          <th (click)="onSortChange('email')" style="cursor: pointer">
+            Correo Institucional <i class="bx bx-sort"></i>
+          </th>
+          <th>Nivel de Acceso</th>
+          <th (click)="onSortChange('is_active')" style="cursor: pointer; text-align: center">
+            Estado <i class="bx bx-sort"></i>
+          </th>
+          <th (click)="onSortChange('created_at')" style="cursor: pointer">
+            Alta en Plataforma <i class="bx bx-sort"></i>
+          </th>
         </tr>
-      </thead>
-      <tbody>
-        @for (item of rows(); track item.id) {
-          <tr>
-            <td>{{ item.username }}</td>
-            <td>{{ item.email }}</td>
-            <td>{{ item.role_id }}</td>
-            <td>{{ item.is_active ? 'Activo' : 'Inactivo' }}</td>
-            <td>{{ item.created_at | date: 'short' }}</td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="5" class="empty">No se encontraron usuarios.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </section>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>
+            <strong>{{ item.username }}</strong>
+          </td>
+          <td>{{ item.email }}</td>
+          <td>
+            <span class="role-badge">{{ roleDictionary[item.role_id] || 'Rol Desconocido' }}</span>
+          </td>
+          <td style="text-align: center">
+            <span class="status-indicator" [class.active]="item.is_active">
+              {{ item.is_active ? 'Activo' : 'Suspendido' }}
+            </span>
+          </td>
+          <td>{{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="empty-message">
+            No se encontraron usuarios bajo los criterios de búsqueda actuales.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
 
-  <footer>
-    <button type="button" (click)="prevPage()">Anterior</button>
-    <span>Pagina {{ page() }} · Total {{ total() }}</span>
-    <button type="button" (click)="nextPage()">Siguiente</button>
-  </footer>
-</main>
+    <div class="custom-paginator">
+      <gm-rounded-button
+        icon="bx bx-chevron-left"
+        label="Anterior"
+        variant="text"
+        severity="secondary"
+        (onClick)="prevPage()"
+        [disabled]="page() === 1"
+      />
+      <span class="page-info">Página {{ page() }} · Total: {{ total() }}</span>
+      <gm-rounded-button
+        icon="bx bx-chevron-right"
+        iconPos="right"
+        label="Siguiente"
+        variant="text"
+        severity="secondary"
+        (onClick)="nextPage()"
+        [disabled]="page() * pageSize() >= total()"
+      />
+    </div>
+  </div>
+</gm-main-container>

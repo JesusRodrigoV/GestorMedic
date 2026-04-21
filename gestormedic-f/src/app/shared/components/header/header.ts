@@ -33,7 +33,6 @@ export class Header {
     return data ? `${data.first_name} ${data.last_name}` : 'Invitado';
   });
 
-  // NUEVA SEÑAL: Traducción de ID a Texto
   userRoleName = computed(() => {
     const roleId = this.user()?.role_id;
 
@@ -53,6 +52,22 @@ export class Header {
       default:
         return 'Usuario';
     }
+  });
+
+  dashboardRoute = computed(() => {
+    const data = this.user();
+    if (!data) return '/';
+
+    if (data.is_admin || data.role_id === UserRole.SUPERADMIN) {
+      return '/control/';
+    } else if (
+      data.role_id === UserRole.ADMIN_CLINICA ||
+      data.role_id === UserRole.MEDICO ||
+      data.role_id === UserRole.RECEPCIONISTA
+    ) {
+      return '/app/';
+    }
+    return '/portal/';
   });
 
   userAvatar = computed(() => this.user()?.photo_url || 'profile/1.webp');

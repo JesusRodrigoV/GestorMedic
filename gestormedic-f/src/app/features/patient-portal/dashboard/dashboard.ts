@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MainContainer } from '@core/layouts/main-container';
 
 @Component({
   selector: 'app-patient-portal-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, MainContainer],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

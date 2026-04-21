@@ -16,20 +16,20 @@ export class ProfileDoctorService {
   };
 
   createOnboarding(payload: UpdateDoctorProfilePayload): Observable<DoctorProfile> {
-    return this.http.post<DoctorProfile>(`${this.apiUrl}/onboarding`, payload, this.httpOptions);
+    return this.http.post<DoctorProfile>(`${this.apiUrl}/onboarding/`, payload, this.httpOptions);
   }
 
   getMyProfile(): Observable<DoctorProfile> {
-    return this.http.get<DoctorProfile>(`${this.apiUrl}/me`, this.httpOptions);
+    return this.http.get<DoctorProfile>(`${this.apiUrl}/me/`, this.httpOptions);
   }
 
   updateMyProfile(payload: UpdateDoctorProfilePayload): Observable<DoctorProfile> {
-    return this.http.put<DoctorProfile>(`${this.apiUrl}/me`, payload, this.httpOptions);
+    return this.http.put<DoctorProfile>(`${this.apiUrl}/me/`, payload, this.httpOptions);
   }
 
   addSpecialtyToMyProfile(specialtyId: number): Observable<DoctorProfile> {
     return this.http.post<DoctorProfile>(
-      `${this.apiUrl}/me/specialties/${specialtyId}`,
+      `${this.apiUrl}/me/specialties/${specialtyId}/`,
       {},
       this.httpOptions,
     );
@@ -37,19 +37,19 @@ export class ProfileDoctorService {
 
   removeSpecialtyFromMyProfile(specialtyId: number): Observable<DoctorProfile> {
     return this.http.delete<DoctorProfile>(
-      `${this.apiUrl}/me/specialties/${specialtyId}`,
+      `${this.apiUrl}/me/specialties/${specialtyId}/`,
       this.httpOptions,
     );
   }
 
   getProfileByUserId(userId: number): Observable<DoctorProfile> {
-    return this.http.get<DoctorProfile>(`${this.apiUrl}/${userId}`, this.httpOptions);
+    return this.http.get<DoctorProfile>(`${this.apiUrl}/${userId}/`, this.httpOptions);
   }
 
   updateProfileByUserId(
     userId: number,
     payload: UpdateDoctorProfilePayload,
   ): Observable<DoctorProfile> {
-    return this.http.put<DoctorProfile>(`${this.apiUrl}/${userId}`, payload, this.httpOptions);
+    return this.http.put<DoctorProfile>(`${this.apiUrl}/${userId}/`, payload, this.httpOptions);
   }
 }

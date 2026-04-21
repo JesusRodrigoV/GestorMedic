@@ -44,18 +44,18 @@ export class ClinicsService {
   }
 
   createOnboarding(payload: ClinicPayload): Observable<Clinic> {
-    return this.http.post<Clinic>(`${this.apiUrl}/onboarding`, payload, this.httpOptions);
+    return this.http.post<Clinic>(`${this.apiUrl}/onboarding/`, payload, this.httpOptions);
   }
 
   getById(id: number): Observable<Clinic> {
-    return this.http.get<Clinic>(`${this.apiUrl}/${id}`, this.httpOptions);
+    return this.http.get<Clinic>(`${this.apiUrl}/${id}/`, this.httpOptions);
   }
 
   update(id: number, payload: ClinicPayload): Observable<Clinic> {
-    return this.http.put<Clinic>(`${this.apiUrl}/${id}`, payload, this.httpOptions);
+    return this.http.put<Clinic>(`${this.apiUrl}/${id}/`, payload, this.httpOptions);
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.httpOptions);
+    return this.http.delete<void>(`${this.apiUrl}/${id}/`, this.httpOptions);
   }
 }

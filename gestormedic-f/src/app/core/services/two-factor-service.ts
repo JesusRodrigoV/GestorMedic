@@ -21,14 +21,14 @@ export class TwoFactor {
   };
 
   setup(): Observable<TwoFASetupResponse> {
-    return this.http.post<TwoFASetupResponse>(`${this.apiUrl}/2fa/setup`, {}, this.httpOptions);
+    return this.http.post<TwoFASetupResponse>(`${this.apiUrl}/2fa/setup/`, {}, this.httpOptions);
   }
 
   confirm(payload: TwoFAConfirmPayload): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/2fa/confirm`, payload, this.httpOptions);
+    return this.http.post<string>(`${this.apiUrl}/2fa/confirm/`, payload, this.httpOptions);
   }
 
   verify(payload: TwoFAVerifyPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/2fa/verify`, payload, this.httpOptions);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/2fa/verify/`, payload, this.httpOptions);
   }
 }

@@ -1,79 +1,97 @@
-<main class="page">
-  <section class="header card">
-    <h2>Historial clinico</h2>
-    <p>Consulta y administra tu historial por especialidad y doctor sin perder el registro historico.</p>
-  </section>
+<gm-main-container>
+  <div class="gm-history-layout">
+    <header class="gm-history-header">
+      <h2>Expediente Clínico</h2>
+      <p>Consulta y administración de sus registros médicos fragmentados por especialidad clínica.</p>
+    </header>
 
-  <section class="card">
-    <h3>Mis historiales</h3>
-    <div class="history-tabs">
-      @for (history of histories(); track history.id) {
-        <button
-          type="button"
-          [class.active]="selectedHistoryId() === history.id"
-          (click)="onSelectHistory(history.id)">
-          {{ history.specialty_name }}
-          @if (history.doctor_name) {
-            <small>{{ history.doctor_name }}</small>
-          }
-        </button>
-      }
-    </div>
-  </section>
+    <section class="gm-history-section">
+      <h3>Departamentos Registrados</h3>
+      <div class="gm-history-tabs">
+        @for (history of histories(); track history.id) {
+          <button
+            type="button"
+            class="gm-tab-button"
+            [class.active]="selectedHistoryId() === history.id"
+            (click)="onSelectHistory(history.id)"
+          >
+            <span class="tab-title">{{ history.specialty_name }}</span>
+            @if (history.doctor_name) {
+              <span class="tab-subtitle">{{ history.doctor_name }}</span>
+            }
+          </button>
+        }
+      </div>
+    </section>
 
-  <section class="card">
-    <h3>Campos base editables por paciente</h3>
-    <div class="form-grid">
-      <label>
-        Tipo de sangre
-        <input [ngModel]="bloodType()" (ngModelChange)="bloodType.set($event)" />
-      </label>
-      <label>
-        Contacto de emergencia
-        <input [ngModel]="emergencyName()" (ngModelChange)="emergencyName.set($event)" />
-      </label>
-      <label>
-        Teléfono emergencia
-        <input [ngModel]="emergencyPhone()" (ngModelChange)="emergencyPhone.set($event)" />
-      </label>
-      <label>
-        Alergias (separadas por coma)
-        <input [ngModel]="allergiesText()" (ngModelChange)="allergiesText.set($event)" />
-      </label>
-      <label>
-        Enfermedades crónicas (coma)
-        <input [ngModel]="conditionsText()" (ngModelChange)="conditionsText.set($event)" />
-      </label>
-      <label>
-        Medicación actual (coma)
-        <input [ngModel]="medicationsText()" (ngModelChange)="medicationsText.set($event)" />
-      </label>
-      <label class="full">
-        Notas generales
-        <textarea rows="4" [ngModel]="notes()" (ngModelChange)="notes.set($event)"></textarea>
-      </label>
-    </div>
-    <button type="button" class="save-btn" [disabled]="isSaving()" (click)="onSaveBasicFields()">
-      {{ isSaving() ? 'Guardando...' : 'Guardar campos base' }}
-    </button>
-  </section>
+    <section class="gm-history-section">
+      <h3>Parámetros Fisiológicos (Editables)</h3>
+      <div class="gm-form-grid">
+        <div class="gm-field-group">
+          <label>Tipo de Sangre</label>
+          <input pInputText [ngModel]="bloodType()" (ngModelChange)="bloodType.set($event)" placeholder="Ej. O+" />
+        </div>
+        <div class="gm-field-group">
+          <label>Contacto de Emergencia</label>
+          <input pInputText [ngModel]="emergencyName()" (ngModelChange)="emergencyName.set($event)" placeholder="Nombre legal" />
+        </div>
+        <div class="gm-field-group">
+          <label>Teléfono de Emergencia</label>
+          <input pInputText [ngModel]="emergencyPhone()" (ngModelChange)="emergencyPhone.set($event)" placeholder="Número directo" />
+        </div>
+        <div class="gm-field-group">
+          <label>Alergias Conocidas (separar con comas)</label>
+          <input pInputText [ngModel]="allergiesText()" (ngModelChange)="allergiesText.set($event)" placeholder="Penicilina, polvo, etc." />
+        </div>
+        <div class="gm-field-group">
+          <label>Afecciones Crónicas (separar con comas)</label>
+          <input pInputText [ngModel]="conditionsText()" (ngModelChange)="conditionsText.set($event)" placeholder="Asma, hipertensión..." />
+        </div>
+        <div class="gm-field-group">
+          <label>Medicación Constante (separar con comas)</label>
+          <input pInputText [ngModel]="medicationsText()" (ngModelChange)="medicationsText.set($event)" placeholder="Ibuprofeno, insulina..." />
+        </div>
+        <div class="gm-field-group full-width">
+          <label>Observaciones Adicionales</label>
+          <textarea pTextarea rows="4" [ngModel]="notes()" (ngModelChange)="notes.set($event)" placeholder="Cualquier otra condición relevante..."></textarea>
+        </div>
+      </div>
+      
+      <div class="gm-form-actions">
+        <gm-rounded-button
+          (onClick)="onSaveBasicFields()"
+          [label]="isSaving() ? 'Sincronizando...' : 'Actualizar Expediente'"
+          severity="primary"
+          icon="bx bx-save"
+          [disabled]="isSaving()"
+          [loading]="isSaving()"
+        />
+      </div>
+    </section>
 
-  <section class="card">
-    <h3>Linea de atenciones</h3>
-    <div class="events">
-      @for (entry of entries(); track entry.id) {
-        <article>
-          <span>{{ formatDate(entry.created_at) }}</span>
-          <div>
-            <h4>{{ entry.specialty_name }} · {{ entry.section_title }}</h4>
-            <p>{{ entry.notes || 'Sin notas adicionales' }}</p>
-            <small>Editable por medico hasta: {{ formatDate(entry.editable_until) }}</small>
+    <section class="gm-history-section">
+      <h3>Registro Histórico de Atenciones</h3>
+      <div class="gm-events-list">
+        @for (entry of entries(); track entry.id) {
+          <article class="gm-event-card">
+            <div class="event-timeline">
+              <i class="bx bx-calendar-check"></i>
+              <span>{{ formatDate(entry.created_at) }}</span>
+            </div>
+            <div class="event-info">
+              <h4>{{ entry.specialty_name }} · {{ entry.section_title }}</h4>
+              <p>{{ entry.notes || 'Sin anotaciones clínicas adicionales.' }}</p>
+              <small><i class="bx bx-lock-open"></i> Auditoría médica cerrada el: {{ formatDate(entry.editable_until) }}</small>
+            </div>
+          </article>
+        }
+        @if (!entries().length) {
+          <div class="gm-empty-state">
+            <i class="bx bx-file-blank"></i>
+            <p>No existen atenciones previas archivadas en este departamento clínico.</p>
           </div>
-        </article>
-      }
-      @if (!entries().length) {
-        <p class="empty">Aun no hay atenciones registradas para este historial.</p>
-      }
-    </div>
-  </section>
-</main>
+        }
+      </div>
+    </section>
+  </div>
+</gm-main-container>

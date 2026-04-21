@@ -11,29 +11,29 @@
 // ============================================================================
 // Standardized spacing scale for consistent padding, margins, and gaps
 // Uses 0.25rem (4px) as the base unit
-$spacing-xs: 0.25rem;   // 4px - micro spacing
-$spacing-sm: 0.5rem;    // 8px - small spacing
-$spacing-md: 1rem;      // 16px - medium spacing (default)
-$spacing-lg: 1.5rem;    // 24px - large spacing
-$spacing-xl: 2rem;      // 32px - extra large spacing
-$spacing-2xl: 2.5rem;   // 40px - 2xl spacing
-$spacing-3xl: 3rem;     // 48px - 3xl spacing
+$spacing-xs: 0.25rem; // 4px - micro spacing
+$spacing-sm: 0.5rem; // 8px - small spacing
+$spacing-md: 1rem; // 16px - medium spacing (default)
+$spacing-lg: 1.5rem; // 24px - large spacing
+$spacing-xl: 2rem; // 32px - extra large spacing
+$spacing-2xl: 2.5rem; // 40px - 2xl spacing
+$spacing-3xl: 3rem; // 48px - 3xl spacing
 
 // Form-specific spacing
-$form-section-gap: 2.5rem;      // Gap between form sections
-$form-field-gap: 0.5rem;        // Gap in field groups (label to input)
-$form-row-gap: 1.5rem;          // Gap between field rows
-$form-input-padding-h: 1rem;    // Horizontal padding in inputs
+$form-section-gap: 2.5rem; // Gap between form sections
+$form-field-gap: 0.5rem; // Gap in field groups (label to input)
+$form-row-gap: 1.5rem; // Gap between field rows
+$form-input-padding-h: 1rem; // Horizontal padding in inputs
 $form-input-padding-v: 0.75rem; // Vertical padding in inputs
 
 // ============================================================================
 // BORDER RADIUS
 // ============================================================================
 // Standardized border radius for consistent curves across components
-$border-radius-sm: 4px;   // Subtle roundness
-$border-radius-md: 8px;   // Standard roundness (inputs, small cards)
-$border-radius-lg: 12px;  // Medium roundness (form sections, larger inputs)
-$border-radius-xl: 16px;  // Large roundness (primary containers)
+$border-radius-sm: 4px; // Subtle roundness
+$border-radius-md: 8px; // Standard roundness (inputs, small cards)
+$border-radius-lg: 12px; // Medium roundness (form sections, larger inputs)
+$border-radius-xl: 16px; // Large roundness (primary containers)
 $border-radius-2xl: 24px; // Extra large roundness (hero cards)
 $border-radius-full: 9999px; // Fully rounded (pills, circles)
 
@@ -59,9 +59,9 @@ $shadow-elevated: 0 12px 24px rgba(0, 53, 102, 0.12);
 $shadow-large: 0 20px 40px rgba(0, 53, 102, 0.15);
 
 // Focus ring shadows (accessibility)
-$shadow-focus-primary: 0 0 0 3px rgba(74, 144, 226, 0.1);     // Energy blue
-$shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.1);        // Error red
-$shadow-focus-success: 0 0 0 3px rgba(34, 197, 94, 0.1);      // Success green
+$shadow-focus-primary: 0 0 0 3px rgba(74, 144, 226, 0.1); // Energy blue
+$shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.1); // Error red
+$shadow-focus-success: 0 0 0 3px rgba(34, 197, 94, 0.1); // Success green
 
 // Inset shadows (depth for inputs)
 $shadow-inset-subtle: inset 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -78,55 +78,56 @@ $ease-in-out: ease-in-out;
 $cubic-pulse: cubic-bezier(0.26, 0.75, 0.48, 0.95);
 
 // Durations
-$transition-fast: 0.15s;      // Fast interactions (ripple)
-$transition-base: 0.2s;       // Standard transitions (hover, focus)
-$transition-slow: 0.3s;       // Slower transitions (input focus)
-$animation-subtle: 0.4s;      // Subtle animations (scale)
-$animation-normal: 0.6s;      // Normal animations (slide, fade)
-$animation-entrance: 0.8s;    // Page entrance animations
-$animation-emphasis: 1s;      // Emphasis animations (loader, bounce)
+$transition-fast: 0.15s; // Fast interactions (ripple)
+$transition-base: 0.2s; // Standard transitions (hover, focus)
+$transition-slow: 0.3s; // Slower transitions (input focus)
+$animation-subtle: 0.4s; // Subtle animations (scale)
+$animation-normal: 0.6s; // Normal animations (slide, fade)
+$animation-entrance: 0.8s; // Page entrance animations
+$animation-emphasis: 1s; // Emphasis animations (loader, bounce)
 
 // ============================================================================
 // COLOR TOKENS (via CSS Custom Properties)
 // ============================================================================
 // These reference the theme-preset.ts CSS custom properties
 // Primary color palette (Energy - for actions and highlights)
-$color-primary: var(--p-energy-500);           // #4a90e2
-$color-primary-hover: var(--p-energy-600);     // #4382cc
-$color-primary-light: var(--p-energy-50);      // #ebf4fc
-$color-primary-dark: var(--p-energy-900);      // #0f1d2d
+$color-primary: var(--p-energy-500); // #4a90e2
+$color-primary-hover: var(--p-energy-600); // #4382cc
+$color-primary-light: var(--p-energy-50); // #ebf4fc
+$color-primary-dark: var(--p-energy-900); // #0f1d2d
 
 // Secondary color palette (Yale - for branding and dark elements)
-$color-secondary: var(--p-yale-500);           // #1a3c5a
-$color-secondary-hover: var(--p-yale-600);     // #143055
-$color-secondary-light: var(--p-yale-50);      // #ecf2f7
-$color-secondary-dark: var(--p-yale-900);      // #07121b
+$color-secondary: var(--p-yale-500); // #1a3c5a
+$color-secondary-hover: var(--p-yale-600); // #143055
+$color-secondary-light: var(--p-yale-50); // #ecf2f7
+$color-secondary-dark: var(--p-yale-900); // #07121b
 
 // Background colors (Slate - for neutral surfaces)
-$color-bg-primary: #ffffff;                    // Pure white
-$color-bg-secondary: var(--p-slate-50);        // #eff2f3 (very light gray)
-$color-bg-tertiary: var(--p-slate-100);        // Even lighter slate
-$color-bg-hover: var(--p-slate-100);           // Hover state background
+$color-bg-primary: #ffffff; // Pure white
+$color-bg-secondary: var(--p-slate-50); // #eff2f3 (very light gray)
+$color-bg-tertiary: var(--p-slate-100); // Even lighter slate
+$color-bg-hover: var(--p-slate-100); // Hover state background
 
 // Border colors
-$color-border-default: var(--p-slate-200);     // #b0c0c6 (medium gray)
-$color-border-focus: $color-primary;           // Energy blue on focus
-$color-border-error: #ef4444;                  // Red for errors
-$color-border-success: #22c55e;                // Green for success
+$color-border-default: var(--p-slate-200); // #b0c0c6 (medium gray)
+$color-border-subtle: var(--p-slate-100);
+$color-border-focus: $color-primary; // Energy blue on focus
+$color-border-error: #ef4444; // Red for errors
+$color-border-success: #22c55e; // Green for success
 
 // Text colors
-$color-text-primary: var(--p-slate-900);       // Dark text
-$color-text-secondary: var(--p-slate-600);     // Medium gray text
-$color-text-tertiary: var(--p-slate-500);      // Light gray text (placeholders)
-$color-text-inverse: #ffffff;                  // White text on dark backgrounds
-$color-text-muted: var(--p-slate-400);         // Muted text (disabled)
+$color-text-primary: var(--p-slate-900); // Dark text
+$color-text-secondary: var(--p-slate-600); // Medium gray text
+$color-text-tertiary: var(--p-slate-500); // Light gray text (placeholders)
+$color-text-inverse: #ffffff; // White text on dark backgrounds
+$color-text-muted: var(--p-slate-400); // Muted text (disabled)
 
 // Semantic colors
-$color-error: #ef4444;                         // Red
-$color-error-light: #fee2e2;                   // Light red background
-$color-success: #22c55e;                       // Green
-$color-warning: #f59e0b;                       // Amber
-$color-info: $color-primary;                   // Info is primary color
+$color-error: #ef4444; // Red
+$color-error-light: #fee2e2; // Light red background
+$color-success: #22c55e; // Green
+$color-warning: #f59e0b; // Amber
+$color-info: $color-primary; // Info is primary color
 
 // Glass-morphism overlay
 $color-glass-overlay: rgba(255, 255, 255, 0.8);
@@ -159,20 +160,21 @@ $z-index-notification: 1200;
 // TYPOGRAPHY
 // ============================================================================
 // Font sizes using clamp() for fluid typography
-$font-size-xs: clamp(0.75rem, 1vw, 0.875rem);      // Extra small
-$font-size-sm: clamp(0.875rem, 1.2vw, 1rem);      // Small
-$font-size-base: clamp(1rem, 1.4vw, 1.125rem);    // Base/paragraph
-$font-size-lg: clamp(1.125rem, 1.6vw, 1.25rem);   // Large
-$font-size-xl: clamp(1.25rem, 1.8vw, 1.5rem);     // Extra large
-$font-size-2xl: clamp(1.5rem, 2vw, 1.875rem);     // 2XL
-$font-size-3xl: clamp(1.875rem, 2.5vw, 2.25rem);  // 3XL
-$font-size-4xl: clamp(2.25rem, 3vw, 3rem);        // 4XL
+$font-size-xs: clamp(0.75rem, 1vw, 0.875rem); // Extra small
+$font-size-sm: clamp(0.875rem, 1.2vw, 1rem); // Small
+$font-size-base: clamp(1rem, 1.4vw, 1.125rem); // Base/paragraph
+$font-size-lg: clamp(1.125rem, 1.6vw, 1.25rem); // Large
+$font-size-xl: clamp(1.25rem, 1.8vw, 1.5rem); // Extra large
+$font-size-2xl: clamp(1.5rem, 2vw, 1.875rem); // 2XL
+$font-size-3xl: clamp(1.875rem, 2.5vw, 2.25rem); // 3XL
+$font-size-4xl: clamp(2.25rem, 3vw, 3rem); // 4XL
 
 // Font weights
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+$font-weight-black: 900;
 $font-weight-heavy: 800;
 
 // Line heights
@@ -186,19 +188,19 @@ $line-height-loose: 1.875;
 // INPUT SIZES
 // ============================================================================
 // Standard input dimensions
-$input-height-sm: 2.25rem;     // 36px
-$input-height-md: 2.5rem;      // 40px - default
-$input-height-lg: 2.75rem;     // 44px
-$input-icon-size: 1.25rem;     // 20px
-$input-icon-offset: 1rem;      // Distance from left
+$input-height-sm: 2.25rem; // 36px
+$input-height-md: 2.5rem; // 40px - default
+$input-height-lg: 2.75rem; // 44px
+$input-icon-size: 1.25rem; // 20px
+$input-icon-offset: 1rem; // Distance from left
 
 // ============================================================================
 // BUTTON SIZES
 // ============================================================================
 // Standard button dimensions
-$button-height-sm: 2rem;       // 32px
-$button-height-md: 2.5rem;     // 40px - default
-$button-height-lg: 3rem;       // 48px
+$button-height-sm: 2rem; // 32px
+$button-height-md: 2.5rem; // 40px - default
+$button-height-lg: 3rem; // 48px
 $button-padding-h: 1.5rem;
 $button-padding-v: 0.625rem;
 $button-icon-gap: 0.5rem;
@@ -208,6 +210,6 @@ $button-icon-gap: 0.5rem;
 // ============================================================================
 // Standard card dimensions
 $card-padding-sm: 1rem;
-$card-padding-md: 1.5rem;      // default
+$card-padding-md: 1.5rem; // default
 $card-padding-lg: 2rem;
 $card-gap: 1.5rem;

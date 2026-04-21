@@ -1,162 +1,189 @@
-<div class="manager-layout">
-  <header class="manager-header">
-    <h2>Registro de Clínicas y Consultorios</h2>
-    <p>Administración de inquilinos, asignación de planes y estado de operaciones.</p>
-  </header>
+<gm-main-container>
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-  <div class="toolbar">
-    <div class="filter-group">
-      <gm-rounded-button 
-        label="Todos" 
-        variant="text" 
-        [severity]="store.currentFilter() === null ? 'primary' : 'secondary'"
-        (onClick)="filterByStatus(null)" 
-      />
-      <gm-rounded-button 
-        label="Activos" 
-        variant="text" 
-        [severity]="store.currentFilter() === true ? 'success' : 'secondary'"
-        (onClick)="filterByStatus(true)" 
-      />
-      <gm-rounded-button 
-        label="Suspendidos" 
-        variant="text" 
-        [severity]="store.currentFilter() === false ? 'warn' : 'secondary'"
-        (onClick)="filterByStatus(false)" 
+  <div class="manager-layout">
+    <header class="manager-header">
+      <h2>Gestión de Clínicas</h2>
+      <p>Administración de planes de suscripción y control de acceso.</p>
+    </header>
+
+    <div class="toolbar">
+      <div class="filter-group">
+        <gm-rounded-button
+          label="Todas"
+          variant="text"
+          [severity]="store.currentFilter() === null ? 'primary' : 'secondary'"
+          (onClick)="filterByStatus(null)"
+        />
+        <gm-rounded-button
+          label="Activas"
+          variant="text"
+          [severity]="store.currentFilter() === true ? 'success' : 'secondary'"
+          (onClick)="filterByStatus(true)"
+        />
+        <gm-rounded-button
+          label="Suspendidas"
+          variant="text"
+          [severity]="store.currentFilter() === false ? 'warn' : 'secondary'"
+          (onClick)="filterByStatus(false)"
+        />
+      </div>
+      <gm-rounded-button
+        label="Registrar Clínica"
+        icon="bx bx-plus"
+        severity="primary"
+        (onClick)="openCreateDialog()"
       />
     </div>
-    <gm-rounded-button 
-      label="Registrar Inquilino" 
-      icon="bx bx-plus" 
-      severity="primary" 
-      (onClick)="openCreateDialog()" 
-    />
-  </div>
 
-  <p-table
-    [value]="store.clinicsList()"
-    [lazy]="true"
-    (onLazyLoad)="onPageChange($event)"
-    [paginator]="true"
-    [rows]="store.pageSize()"
-    [totalRecords]="store.totalRecords()"
-    [loading]="store.isProcessing()"
-    styleClass="p-datatable-sm p-datatable-striped"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 80px">ID</th>
-        <th>Razón Social</th>
-        <th>NIT / RUC</th>
-        <th>Plan</th>
-        <th>Alta</th>
-        <th style="width: 100px; text-align: center;">Estado</th>
-        <th style="width: 140px; text-align: center;">Operaciones</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-clinic>
-      <tr>
-        <td><span class="code-badge">{{ clinic.id }}</span></td>
-        <td><strong>{{ clinic.name }}</strong></td>
-        <td>{{ clinic.nit_ruc }}</td>
-        <td><span class="plan-badge">{{ clinic.plan | uppercase }}</span></td>
-        <td>{{ clinic.created_at | date:'dd/MM/yyyy' }}</td>
-        <td style="text-align: center;">
-          <span class="status-indicator" [class.active]="clinic.is_active">
-            {{ clinic.is_active ? 'Activo' : 'Suspendido' }}
-          </span>
-        </td>
-        <td>
-          <div class="action-buttons">
-            <gm-rounded-button 
-              icon="bx bx-edit-alt" 
-              variant="text" 
-              severity="info" 
-              (onClick)="openEditDialog(clinic)" 
-            />
-            <gm-rounded-button 
-              icon="bx bx-trash" 
-              variant="text" 
-              severity="warn" 
-              (onClick)="confirmDelete(clinic.id)" 
+    <p-table
+      [value]="store.clinicsList()"
+      [lazy]="true"
+      (onLazyLoad)="onPageChange($event)"
+      [paginator]="true"
+      [rows]="store.pageSize()"
+      [totalRecords]="store.totalRecords()"
+      [loading]="store.isProcessing()"
+      styleClass="p-datatable-sm p-datatable-striped"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 80px">ID</th>
+          <th>Clínica</th>
+          <th>NIT / RUC</th>
+          <th>Plan</th>
+          <th>Alta</th>
+          <th style="width: 100px; text-align: center">Estado</th>
+          <th style="width: 140px; text-align: center">Operaciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-clinic>
+        <tr>
+          <td>
+            <span class="code-badge">{{ clinic.id }}</span>
+          </td>
+          <td>
+            <strong>{{ clinic.name }}</strong>
+          </td>
+          <td>{{ clinic.nit_ruc }}</td>
+          <td>
+            <span class="plan-badge">{{ clinic.plan | uppercase }}</span>
+          </td>
+          <td>{{ clinic.created_at | date: 'dd/MM/yyyy' }}</td>
+          <td style="text-align: center">
+            <span class="status-indicator" [class.active]="clinic.is_active">
+              {{ clinic.is_active ? 'Activa' : 'Suspendida' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <gm-rounded-button
+                icon="bx bx-edit-alt"
+                variant="text"
+                severity="info"
+                (onClick)="openEditDialog(clinic)"
+              />
+              <gm-rounded-button
+                icon="bx bx-trash"
+                variant="text"
+                severity="warn"
+                (onClick)="confirmDelete(clinic.id)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="empty-message">
+            No se encontraron clínicas registradas bajo los filtros actuales.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-dialog
+      [header]="editingId ? 'Gestionar Suscripción' : 'Alta de Clínica'"
+      [(visible)]="dialogVisible"
+      [modal]="true"
+      [style]="{ width: '600px' }"
+      (onHide)="closeDialog()"
+    >
+      <form [formGroup]="clinicForm" (ngSubmit)="onSave()" class="dialog-form">
+        @if (editingId) {
+          <div
+            style="
+              margin-bottom: 1.5rem;
+              color: var(--p-slate-600);
+              font-size: 0.85rem;
+              padding: 0.75rem;
+              background: var(--p-surface-50);
+              border-radius: 6px;
+              border: 1px solid var(--p-surface-200);
+            "
+          >
+            Los datos comerciales son gestionados por el cliente.
+          </div>
+        }
+
+        <div class="form-grid">
+          <div class="field-group col-span-2">
+            <label for="name">Razón Social</label>
+            <input pInputText id="name" formControlName="name" fluid />
+          </div>
+
+          <div class="field-group">
+            <label for="nit_ruc">NIT / RUC</label>
+            <input pInputText id="nit_ruc" formControlName="nit_ruc" fluid />
+          </div>
+
+          <div class="field-group">
+            <label for="phone">Teléfono</label>
+            <input pInputText id="phone" formControlName="phone" fluid />
+          </div>
+
+          <div class="field-group col-span-2">
+            <label for="address">Dirección</label>
+            <input pInputText id="address" formControlName="address" fluid />
+          </div>
+
+          <div class="field-group">
+            <label for="plan">Plan Asignado</label>
+            <p-select
+              id="plan"
+              formControlName="plan"
+              [options]="planOptions"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              fluid
             />
           </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7" class="empty-message">No se encontraron inquilinos registrados bajo los criterios actuales.</td>
-      </tr>
-    </ng-template>
-  </p-table>
 
-  <p-dialog
-    [header]="editingId ? 'Modificar Registro de Clínica' : 'Alta de Nueva Clínica'"
-    [(visible)]="dialogVisible"
-    [modal]="true"
-    [style]="{ width: '600px' }"
-    (onHide)="closeDialog()"
-  >
-    <form [formGroup]="clinicForm" (ngSubmit)="onSave()" class="dialog-form">
-      
-      <div class="form-grid">
-        <div class="field-group col-span-2">
-          <label for="name">Razón Social o Nombre Comercial</label>
-          <input pInputText id="name" formControlName="name" fluid />
+          <div class="field-group switch-field">
+            <label for="is_active">Estado Operativo</label>
+            <p-toggleswitch inputId="is_active" formControlName="is_active" />
+          </div>
         </div>
 
-        <div class="field-group">
-          <label for="nit_ruc">NIT / RUC</label>
-          <input pInputText id="nit_ruc" formControlName="nit_ruc" fluid />
-        </div>
-
-        <div class="field-group">
-          <label for="phone">Teléfono Central</label>
-          <input pInputText id="phone" formControlName="phone" fluid />
-        </div>
-
-        <div class="field-group col-span-2">
-          <label for="address">Dirección Física</label>
-          <input pInputText id="address" formControlName="address" fluid />
-        </div>
-
-        <div class="field-group">
-          <label for="plan">Plan de Suscripción</label>
-          <p-select 
-            id="plan" 
-            formControlName="plan" 
-            [options]="planOptions" 
-            optionLabel="label" 
-            optionValue="value" 
-            appendTo="body"
-            fluid 
+        <div class="dialog-actions">
+          <gm-rounded-button
+            type="button"
+            label="Cancelar"
+            variant="text"
+            severity="secondary"
+            (onClick)="closeDialog()"
+            [disabled]="store.isProcessing()"
+          />
+          <gm-rounded-button
+            type="submit"
+            label="Guardar"
+            severity="primary"
+            [loading]="store.isProcessing()"
+            [disabled]="clinicForm.invalid || store.isProcessing()"
           />
         </div>
-
-        <div class="field-group switch-field">
-          <label for="is_active">Estado Operativo</label>
-          <p-toggleswitch inputId="is_active" formControlName="is_active" />
-        </div>
-      </div>
-
-      <div class="dialog-actions">
-        <gm-rounded-button 
-          type="button" 
-          label="Cancelar" 
-          variant="text" 
-          severity="secondary" 
-          (onClick)="closeDialog()" 
-          [disabled]="store.isProcessing()" 
-        />
-        <gm-rounded-button 
-          type="submit" 
-          label="Guardar Registro" 
-          severity="primary" 
-          [loading]="store.isProcessing()" 
-          [disabled]="clinicForm.invalid || store.isProcessing()" 
-        />
-      </div>
-    </form>
-  </p-dialog>
-</div>
+      </form>
+    </p-dialog>
+  </div>
+</gm-main-container>

@@ -1,92 +1,100 @@
-.management-page {
-  display: grid;
-  gap: 1rem;
+:host {
+  display: block;
+}
 
-  header {
-    border: 1px solid #d5deea;
-    border-radius: 14px;
-    background: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    align-items: end;
+.manager-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--p-surface-0);
+  border-radius: 12px;
+  border: 1px solid var(--p-surface-200);
+  padding: 1.5rem;
+}
 
-    .eyebrow {
-      margin: 0;
-      font-size: 0.72rem;
-      color: #0f766e;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
+.manager-header {
+  h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--p-surface-900);
+  }
+  p {
+    margin: 0;
+    color: var(--p-text-muted-color);
+  }
+}
 
-    h2 {
-      margin: 0.25rem 0;
-    }
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: var(--p-surface-50);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--p-surface-200);
 
-    p {
-      margin: 0;
-      color: #64748b;
+  .search-box {
+    position: relative;
+    width: 350px;
+
+    i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--p-text-muted-color);
+      z-index: 1;
     }
 
     input {
-      border: 1px solid #d5deea;
-      border-radius: 999px;
-      padding: 0.5rem 0.8rem;
-      min-width: 280px;
-      font: inherit;
+      width: 100%;
+      padding-left: 2.5rem;
     }
   }
 }
 
-.table-wrap {
-  border: 1px solid #d5deea;
-  border-radius: 14px;
-  overflow: auto;
-  background: #fff;
+.role-badge {
+  background: var(--p-slate-100);
+  color: var(--p-slate-700);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--p-slate-200);
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+.status-indicator {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--p-red-100);
+  color: var(--p-red-800);
 
-  th,
-  td {
-    border-bottom: 1px solid #eef2f7;
-    padding: 0.7rem;
-    text-align: left;
-    font-size: 0.92rem;
-  }
-
-  th {
-    cursor: pointer;
-    color: #0f172a;
-    background: #f8fafc;
-  }
-
-  .empty {
-    text-align: center;
-    color: #64748b;
+  &.active {
+    background: var(--p-green-100);
+    color: var(--p-green-800);
   }
 }
 
-footer {
+.empty-message {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--p-text-muted-color);
+}
+
+.custom-paginator {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
-  gap: 0.6rem;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--p-surface-200);
 
-  button {
-    border: 1px solid #d5deea;
-    background: #fff;
-    border-radius: 999px;
-    padding: 0.35rem 0.8rem;
-    cursor: pointer;
-  }
-
-  span {
-    color: #475569;
-    font-size: 0.92rem;
+  .page-info {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--p-slate-600);
   }
 }

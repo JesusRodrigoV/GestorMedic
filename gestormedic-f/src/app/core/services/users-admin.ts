@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class UsersAdminService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = `${environment.apiUrl}/users/`;
 
   private readonly httpOptions = {
     withCredentials: true,

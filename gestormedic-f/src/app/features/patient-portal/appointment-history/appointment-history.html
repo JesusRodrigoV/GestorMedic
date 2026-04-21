@@ -1,35 +1,51 @@
-<main class="page">
-  <section class="portal-hero">
-    <div>
-      <span>Citas</span>
-      <h2>Historial de citas</h2>
-      <p>Revisa tus citas pasadas y futuras con filtros por estado.</p>
-    </div>
+<gm-main-container>
+  <div class="gm-history-layout">
+    <header class="gm-history-header">
+      <div class="header-content">
+        <h2>Registro de Consultas</h2>
+        <p>Trazabilidad cronológica de sus atenciones médicas y citas programadas.</p>
+      </div>
 
-    <select [ngModel]="status()" (ngModelChange)="onStatusChange($event)">
-      <option value="">Todos los estados</option>
-      <option value="CONFIRMED">Confirmadas</option>
-      <option value="PENDING">Pendientes</option>
-      <option value="COMPLETED">Completadas</option>
-      <option value="CANCELLED">Canceladas</option>
-    </select>
-  </section>
+      <div class="header-filter">
+        <p-select
+          [options]="statusOptions"
+          [ngModel]="status()"
+          (ngModelChange)="onStatusChange($event)"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Filtrar por estado"
+        ></p-select>
+      </div>
+    </header>
 
-  <section class="panel">
-    <h3>Resultados</h3>
-    <div class="history-list">
-      @for (item of appointments(); track item.id) {
-        <article>
-          <span>{{ formatWindow(item) }}</span>
-          <div>
-            <h4>{{ item.specialty_name }} · {{ item.doctor_name }}</h4>
-            <p>Consultorio: {{ item.room_name }}</p>
-            <small>{{ item.status }}</small>
+    <section class="gm-history-body">
+      <div class="gm-appointment-list">
+        @for (item of appointments(); track item.id) {
+          <article class="gm-appointment-card">
+            <div class="card-timeline">
+              <i class="bx bx-time-five"></i>
+              <span>{{ formatWindow(item) }}</span>
+            </div>
+            
+            <div class="card-info">
+              <h4>{{ item.specialty_name }}</h4>
+              <p class="doctor-name"><i class="bx bx-user-pin"></i> {{ item.doctor_name }}</p>
+              <p class="room-name"><i class="bx bx-door-open"></i> Consultorio: {{ item.room_name }}</p>
+            </div>
+
+            <div class="card-actions">
+              <span class="gm-status-badge" [attr.data-status]="item.status">
+                {{ translateStatus(item.status) }}
+              </span>
+            </div>
+          </article>
+        } @empty {
+          <div class="gm-empty-state">
+            <i class="bx bx-folder-open"></i>
+            <p>No se encontraron expedientes de citas bajo los criterios seleccionados.</p>
           </div>
-        </article>
-      } @empty {
-        <article class="empty-row">No hay citas para el filtro seleccionado.</article>
-      }
-    </div>
-  </section>
-</main>
+        }
+      </div>
+    </section>
+  </div>
+</gm-main-container>

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, UpperCasePipe } from '@angular/common';
 import { MedicalRecordsService } from '@core/services/medical-records';
 import { NotificationService } from '@core/services/notification';
 import { PatientMedicalFile } from '@core/models/medical-records.model';
@@ -8,17 +8,39 @@ import { DocxViewer } from '@shared/components/file-viewers/docx-viewer/docx-vie
 import { GenericViewer } from '@shared/components/file-viewers/generic-viewer/generic-viewer';
 import { ImageViewer } from '@shared/components/file-viewers/image-viewer/image-viewer';
 import { PdfViewer } from '@shared/components/file-viewers/pdf-viewer/pdf-viewer';
+import { MainContainer } from '@core/layouts/main-container';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { RoundedButton } from '@shared/ui/rounded-button';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-document-center',
-  imports: [DatePipe, DecimalPipe, DicomAdvancedViewer, DocxViewer, GenericViewer, ImageViewer, PdfViewer],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    UpperCasePipe,
+    TableModule,
+    DialogModule,
+    ConfirmDialogModule,
+    MainContainer,
+    RoundedButton,
+    DicomAdvancedViewer,
+    DocxViewer,
+    GenericViewer,
+    ImageViewer,
+    PdfViewer,
+  ],
   templateUrl: './document-center.html',
   styleUrl: './document-center.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [ConfirmationService],
 })
 export default class DocumentCenter {
   private recordsService = inject(MedicalRecordsService);
   private notification = inject(NotificationService);
+  private confirmationService = inject(ConfirmationService);
 
   readonly activeTab = signal<'upload' | 'viewer'>('upload');
   readonly selectedFiles = signal<File[]>([]);
@@ -35,15 +57,18 @@ export default class DocumentCenter {
     const input = event.target as HTMLInputElement;
     const list = Array.from(input.files || []);
     const maxBytes = 30 * 1024 * 1024;
+
     const valid = list.filter((file) => file.size <= maxBytes);
+
     if (valid.length !== list.length) {
       this.notification
         .builder()
         .warn()
-        .summary('Algunos archivos exceden 30MB')
-        .detail('Solo se tomaron archivos dentro del limite permitido.')
+        .summary('Límite de tamaño excedido')
+        .detail('Algunos archivos superaban los 30MB y fueron excluidos de la selección.')
         .show();
     }
+
     this.selectedFiles.set(valid);
   }
 
@@ -55,33 +80,37 @@ export default class DocumentCenter {
 
     this.isUploading.set(true);
     const queue = [...files];
+
     const uploadNext = (): void => {
       const file = queue.shift();
       if (!file) {
         this.isUploading.set(false);
         this.selectedFiles.set([]);
         this.loadFiles();
+
         this.notification
           .builder()
           .success()
-          .summary('Archivos cargados')
-          .detail('Tus archivos fueron almacenados correctamente.')
+          .summary('Carga Completada')
+          .detail('Los documentos fueron encriptados y almacenados en su expediente.')
           .show();
         return;
       }
+
       this.recordsService.uploadMyFile(file).subscribe({
         next: () => uploadNext(),
         error: () => {
           this.isUploading.set(false);
           this.notification
             .builder()
-            .warn()
-            .summary('No se pudo subir un archivo')
-            .detail('Revisa formato/tamaño e intenta nuevamente.')
+            .error()
+            .summary('Fallo en la transferencia')
+            .detail(`No se pudo procesar el archivo: ${file.name}. Verifique su conexión.`)
             .show();
         },
       });
     };
+
     uploadNext();
   }
 
@@ -94,23 +123,27 @@ export default class DocumentCenter {
   }
 
   onDelete(file: PatientMedicalFile): void {
-    const accepted = window.confirm(`¿Eliminar el archivo ${file.original_name}?`);
-    if (!accepted) {
-      return;
-    }
-
-    this.recordsService.deleteMyFile(file.id).subscribe({
-      next: () => {
-        this.loadFiles();
-        this.notification.builder().success().summary('Archivo eliminado').show();
-      },
-      error: () => {
-        this.notification
-          .builder()
-          .warn()
-          .summary('No se pudo eliminar')
-          .detail('Intenta nuevamente en unos segundos.')
-          .show();
+    this.confirmationService.confirm({
+      message: `¿Está seguro de que desea eliminar permanentemente el documento clínico "${file.original_name}"? Esta acción no se puede deshacer.`,
+      header: 'Confirmar Eliminación',
+      icon: 'bx bx-error-circle',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.recordsService.deleteMyFile(file.id).subscribe({
+          next: () => {
+            this.loadFiles();
+            this.notification.builder().success().summary('Documento purgado').show();
+          },
+          error: () => {
+            this.notification
+              .builder()
+              .warn()
+              .summary('Error de eliminación')
+              .detail('El sistema no pudo procesar la eliminación. Intente de nuevo.')
+              .show();
+          },
+        });
       },
     });
   }
@@ -131,15 +164,17 @@ export default class DocumentCenter {
   openSelectedDicomStack(): void {
     const selectedIds = this.selectedDicomIds();
     const dicomCandidates = this.files().filter((file) => selectedIds.includes(file.id));
+
     if (!dicomCandidates.length) {
       this.notification
         .builder()
         .warn()
-        .summary('Selecciona al menos un archivo DICOM')
-        .detail('Marca uno o más DICOM para abrir el stack de imágenes.')
+        .summary('Selección Inválida')
+        .detail('Debe marcar al menos un estudio DICOM para procesar el stack volumétrico.')
         .show();
       return;
     }
+
     this.onView(dicomCandidates[0]);
   }
 
@@ -166,7 +201,10 @@ export default class DocumentCenter {
 
   selectedDicomUrls(): string[] {
     const selectedIds = this.selectedDicomIds();
-    const selected = this.files().filter((file) => selectedIds.includes(file.id) && this.isDicom(file));
+    const selected = this.files().filter(
+      (file) => selectedIds.includes(file.id) && this.isDicom(file),
+    );
+
     if (selected.length) {
       return selected.map((file) => this.getViewerUrl(file));
     }
@@ -175,6 +213,7 @@ export default class DocumentCenter {
     if (current && this.isDicom(current)) {
       return [this.getViewerUrl(current)];
     }
+
     return [];
   }
 
@@ -184,9 +223,9 @@ export default class DocumentCenter {
       error: () => {
         this.notification
           .builder()
-          .warn()
-          .summary('No se pudieron cargar archivos')
-          .detail('Intenta nuevamente en unos segundos.')
+          .error()
+          .summary('Fallo de conexión')
+          .detail('No se pudo establecer contacto con el archivo clínico central.')
           .show();
       },
     });

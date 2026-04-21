@@ -64,11 +64,11 @@ export const AuditStore = signalStore(
                   patchState(store, { error: msg, isLoading: false });
                   notification.builder().error().summary('Error de seguridad').detail(msg).show();
                 },
-              })
-            )
-          )
-        )
-      )
-    })
-  )
+              }),
+            ),
+          ),
+        ),
+      ),
+    }),
+  ),
 );

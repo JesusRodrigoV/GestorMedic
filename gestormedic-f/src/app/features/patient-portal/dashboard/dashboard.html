@@ -1,37 +1,37 @@
-<main class="page">
-  <header class="top-banner">
-    <div>
-      <p class="eyebrow">Portal de Paciente</p>
-      <h2>Resumen general de tu salud</h2>
-      <p>
-        Accede rapidamente a tus proximas acciones: citas, resultados, recetas y documentos.
-      </p>
-    </div>
-    <a routerLink="/portal/citas">Gestionar mis citas</a>
-  </header>
+<gm-main-container>
+  <main class="page">
+    <header class="top-banner">
+      <div>
+        <p class="eyebrow">Portal de Paciente</p>
+        <h2>Resumen general de tu salud</h2>
+        <p>Accede rapidamente a tus proximas acciones: citas, resultados, recetas y documentos.</p>
+      </div>
+      <a routerLink="/portal/citas">Gestionar mis citas</a>
+    </header>
 
-  <section class="kpi-grid">
-    @for (item of highlights(); track item.label) {
-      <article class="card">
-        <small>{{ item.label }}</small>
-        <h3>{{ item.value }}</h3>
-        <p>{{ item.detail }}</p>
-      </article>
-    }
-  </section>
-
-  <section class="card timeline-card">
-    <h3>Actividad reciente</h3>
-    <div class="timeline">
-      @for (event of timeline(); track event.title) {
-        <article>
-          <span>{{ event.date }}</span>
-          <div>
-            <h4>{{ event.title }}</h4>
-            <p>{{ event.status }}</p>
-          </div>
+    <section class="kpi-grid">
+      @for (item of highlights(); track item.label) {
+        <article class="card">
+          <small>{{ item.label }}</small>
+          <h3>{{ item.value }}</h3>
+          <p>{{ item.detail }}</p>
         </article>
       }
-    </div>
-  </section>
-</main>
+    </section>
+
+    <section class="card timeline-card">
+      <h3>Actividad reciente</h3>
+      <div class="timeline">
+        @for (event of timeline(); track event.title) {
+          <article>
+            <span>{{ event.date }}</span>
+            <div>
+              <h4>{{ event.title }}</h4>
+              <p>{{ event.status }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  </main>
+</gm-main-container>

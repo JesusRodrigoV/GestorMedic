@@ -83,3 +83,17 @@ async def delete_specialty(db: AsyncSession, specialty_id: int) -> bool:
     await db.delete(db_specialty)
     await db.commit()
     return True
+
+def get_specialties_query(search: Optional[str] = None):
+    stmt = select(Specialty)
+    
+    if search:
+        search_filter = f"%{search}%"
+        stmt = stmt.where(
+            or_(
+                Specialty.name.ilike(search_filter),
+                Specialty.description.ilike(search_filter)
+            )
+        )
+    
+    return stmt.order_by(Specialty.name)

@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.gm-superadmin-profile {
+  background: var(--p-surface-0);
+  border-radius: 12px;
+  border: 1px solid var(--p-surface-200);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+}
+
+.gm-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.gm-form-section {
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  legend {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    border-bottom: 1px solid var(--p-surface-200);
+    padding-bottom: 0.75rem;
+
+    i {
+      color: var(--p-primary-600);
+      font-size: 1.35rem;
+    }
+  }
+}
+
+.gm-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gm-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--p-slate-700);
+  }
+
+  .gm-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    i {
+      position: absolute;
+      left: 1rem;
+      color: var(--p-text-muted-color);
+      z-index: 1;
+    }
+
+    input {
+      width: 100%;
+      padding-left: 2.5rem;
+      background: var(--p-surface-50);
+      border: 1px solid var(--p-surface-300);
+      border-radius: 6px;
+      padding-top: 0.65rem;
+      padding-bottom: 0.65rem;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background-color 0.2s;
+
+      &:focus {
+        background: var(--p-surface-0);
+        border-color: var(--p-primary-500);
+        box-shadow: 0 0 0 2px rgba(var(--p-primary-500-rgb), 0.2);
+        outline: none;
+      }
+
+      &[id='last_name'] {
+        padding-left: 1rem;
+      }
+    }
+  }
+}
+
+.gm-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--p-surface-200);
+}

@@ -1,19 +1,24 @@
 <div class="manager-layout">
   <header class="manager-header">
     <h2>Catálogo de Especialidades</h2>
-    <p>Gestión global de ramas médicas disponibles en la infraestructura SaaS.</p>
+    <p>Administración centralizada de las disciplinas médicas habilitadas para GestorMedic.</p>
   </header>
 
   <div class="toolbar">
     <div class="search-box">
       <i class="bx bx-search"></i>
-      <input pInputText type="text" [formControl]="searchControl" placeholder="Buscar en el catálogo..." />
+      <input
+        pInputText
+        type="text"
+        [formControl]="searchControl"
+        placeholder="Buscar en el catálogo..."
+      />
     </div>
-    <gm-rounded-button 
-      label="Nueva Especialidad" 
-      icon="bx bx-plus" 
-      severity="primary" 
-      (onClick)="openCreateDialog()" 
+    <gm-rounded-button
+      label="Nueva Especialidad"
+      icon="bx bx-plus"
+      severity="primary"
+      (onClick)="openCreateDialog()"
     />
   </div>
 
@@ -32,27 +37,31 @@
         <th style="width: 80px">Código</th>
         <th>Denominación Oficial</th>
         <th>Descripción Técnica</th>
-        <th style="width: 140px; text-align: center;">Operaciones</th>
+        <th style="width: 140px; text-align: center">Operaciones</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-specialty>
       <tr>
-        <td><span class="code-badge">ESP-{{ specialty.id }}</span></td>
-        <td><strong>{{ specialty.name }}</strong></td>
+        <td>
+          <span class="code-badge">ESP-{{ specialty.id }}</span>
+        </td>
+        <td>
+          <strong>{{ specialty.name }}</strong>
+        </td>
         <td>{{ specialty.description }}</td>
         <td>
           <div class="action-buttons">
-            <gm-rounded-button 
-              icon="bx bx-edit-alt" 
-              variant="text" 
-              severity="info" 
-              (onClick)="openEditDialog(specialty)" 
+            <gm-rounded-button
+              icon="bx bx-edit-alt"
+              variant="text"
+              severity="info"
+              (onClick)="openEditDialog(specialty)"
             />
-            <gm-rounded-button 
-              icon="bx bx-trash" 
-              variant="text" 
-              severity="warn" 
-              (onClick)="confirmDelete(specialty.id)" 
+            <gm-rounded-button
+              icon="bx bx-trash"
+              variant="text"
+              severity="warn"
+              (onClick)="confirmDelete(specialty.id)"
             />
           </div>
         </td>
@@ -75,29 +84,41 @@
     <form [formGroup]="specialtyForm" (ngSubmit)="onSave()" class="dialog-form">
       <div class="field-group">
         <label for="name">Denominación Oficial</label>
-        <input pInputText id="name" formControlName="name" placeholder="Ej. Cardiología Intervencionista" fluid />
+        <input
+          pInputText
+          id="name"
+          formControlName="name"
+          placeholder="Ej. Cardiología Intervencionista"
+          fluid
+        />
       </div>
-      
+
       <div class="field-group">
         <label for="description">Descripción Técnica</label>
-        <textarea pTextarea id="description" formControlName="description" rows="4" fluid></textarea>
+        <textarea
+          pTextarea
+          id="description"
+          formControlName="description"
+          rows="4"
+          fluid
+        ></textarea>
       </div>
 
       <div class="dialog-actions">
-        <gm-rounded-button 
-          type="button" 
-          label="Cancelar" 
-          variant="text" 
-          severity="secondary" 
-          (onClick)="closeDialog()" 
-          [disabled]="store.isProcessing()" 
+        <gm-rounded-button
+          type="button"
+          label="Cancelar"
+          variant="text"
+          severity="secondary"
+          (onClick)="closeDialog()"
+          [disabled]="store.isProcessing()"
         />
-        <gm-rounded-button 
-          type="submit" 
-          label="Certificar Registro" 
-          severity="primary" 
-          [loading]="store.isProcessing()" 
-          [disabled]="specialtyForm.invalid || store.isProcessing()" 
+        <gm-rounded-button
+          (onClick)="onSave()"
+          label="Certificar Registro"
+          severity="primary"
+          [loading]="store.isProcessing()"
+          [disabled]="specialtyForm.invalid || store.isProcessing()"
         />
       </div>
     </form>

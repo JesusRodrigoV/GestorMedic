@@ -1,32 +1,41 @@
-<div class="security-settings-layout">
-  <header class="section-header">
-    <h2>Seguridad y Acceso</h2>
-    <p>Gestione la seguridad de su cuenta y la autenticación en dos pasos.</p>
+<div class="gm-security-module">
+  <header class="gm-module-header">
+    <h2>Seguridad</h2>
+    <p>Gestión de autenticación en dos pasos.</p>
   </header>
 
-  <section class="security-card">
-    <div class="card-header">
-      <div class="header-icon">
+  <section class="gm-card-secure">
+    <div class="gm-card-header">
+      <div class="gm-icon-shield">
         <i class="bx bx-shield-quarter"></i>
       </div>
-      <div class="header-text">
-        <h3>Autenticación de Dos Factores (2FA)</h3>
-        <p>Añada una capa extra de seguridad. Además de su contraseña, necesitará un código generado por su aplicación móvil.</p>
+      <div class="gm-header-content">
+        <h3>Autenticación basada en TOTP</h3>
+        <p>
+          Protección estricta de la sesión mediante algoritmos de contraseña de un solo uso basados
+          en tiempo.
+        </p>
       </div>
     </div>
 
-    <div class="card-body">
+    <div class="gm-card-body">
       @if (authStore.currentUser()?.is_totp_enabled || twoFactorStore.setupComplete()) {
-        <div class="success-state">
-          <i class="bx bx-check-shield success-icon"></i>
-          <h4>Seguridad Máxima Activada</h4>
-          <p>Su cuenta está protegida. Se requerirá un código de su aplicación autenticadora (Google Authenticator, Authy, etc.) cada vez que inicie sesión.</p>
-          
+        <div class="gm-state-verified">
+          <i class="bx bx-check-shield gm-success-icon"></i>
+          <h4>Protocolo TOTP Activo</h4>
+          <p>
+            La identidad de esta cuenta está verificada mediante un dispositivo criptográfico
+            externo.
+          </p>
+
           @if (twoFactorStore.setupComplete() && twoFactorStore.backupCodes().length > 0) {
-            <div class="backup-codes-alert">
-              <strong>¡Guarde estos códigos de recuperación!</strong>
-              <p>Son la única forma de recuperar su cuenta si pierde el acceso a su dispositivo móvil.</p>
-              <ul class="code-list">
+            <div class="gm-recovery-vault">
+              <strong>Códigos de Recuperación de Emergencia</strong>
+              <p>
+                Almacene estas secuencias en una bóveda de contraseñas. Son intransferibles e
+                irrecuperables en caso de pérdida del dispositivo primario.
+              </p>
+              <ul class="gm-code-grid">
                 @for (code of twoFactorStore.backupCodes(); track code) {
                   <li>{{ code }}</li>
                 }
@@ -35,48 +44,60 @@
           }
         </div>
       } @else if (twoFactorStore.isProcessing() && !twoFactorStore.qrCodeUri()) {
-        <div class="loading-skeleton">Generando credenciales criptográficas seguras...</div>
+        <div class="gm-state-loading">Sintetizando vectores de inicialización criptográfica...</div>
       } @else if (twoFactorStore.qrCodeUri()) {
-        <div class="setup-flow">
-          <div class="step-instruction">
-            <span class="step-number">1</span>
-            <p>Escanee este código QR usando una aplicación como Google Authenticator o Authy.</p>
-          </div>
-          
-          <div class="qr-container">
-            <qrcode 
-              [qrdata]="twoFactorStore.qrCodeUri()!" 
-              [width]="200" 
-              [errorCorrectionLevel]="'M'">
-            </qrcode>
-          </div>
-
-          <div class="step-instruction">
-            <span class="step-number">2</span>
-            <p>Si no puede escanear el código, ingrese esta clave secreta manualmente: 
-              <br><strong class="secret-text">{{ twoFactorStore.secretKey() }}</strong>
+        <div class="gm-setup-protocol">
+          <div class="gm-instruction-node">
+            <span class="gm-node-index">1</span>
+            <p>
+              Sincronice su generador TOTP (Google Authenticator, Authy, Microsoft Authenticator)
+              escaneando el siguiente código QR.
             </p>
           </div>
 
-          <div class="step-instruction">
-            <span class="step-number">3</span>
-            <p>Ingrese el código de 6 dígitos que muestra su aplicación para confirmar la vinculación.</p>
+          <div class="gm-qr-vault">
+            <qrcode
+              [qrdata]="twoFactorStore.qrCodeUri()!"
+              [width]="200"
+              [errorCorrectionLevel]="'M'"
+            >
+            </qrcode>
           </div>
 
-          <form [formGroup]="verificationForm" (ngSubmit)="onConfirmSetup()" class="verification-form">
-            <div class="input-container">
-              <input 
-                pInputText 
-                id="code" 
-                formControlName="code" 
-                placeholder="000000" 
+          <div class="gm-instruction-node">
+            <span class="gm-node-index">2</span>
+            <p>
+              Alternativa manual de sincronización mediante clave de inicialización en base32:
+              <br /><strong class="gm-secret-key">{{ twoFactorStore.secretKey() }}</strong>
+            </p>
+          </div>
+
+          <div class="gm-instruction-node">
+            <span class="gm-node-index">3</span>
+            <p>
+              Valide la sincronización ingresando el token temporal de 6 dígitos generado por su
+              dispositivo.
+            </p>
+          </div>
+
+          <form
+            [formGroup]="verificationForm"
+            (ngSubmit)="onConfirmSetup()"
+            class="gm-validation-form"
+          >
+            <div class="gm-input-wrapper">
+              <input
+                pInputText
+                id="code"
+                formControlName="code"
+                placeholder="000000"
                 maxlength="6"
                 autocomplete="off"
               />
             </div>
             <gm-rounded-button
               type="submit"
-              label="Verificar y Activar"
+              label="Validar Protocolo"
               severity="primary"
               (onClick)="onConfirmSetup()"
               [disabled]="verificationForm.invalid || twoFactorStore.isProcessing()"

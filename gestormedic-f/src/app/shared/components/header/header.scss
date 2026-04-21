@@ -40,9 +40,7 @@
   height: 72px;
   display: flex;
   justify-content: center;
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .gm-header-container {
@@ -54,7 +52,7 @@
   justify-content: space-between;
 }
 
-.gm-header__section {
+.gm-header-section {
   display: flex;
   align-items: center;
 }
@@ -71,6 +69,7 @@
     border-radius: 10px;
     display: flex;
     box-shadow: 0 4px 12px rgba(var(--p-yale-500-rgb), 0.2);
+    
     img {
       filter: brightness(0) invert(1);
     }
@@ -79,7 +78,8 @@
   .brand-text {
     display: flex;
     flex-direction: column;
-    &__main {
+    
+    .brand-text-main {
       font-weight: 900;
       font-size: 1.2rem;
       color: var(--h-brand-main);
@@ -87,7 +87,8 @@
       line-height: 1;
       transition: color 0.3s ease;
     }
-    &__tagline {
+    
+    .brand-text-tagline {
       font-size: 0.65rem;
       color: var(--p-slate-400);
       text-transform: uppercase;
@@ -97,9 +98,25 @@
   }
 }
 
+.header-loader {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #0f62fe;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .public-nav {
   display: flex;
   gap: 1rem;
+  
   a {
     color: var(--h-nav-link);
     text-decoration: none;
@@ -107,13 +124,16 @@
     font-weight: 600;
     white-space: nowrap;
     transition: all 0.3s ease;
+    
     &:hover {
       color: var(--p-energy-500);
     }
   }
+  
   .active-link {
     color: var(--p-energy-500) !important;
     position: relative;
+    
     &::after {
       content: '';
       position: absolute;
@@ -150,6 +170,7 @@
     font-size: 0.85rem;
     color: var(--h-search-text);
     outline: none;
+    
     &::placeholder {
       color: var(--p-slate-400);
       opacity: 0.7;
@@ -178,7 +199,8 @@
   background: var(--h-search-bg);
   color: var(--p-slate-500);
   transition: all 0.3s ease;
-  &--pro {
+  
+  &-pro {
     background: var(--p-energy-500);
     color: white;
     box-shadow: 0 4px 10px rgba(var(--p-energy-500-rgb), 0.2);
@@ -197,13 +219,15 @@
 
   .user-info {
     text-align: right;
-    &__name {
+    
+    .user-name {
       display: block;
       font-size: 0.8rem;
       font-weight: 700;
       color: var(--h-user-name);
     }
-    &__role {
+    
+    .user-role {
       font-size: 0.65rem;
       color: var(--p-energy-600);
       font-weight: 600;
@@ -232,6 +256,7 @@
 .icon-btn {
   font-size: 1.2rem;
   color: var(--p-slate-400);
+  
   &:hover {
     color: var(--p-energy-500);
   }
@@ -245,7 +270,7 @@
 }
 
 @media (max-width: 1240px) {
-  .brand-text__tagline {
+  .brand-text-tagline {
     display: none;
   }
 

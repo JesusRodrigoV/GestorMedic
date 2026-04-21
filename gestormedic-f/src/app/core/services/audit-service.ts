@@ -9,7 +9,7 @@ import { AuditQueryParams, PaginatedAuditLogs } from '@core/models/audit.model';
 })
 export class AuditService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/audit`;
+  private apiUrl = `${environment.apiUrl}/audit/`;
 
   private readonly httpOptions = {
     withCredentials: true,

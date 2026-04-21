@@ -1,30 +1,20 @@
 <header class="gm-header-wrapper" role="banner">
   <div class="gm-header-container">
-    <div class="gm-header__section gm-header__brand">
+    <div class="gm-header-section gm-header-brand">
       <a routerLink="/" class="brand-link">
         <div class="logo-wrapper">
           <img ngSrc="logos/logo.png" alt="GestorMedic" width="32" height="32" priority />
         </div>
         <div class="brand-text">
-          <span class="brand-text__main">GestorMedic</span>
-          <span class="brand-text__tagline">SaaS de Precisión Médica</span>
+          <span class="brand-text-main">GestorMedic</span>
+          <span class="brand-text-tagline">Gestión Clínica Integrada</span>
         </div>
       </a>
     </div>
 
-    <div class="gm-header__section gm-header__main">
+    <div class="gm-header-section gm-header-main">
       @if (isLoading()) {
-        <div
-          class="header-loader"
-          style="
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #ccc;
-            border-top-color: #0f62fe;
-            animation: spin 1s linear infinite;
-          "
-        ></div>
+        <div class="header-loader"></div>
       } @else if (isLoggedIn()) {
         <div class="search-bar">
           <i class="bx bx-search"></i>
@@ -54,17 +44,28 @@
       }
     </div>
 
-    <div class="gm-header__section gm-header__actions">
+    <div class="gm-header-section gm-header-actions">
       @if (isLoading()) {
         <div style="width: 200px"></div>
       } @else if (isLoggedIn()) {
         <div class="action-group">
-          <div class="plan-badge" [class.plan-badge--pro]="isPro()">
-            @if (isPro()) {
-              <i class="bx bxs-badge-check"></i>
-            }
-            {{ isPro() ? 'PLAN PRO' : 'PLAN BÁSICO' }}
-          </div>
+          
+          <gm-rounded-button
+            label="Ir al Panel"
+            icon="bx bx-grid-alt"
+            variant="text"
+            severity="secondary"
+            [routerLink]="dashboardRoute()"
+          />
+
+          @if (user()?.role_id !== 1) {
+            <div class="plan-badge" [class.plan-badge-pro]="isPro()">
+              @if (isPro()) {
+                <i class="bx bxs-badge-check"></i>
+              }
+              {{ isPro() ? 'PLAN PRO' : 'PLAN BÁSICO' }}
+            </div>
+          }
 
           <p-overlayBadge [value]="unreadNotifications().toString()" severity="danger">
             <button class="icon-btn" (click)="onShowNotifications()">

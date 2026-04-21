@@ -1,0 +1,12 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
+@Component({
+  selector: 'gm-main-container',
+  imports: [],
+  templateUrl: './main-container.html',
+  styleUrl: './main-container.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MainContainer {
+
+}

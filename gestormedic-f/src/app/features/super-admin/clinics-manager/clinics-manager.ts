@@ -9,6 +9,9 @@ import { DatePipe, UpperCasePipe } from '@angular/common';
 import { ClinicsStore } from '../stores/clinics.stores';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { MainContainer } from '@core/layouts/main-container';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'gm-clinics-manager',
@@ -22,22 +25,25 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
     RoundedButton,
     DatePipe,
     UpperCasePipe,
+    MainContainer,
+    ConfirmDialogModule,
   ],
   templateUrl: './clinics-manager.html',
   styleUrl: './clinics-manager.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ClinicsStore],
+  providers: [ClinicsStore, ConfirmationService],
 })
 export default class ClinicsManager {
   protected store = inject(ClinicsStore);
   private fb = inject(FormBuilder);
+  private confirmationService = inject(ConfirmationService);
 
   protected dialogVisible = false;
   protected editingId: number | null = null;
 
   protected planOptions = [
-    { label: 'Gratuito', value: 'free' },
-    { label: 'Básico', value: 'basic' },
+    { label: 'Gratuita', value: 'free' },
+    { label: 'Básica', value: 'basic' },
     { label: 'Profesional', value: 'pro' },
     { label: 'Empresarial', value: 'enterprise' },
   ];
@@ -78,6 +84,12 @@ export default class ClinicsManager {
   protected openCreateDialog(): void {
     this.editingId = null;
     this.clinicForm.reset({ plan: 'free', is_active: true });
+
+    this.clinicForm.get('name')?.enable();
+    this.clinicForm.get('nit_ruc')?.enable();
+    this.clinicForm.get('address')?.enable();
+    this.clinicForm.get('phone')?.enable();
+
     this.dialogVisible = true;
   }
 
@@ -92,6 +104,12 @@ export default class ClinicsManager {
       plan: clinic.plan,
       is_active: clinic.is_active,
     });
+
+    this.clinicForm.get('name')?.disable();
+    this.clinicForm.get('nit_ruc')?.disable();
+    this.clinicForm.get('address')?.disable();
+    this.clinicForm.get('phone')?.disable();
+
     this.dialogVisible = true;
   }
 
@@ -116,12 +134,16 @@ export default class ClinicsManager {
   }
 
   protected confirmDelete(id: number): void {
-    if (
-      confirm(
-        'Atención: Eliminar una clínica es una acción destructiva que afectará a todos sus usuarios asociados. ¿Proceder?',
-      )
-    ) {
-      this.store.deleteClinic(id);
-    }
+    this.confirmationService.confirm({
+      message:
+        'Eliminar una clínica borrará de forma permanente a todos sus usuarios asociados. ¿Desea proceder?',
+      header: 'Confirmar Eliminación',
+      icon: 'bx bx-error-circle',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.store.deleteClinic(id);
+      },
+    });
   }
 }

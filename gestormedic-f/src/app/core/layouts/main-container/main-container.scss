@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+}
+
+.gm-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .gm-page-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gm-page-container {
+    padding: 1rem;
+  }
+}

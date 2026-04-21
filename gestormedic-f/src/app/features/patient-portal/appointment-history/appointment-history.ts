@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MainContainer } from '@core/layouts/main-container';
 import { AppointmentItem } from '@core/models/appointment.model';
 import { AppointmentsService } from '@core/services/appointments';
 import { NotificationService } from '@core/services/notification';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-appointment-history',
-  imports: [FormsModule],
+  imports: [FormsModule, MainContainer, SelectModule],
   templateUrl: './appointment-history.html',
   styleUrl: './appointment-history.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +19,14 @@ export default class AppointmentHistory {
 
   readonly status = signal('');
   readonly appointments = signal<AppointmentItem[]>([]);
+
+  readonly statusOptions = [
+    { label: 'Todos los estados', value: '' },
+    { label: 'Confirmadas', value: 'CONFIRMED' },
+    { label: 'Pendientes', value: 'PENDING' },
+    { label: 'Completadas', value: 'COMPLETED' },
+    { label: 'Canceladas', value: 'CANCELLED' },
+  ];
 
   constructor() {
     this.load();
@@ -33,6 +43,16 @@ export default class AppointmentHistory {
     return `${startsAt.toLocaleDateString()} ${startsAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endsAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   }
 
+  translateStatus(status: string): string {
+    const translations: Record<string, string> = {
+      CONFIRMED: 'Confirmada',
+      PENDING: 'Pendiente',
+      COMPLETED: 'Completada',
+      CANCELLED: 'Cancelada',
+    };
+    return translations[status] || status;
+  }
+
   private load(): void {
     const selected = this.status().trim();
     this.appointmentsService.getMyAppointments(selected || undefined).subscribe({
@@ -41,8 +61,10 @@ export default class AppointmentHistory {
         this.notification
           .builder()
           .warn()
-          .summary('No se pudo cargar el historial')
-          .detail('Intenta nuevamente en unos segundos.')
+          .summary('Fallo de conexión')
+          .detail(
+            'No se pudo establecer contacto con el registro central. Reintente en unos instantes.',
+          )
           .show();
       },
     });

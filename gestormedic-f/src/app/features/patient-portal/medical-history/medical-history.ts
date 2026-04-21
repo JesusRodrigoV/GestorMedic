@@ -1,12 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MedicalHistory as MedicalHistoryModel, MedicalHistoryEntry } from '@core/models/medical-records.model';
+import { MainContainer } from '@core/layouts/main-container';
+import {
+  MedicalHistory as MedicalHistoryModel,
+  MedicalHistoryEntry,
+} from '@core/models/medical-records.model';
 import { MedicalRecordsService } from '@core/services/medical-records';
 import { NotificationService } from '@core/services/notification';
+import { RoundedButton } from '@shared/ui/rounded-button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-medical-history',
-  imports: [FormsModule],
+  imports: [FormsModule, InputTextModule, TextareaModule, MainContainer, RoundedButton],
   templateUrl: './medical-history.html',
   styleUrl: './medical-history.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,24 +68,25 @@ export default class MedicalHistory {
           this.notification
             .builder()
             .success()
-            .summary('Historial actualizado')
-            .detail('Tus datos base se guardaron correctamente.')
+            .summary('Expediente actualizado')
+            .detail('Los parámetros fisiológicos han sido registrados correctamente.')
             .show();
         },
         error: () => {
           this.isSaving.set(false);
           this.notification
             .builder()
-            .warn()
-            .summary('No se pudo guardar')
-            .detail('Intenta nuevamente en unos segundos.')
+            .error()
+            .summary('Fallo de escritura')
+            .detail('El sistema no pudo confirmar los cambios en la base de datos.')
             .show();
         },
       });
   }
 
   formatDate(isoDate: string): string {
-    return new Date(isoDate).toLocaleString();
+    const date = new Date(isoDate);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   }
 
   private loadHistories(): void {
@@ -95,8 +103,8 @@ export default class MedicalHistory {
         this.notification
           .builder()
           .warn()
-          .summary('No se pudo cargar historiales')
-          .detail('Revisa tu conexión e intenta de nuevo.')
+          .summary('Error de lectura')
+          .detail('No se pudo acceder a los expedientes. Verifique su conexión.')
           .show();
       },
     });
@@ -112,8 +120,8 @@ export default class MedicalHistory {
         this.notification
           .builder()
           .warn()
-          .summary('No se pudo cargar el detalle')
-          .detail('Intenta de nuevo en unos segundos.')
+          .summary('Fallo de lectura')
+          .detail('No se pudo recuperar el detalle de la especialidad seleccionada.')
           .show();
       },
     });

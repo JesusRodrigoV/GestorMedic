@@ -1,107 +1,155 @@
-<main class="page">
-  <section class="top card">
-    <h2>Archivos médicos</h2>
-    <p>Sube recetas, PDFs, imágenes y estudios DICOM vinculados a tu perfil o historiales.</p>
-  </section>
+<gm-main-container>
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-  <section class="card tabs">
-    <button type="button" [class.active]="activeTab() === 'upload'" (click)="activeTab.set('upload')">
-      Subir
-    </button>
-    <button type="button" [class.active]="activeTab() === 'viewer'" (click)="activeTab.set('viewer')">
-      Visualizador
-    </button>
-  </section>
+  <div class="gm-document-layout">
+    <header class="gm-section-header">
+      <h2>Centro de Documentación Clínica</h2>
+      <p>Gestión segura de recetas, informes PDF y estudios de imagen (DICOM) vinculados a su expediente.</p>
+    </header>
 
-  @if (activeTab() === 'upload') {
-    <section class="card">
-      <h3>Seleccionar archivos</h3>
-      <p>Máximo por archivo: 30MB. Se permite selección múltiple.</p>
-      <input type="file" multiple (change)="onSelectFiles($event)" />
-
-      @if (selectedFiles().length) {
-        <div class="preview-list">
-          @for (file of selectedFiles(); track file.name + file.size) {
-            <article>
-              <h4>{{ file.name }}</h4>
-              <p>{{ file.type || 'desconocido' }} · {{ file.size / 1024 / 1024 | number: '1.0-2' }} MB</p>
-            </article>
-          }
-        </div>
-      }
-
-      <button type="button" class="primary" [disabled]="isUploading()" (click)="onUploadAll()">
-        {{ isUploading() ? 'Subiendo...' : 'Subir archivos' }}
+    <div class="gm-tabs-container">
+      <button 
+        type="button" 
+        class="gm-tab-btn" 
+        [class.active]="activeTab() === 'upload'" 
+        (click)="activeTab.set('upload')"
+      >
+        <i class="bx bx-cloud-upload"></i> Carga de Archivos
       </button>
-    </section>
-  }
+      <button 
+        type="button" 
+        class="gm-tab-btn" 
+        [class.active]="activeTab() === 'viewer'" 
+        (click)="activeTab.set('viewer')"
+      >
+        <i class="bx bx-folder-open"></i> Explorador y Visualizador
+      </button>
+    </div>
 
-  @if (activeTab() === 'viewer') {
-    <section class="card">
-      <h3>Archivos subidos</h3>
-      <div class="dicom-stack-actions">
-        <button type="button" (click)="openSelectedDicomStack()">Abrir stack DICOM seleccionado</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>DICOM Stack</th>
-              <th>Nombre</th>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Tamaño</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (file of files(); track file.id) {
-              <tr>
-                <td>
-                  @if (isDicom(file)) {
-                    <input
-                      type="checkbox"
-                      [checked]="isDicomSelected(file.id)"
-                      (change)="toggleDicomSelection(file)" />
-                  }
-                </td>
-                <td>{{ file.original_name }}</td>
-                <td>{{ file.uploaded_at | date: 'short' }}</td>
-                <td>{{ file.content_type }}</td>
-                <td>{{ file.size_bytes / 1024 / 1024 | number: '1.0-2' }} MB</td>
-                <td class="actions">
-                  <button type="button" (click)="onView(file)">Ver</button>
-                  <button type="button" class="danger" (click)="onDelete(file)">Borrar</button>
-                </td>
-              </tr>
+    @if (activeTab() === 'upload') {
+      <section class="gm-card">
+        <div class="gm-file-upload-zone">
+          <input type="file" id="file-upload" multiple (change)="onSelectFiles($event)" class="gm-hidden-input" />
+          <label for="file-upload" class="gm-upload-label">
+            <i class="bx bx-cloud-upload"></i>
+            <span>Haga clic para examinar o arrastre los archivos aquí</span>
+            <small>Límite estricto por archivo: 30MB (Soporta PDF, DICOM, DOCX, Imágenes)</small>
+          </label>
+        </div>
+
+        @if (selectedFiles().length) {
+          <div class="gm-preview-grid">
+            @for (file of selectedFiles(); track file.name + file.size) {
+              <article class="gm-preview-card">
+                <i class="bx bx-file-blank file-icon"></i>
+                <div class="file-details">
+                  <h4>{{ file.name }}</h4>
+                  <p>{{ file.type || 'Formato no especificado' }} · {{ file.size / 1024 / 1024 | number: '1.0-2' }} MB</p>
+                </div>
+              </article>
             }
-          </tbody>
-        </table>
+          </div>
+        }
+
+        <div class="gm-form-actions">
+          <gm-rounded-button 
+            [disabled]="selectedFiles().length === 0 || isUploading()" 
+            (onClick)="onUploadAll()"
+            [loading]="isUploading()"
+            [label]="isUploading() ? 'Sincronizando...' : 'Subir Archivos al Servidor'"
+            severity="primary"
+            icon="bx bx-up-arrow-circle"
+          />
+        </div>
+      </section>
+    }
+
+    @if (activeTab() === 'viewer') {
+      <section class="gm-card">
+        <div class="gm-table-toolbar">
+          <gm-rounded-button 
+            (onClick)="openSelectedDicomStack()"
+            label="Procesar Stack DICOM Seleccionado"
+            icon="bx bx-layer"
+            severity="info"
+            variant="outlined"
+          />
+        </div>
+
+        <p-table 
+          [value]="files()" 
+          styleClass="p-datatable-sm p-datatable-striped"
+          [paginator]="true"
+          [rows]="10"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 80px; text-align: center">DICOM</th>
+              <th>Nombre del Archivo</th>
+              <th>Fecha de Carga</th>
+              <th>Formato</th>
+              <th>Tamaño</th>
+              <th style="width: 140px; text-align: center">Operaciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-file>
+            <tr>
+              <td style="text-align: center">
+                @if (isDicom(file)) {
+                  <input 
+                    type="checkbox" 
+                    class="gm-checkbox"
+                    [checked]="isDicomSelected(file.id)" 
+                    (change)="toggleDicomSelection(file)" 
+                  />
+                }
+              </td>
+              <td><strong>{{ file.original_name }}</strong></td>
+              <td>{{ file.uploaded_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="gm-format-badge">{{ file.extension | uppercase }}</span></td>
+              <td>{{ file.size_bytes / 1024 / 1024 | number: '1.0-2' }} MB</td>
+              <td>
+                <div class="gm-action-buttons">
+                  <gm-rounded-button icon="bx bx-show" variant="text" severity="info" (onClick)="onView(file)" />
+                  <gm-rounded-button icon="bx bx-trash" variant="text" severity="warn" (onClick)="onDelete(file)" />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="gm-empty-message">
+                No existen documentos clínicos archivados en este momento.
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </section>
+    }
+  </div>
+
+  <p-dialog 
+    [header]="'Visualizador Avanzado: ' + (selectedView()?.original_name || '')" 
+    [visible]="!!selectedView()" 
+    (onHide)="onCloseViewer()"
+    [modal]="true" 
+    [draggable]="false"
+    [resizable]="false"
+  >
+    @if (selectedView()) {
+      <div class="gm-viewer-container">
+        @if (isImage(selectedView()!)) {
+          <gm-image-viewer [fileUrl]="getViewerUrl(selectedView()!)" [fileName]="selectedView()!.original_name" />
+        } @else if (isPdf(selectedView()!)) {
+          <gm-pdf-viewer [fileUrl]="getViewerUrl(selectedView()!)" />
+        } @else if (isDicom(selectedView()!)) {
+          <gm-dicom-advanced-viewer [dicomUrls]="selectedDicomUrls()" [fileName]="selectedView()!.original_name" />
+        } @else if (isDocx(selectedView()!)) {
+          <gm-docx-viewer [fileUrl]="getViewerUrl(selectedView()!)" [fileName]="selectedView()!.original_name" />
+        } @else {
+          <gm-generic-viewer [fileUrl]="getViewerUrl(selectedView()!)" />
+        }
       </div>
-    </section>
-  }
-
-  @if (selectedView()) {
-    <div class="overlay" (click)="onCloseViewer()"></div>
-    <section class="viewer-modal card" role="dialog" aria-modal="true">
-      <header>
-        <h3>Visualizador: {{ selectedView()!.original_name }}</h3>
-        <button type="button" (click)="onCloseViewer()">Cerrar</button>
-      </header>
-
-      @if (isImage(selectedView()!)) {
-        <gm-image-viewer [fileUrl]="getViewerUrl(selectedView()!)" [fileName]="selectedView()!.original_name" />
-      } @else if (isPdf(selectedView()!)) {
-        <gm-pdf-viewer [fileUrl]="getViewerUrl(selectedView()!)" />
-      } @else if (isDicom(selectedView()!)) {
-        <gm-dicom-advanced-viewer
-          [dicomUrls]="selectedDicomUrls()"
-          [fileName]="selectedView()!.original_name" />
-      } @else if (isDocx(selectedView()!)) {
-        <gm-docx-viewer [fileUrl]="getViewerUrl(selectedView()!)" [fileName]="selectedView()!.original_name" />
-      } @else {
-        <gm-generic-viewer [fileUrl]="getViewerUrl(selectedView()!)" />
-      }
-    </section>
-  }
-</main>
+    }
+  </p-dialog>
+</gm-main-container>

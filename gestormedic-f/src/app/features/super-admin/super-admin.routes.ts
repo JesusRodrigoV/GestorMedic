@@ -10,12 +10,12 @@ export const SUPER_ADMIN_ROUTES: Routes = [
     data: {
       allowedRoles: [UserRole.SUPERADMIN],
       menu: [
-        { label: 'Gestión de Inquilinos', icon: 'bx-buildings', route: '/control/clinics' },
+        { label: 'Gestión de Clínicas', icon: 'bx-buildings', route: '/control/clinics' },
         { label: 'Gestión de usuarios', icon: 'bx-buildings', route: '/control/users' },
         { label: 'Catálogo de Especialidades', icon: 'bx-list-ul', route: '/control/specialties' },
-        { label: 'Planes de Suscripción', icon: 'bx-credit-card-front', route: '/control/plans' },
+        //{ label: 'Planes de Suscripción', icon: 'bx-credit-card-front', route: '/control/plans' },
         { label: 'Auditoría y Seguridad', icon: 'bx-shield-quarter', route: '/control/audit' },
-        { label: 'Configuración del Sistema', icon: 'bx-cog', route: '/control/settings' },
+        { label: 'Configuración', icon: 'bx-cog', route: '/control/settings' },
       ],
     },
     children: [

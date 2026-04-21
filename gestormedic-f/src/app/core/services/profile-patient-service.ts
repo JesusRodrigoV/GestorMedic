@@ -16,18 +16,18 @@ export class ProfilePatientService {
   };
 
   getMyProfile(): Observable<PatientProfile> {
-    return this.http.get<PatientProfile>(`${this.apiUrl}/me`, this.httpOptions);
+    return this.http.get<PatientProfile>(`${this.apiUrl}/me/`, this.httpOptions);
   }
 
   updateMyProfile(payload: UpdatePatientProfilePayload): Observable<PatientProfile> {
-    return this.http.put<PatientProfile>(`${this.apiUrl}/me`, payload, this.httpOptions);
+    return this.http.put<PatientProfile>(`${this.apiUrl}/me/`, payload, this.httpOptions);
   }
 
   getProfileByUserId(userId: number): Observable<PatientProfile> {
-    return this.http.get<PatientProfile>(`${this.apiUrl}/${userId}`, this.httpOptions);
+    return this.http.get<PatientProfile>(`${this.apiUrl}/${userId}/`, this.httpOptions);
   }
 
   updateProfileByUserId(userId: number, payload: UpdatePatientProfilePayload): Observable<PatientProfile> {
-    return this.http.put<PatientProfile>(`${this.apiUrl}/${userId}`, payload, this.httpOptions);
+    return this.http.put<PatientProfile>(`${this.apiUrl}/${userId}/`, payload, this.httpOptions);
   }
 }

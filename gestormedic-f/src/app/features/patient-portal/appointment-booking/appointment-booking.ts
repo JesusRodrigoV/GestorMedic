@@ -7,13 +7,14 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MainContainer } from '@core/layouts/main-container';
 import { DoctorCard, SlotItem, SlotsByDay } from '@core/models/appointment.model';
 import { AppointmentsService } from '@core/services/appointments';
 import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'app-appointment-booking',
-  imports: [FormsModule],
+  imports: [FormsModule, MainContainer],
   templateUrl: './appointment-booking.html',
   styleUrl: './appointment-booking.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -178,7 +179,12 @@ export default class AppointmentBooking {
         },
         error: (err) => {
           const message = err?.error?.detail || 'No se pudo reservar el horario seleccionado.';
-          this.notification.builder().error().summary('Reserva no realizada').detail(message).show();
+          this.notification
+            .builder()
+            .error()
+            .summary('Reserva no realizada')
+            .detail(message)
+            .show();
         },
       });
   }
