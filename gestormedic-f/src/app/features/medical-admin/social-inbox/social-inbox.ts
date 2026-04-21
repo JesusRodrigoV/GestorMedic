@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SocialService, SocialConnection } from '@core/services/social.service';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store';
 import { NotificationService } from '@core/services/notification';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -18,7 +18,7 @@ import { environment } from '@env/environment';
 })
 export default class SocialInbox {
   private socialService = inject(SocialService);
-  private authService = inject(AuthService);
+  protected authStore = inject(AuthStore);
   private notification = inject(NotificationService);
   private http = inject(HttpClient);
 
@@ -32,7 +32,7 @@ export default class SocialInbox {
   }
 
   loadRequests(): void {
-    const user = this.authService.currentUser();
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.getPendingRequests(user.id).subscribe({
         next: (data) => this.requests.set(data),

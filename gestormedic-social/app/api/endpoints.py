@@ -97,37 +97,49 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int, db: Session = D
     await manager.connect(user_id, websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            message_data = json.loads(data)
-            
-            # message_data: { "connection_id": 1, "receiver_id": 2, "content": "hola" }
-            conn_id = message_data.get("connection_id")
-            receiver_id = message_data.get("receiver_id")
-            content = message_data.get("content")
+            try:
+                data = await websocket.receive_text()
+                message_data = json.loads(data)
+                
+                # message_data: { "connection_id": 1, "receiver_id": 2, "content": "hola" }
+                conn_id = message_data.get("connection_id")
+                receiver_id = message_data.get("receiver_id")
+                content = message_data.get("content")
 
-            # Validar conexión
-            conn = db.query(models.PatientDoctorConnection).filter(
-                models.PatientDoctorConnection.id == conn_id,
-                models.PatientDoctorConnection.status == "ACCEPTED"
-            ).first()
-            
-            if not conn:
+                if not all([conn_id, receiver_id, content]):
+                    continue
+
+                # Validar conexión
+                conn = db.query(models.PatientDoctorConnection).filter(
+                    models.PatientDoctorConnection.id == conn_id,
+                    models.PatientDoctorConnection.status == "ACCEPTED"
+                ).first()
+                
+                if not conn:
+                    continue
+
+                # Guardar mensaje
+                new_msg = models.ChatMessage(
+                    connection_id=conn_id,
+                    sender_id=user_id,
+                    content=content
+                )
+                db.add(new_msg)
+                db.commit()
+
+                # Enviar al destinatario
+                await manager.broadcast_to_user(receiver_id, {
+                    "sender_id": user_id,
+                    "content": content,
+                    "timestamp": str(new_msg.created_at)
+                })
+            except json.JSONDecodeError:
                 continue
-
-            # Guardar mensaje
-            new_msg = models.ChatMessage(
-                connection_id=conn_id,
-                sender_id=user_id,
-                content=content
-            )
-            db.add(new_msg)
-            db.commit()
-
-            # Enviar al destinatario
-            await manager.broadcast_to_user(receiver_id, {
-                "sender_id": user_id,
-                "content": content,
-                "timestamp": str(new_msg.created_at)
-            })
+            except Exception as e:
+                print(f"Error processing message: {e}")
+                continue
     except WebSocketDisconnect:
+        manager.disconnect(user_id, websocket)
+    except Exception as e:
+        print(f"WebSocket error: {e}")
         manager.disconnect(user_id, websocket)

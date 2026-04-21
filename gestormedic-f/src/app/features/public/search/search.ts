@@ -6,7 +6,7 @@ import { RatingModule } from 'primeng/rating';
 import { RoundedButton } from '@shared/ui/rounded-button';
 import { CurrencyPipe, NgOptimizedImage, CommonModule } from '@angular/common';
 import { Doctor } from '@core/models/doctor.model';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store';
 import { SocialService } from '@core/services/social.service';
 import { NotificationService } from '@core/services/notification';
 
@@ -31,14 +31,14 @@ import { NotificationService } from '@core/services/notification';
   },
 })
 export default class Search {
-  private authService = inject(AuthService);
+  protected readonly authStore = inject(AuthStore);
   private socialService = inject(SocialService);
   private notification = inject(NotificationService);
 
   specialty = input<string>('');
   location = input<string>('');
 
-  protected readonly currentUser = this.authService.currentUser;
+  protected readonly currentUser = this.authStore.currentUser;
   protected readonly maxPrice = signal<number>(500);
   protected readonly selectedModalities = signal<string[]>([]);
 

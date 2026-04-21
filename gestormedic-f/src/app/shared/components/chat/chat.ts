@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit, OnDestroy, s
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocialService, ChatMessage } from '@core/services/social.service';
-import { AuthService } from '@core/services/auth.service';
+import { AuthStore } from '@features/auth/stores/auth.store';
 
 @Component({
   selector: 'gm-chat',
@@ -17,13 +17,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   receiverId = input.required<number>();
   
   private socialService = inject(SocialService);
-  private authService = inject(AuthService);
+  protected authStore = inject(AuthStore);
   
   readonly messages = signal<ChatMessage[]>([]);
   newMessage = '';
 
   ngOnInit(): void {
-    const user = this.authService.currentUser();
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.connectChat(user.id);
       this.socialService.onMessage().subscribe((msg) => {
@@ -39,7 +39,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   send(): void {
     if (!this.newMessage.trim()) return;
     
-    const user = this.authService.currentUser();
+    const user = this.authStore.currentUser();
     if (user) {
       this.socialService.sendMessage(this.connectionId(), this.receiverId(), this.newMessage);
       this.messages.update((prev) => [...prev, {
@@ -52,6 +52,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   isMyMessage(senderId: number): boolean {
-    return senderId === this.authService.currentUser()?.id;
+    return senderId === this.authStore.currentUser()?.id;
   }
 }
