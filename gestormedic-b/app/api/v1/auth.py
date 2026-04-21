@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Request, BackgroundTasks, Cookie
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional, Union
 import pyotp
@@ -33,10 +34,20 @@ from app.core.histories_client import bootstrap_patient_history
 router = APIRouter()
 
 async def _issue_tokens(db: AsyncSession, user: User, response: Response, request: Request):
+    doctor_profile_id = None
+    if user.role.name.lower() == 'medico':
+        from app.models.doctor_profile import DoctorProfile
+        result = await db.execute(
+            select(DoctorProfile.id).where(DoctorProfile.user_id == user.id)
+        )
+        doctor_profile_id = result.scalar_one_or_none()
+
     access_token = create_access_token(
         subject=user.email, 
         role=user.role.name, 
-        clinic_id=getattr(user, 'clinic_id', None)
+        user_id=user.id,
+        clinic_id=getattr(user, 'clinic_id', None),
+        doctor_profile_id=doctor_profile_id
     )
     
     rt_data = create_refresh_token(subject=user.email)
@@ -138,12 +149,20 @@ async def login_google(
     user = await crud_user.get_user_by_email(db, email)
 
     if not user:
-        user_in = UserCreate(
+        google_id = idinfo.get("sub")
+        username = idinfo.get("name", email.split("@")[0])
+        first_name = idinfo.get("given_name")
+        last_name = idinfo.get("family_name")
+        if not google_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Google token inválido: falta identificador 'sub'")
+        user = await crud_user.create_user_by_google(
+            db,
             email=email,
-            username=idinfo.get("name", email.split("@")[0]),
-            password=None
+            username=username,
+            google_id=google_id,
+            first_name=first_name,
+            last_name=last_name
         )
-        user = await crud_user.create_public_user(db, user_in=user_in, role_name=UserRole.PACIENTE.value)
         await bootstrap_patient_history(user.id)
 
     if not user.is_active:

@@ -39,7 +39,13 @@
 
   <div class="main-content-row">
     <div class="timeline-section">
-      <p-card header="Agenda de Hoy">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex justify-between items-center p-4">
+            <h3 class="m-0">Agenda de Hoy</h3>
+            <p-button label="Ver todas las citas" icon="bx bx-list-ul" size="small" routerLink="/app/appointments"></p-button>
+          </div>
+        </ng-template>
         <p-timeline [value]="upcomingAppointments()">
             <ng-template pTemplate="content" let-appt>
                 <div class="timeline-event-content">

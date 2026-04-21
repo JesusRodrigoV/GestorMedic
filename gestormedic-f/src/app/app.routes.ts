@@ -31,6 +31,10 @@ export const routes: Routes = [
     loadComponent: () => import('./core/layouts/patient-portal-layout/patient-portal-layout'),
   },
   {
+    path: 'ranking',
+    loadComponent: () => import('./features/public/ranking').then((m) => m.default),
+  },
+  {
     path: '**',
     loadComponent: () => import('./features/public/not-found/not-found'),
   },

@@ -1,0 +1,26 @@
+<div class="chat-window">
+  <div class="chat-header">
+    <h3>Chat Médico-Paciente</h3>
+  </div>
+  
+  <div class="messages-container">
+    @for (msg of messages(); track msg.timestamp) {
+      <div class="message" [ngClass]="{'mine': isMyMessage(msg.sender_id)}">
+        <div class="bubble">
+          {{ msg.content }}
+          <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="input-area">
+    <input 
+      type="text" 
+      [(ngModel)]="newMessage" 
+      (keyup.enter)="send()" 
+      placeholder="Escribe un mensaje..."
+    />
+    <button (click)="send()"><i class="bx bxs-send"></i></button>
+  </div>
+</div>

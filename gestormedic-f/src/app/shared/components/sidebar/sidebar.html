@@ -13,26 +13,63 @@
 
   <nav class="sidebar-nav">
     <ul class="nav-list">
-      @for (item of items(); track item.route) {
+      @for (item of displayedItems(); track item.label) {
         <li class="nav-item">
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="active-link"
-            [pTooltip]="isCollapsed() ? item.label : ''"
-            tooltipPosition="right"
-            class="nav-link"
-            (click)="onItemClick.emit()"
-          >
-            <div class="active-indicator"></div>
-
-            <div class="icon-wrapper">
-              <i class="bx" [class]="item.icon" aria-hidden="true"></i>
+          @if (item.children && item.children.length > 0) {
+            <div
+              class="nav-link nav-link-parent"
+              [class.active-parent]="isExpanded(item.label)"
+              (click)="toggleSubmenu(item.label, $event)"
+              [pTooltip]="isCollapsed() ? item.label : ''"
+              tooltipPosition="right"
+            >
+              <div class="icon-wrapper">
+                <i class="bx" [class]="item.icon" aria-hidden="true"></i>
+              </div>
+              
+              @if (!isCollapsed()) {
+                <span class="link-label">{{ item.label }}</span>
+                <i class="bx bx-chevron-down toggle-icon" [class.rotated]="isExpanded(item.label)"></i>
+              }
             </div>
 
-            @if (!isCollapsed()) {
-              <span class="link-label" animate.enter="fade-in-node">{{ item.label }}</span>
+            @if (!isCollapsed() && isExpanded(item.label)) {
+              <ul class="sub-nav-list" animate.enter="fade-in-node">
+                @for (child of item.children; track child.route) {
+                  <li class="sub-nav-item">
+                    <a
+                      [routerLink]="child.route"
+                      routerLinkActive="active-link"
+                      class="sub-nav-link"
+                      (click)="onItemClick.emit()"
+                    >
+                      <i class="bx bx-radio-circle-marked sub-icon"></i>
+                      <span class="sub-link-label">{{ child.label }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
             }
-          </a>
+          } @else {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="active-link"
+              [pTooltip]="isCollapsed() ? item.label : ''"
+              tooltipPosition="right"
+              class="nav-link"
+              (click)="onItemClick.emit()"
+            >
+              <div class="active-indicator"></div>
+
+              <div class="icon-wrapper">
+                <i class="bx" [class]="item.icon" aria-hidden="true"></i>
+              </div>
+
+              @if (!isCollapsed()) {
+                <span class="link-label" animate.enter="fade-in-node">{{ item.label }}</span>
+              }
+            </a>
+          }
         </li>
       }
     </ul>

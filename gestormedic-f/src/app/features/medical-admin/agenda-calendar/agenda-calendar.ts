@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { SlotItem, SlotsByDay } from '@core/models/appointment.model';
 import { AppointmentsService } from '@core/services/appointments';
 import { NotificationService } from '@core/services/notification';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-agenda-calendar',
@@ -34,10 +35,17 @@ export default class AgendaCalendar {
 
   constructor() {
     this.load();
-    this.appointmentsService.listSpecialties().subscribe({ next: (rows) => this.specialties.set(rows) });
-    this.appointmentsService.listClinicRooms().subscribe({
-      next: (rows) => this.rooms.set(rows.filter((item) => item.is_active)),
-    });
+    this.appointmentsService
+      .listPublicSpecialties()
+      .pipe(map((res: any) => res.items || res))
+      .subscribe({ next: (rows) => this.specialties.set(rows) });
+      
+    this.appointmentsService
+      .listClinicRooms()
+      .pipe(map((res: any) => res.items || res))
+      .subscribe({
+        next: (rows) => this.rooms.set(rows.filter((item: any) => item.is_active)),
+      });
   }
 
   load(): void {

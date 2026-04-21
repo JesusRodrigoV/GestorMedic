@@ -17,7 +17,7 @@ async def get_doctor_by_id(db: AsyncSession, profile_id: int) -> Optional[Doctor
         .where(DoctorProfile.id == profile_id)
     )
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.unique().scalar_one_or_none()
 
 async def get_doctor_profile_by_user_id(db: AsyncSession, user_id: int) -> Optional[DoctorProfile]:
     stmt = (
@@ -26,7 +26,7 @@ async def get_doctor_profile_by_user_id(db: AsyncSession, user_id: int) -> Optio
         .where(DoctorProfile.user_id == user_id)
     )
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.unique().scalar_one_or_none()
 
 
 async def create_doctor(db: AsyncSession, profile_in: DoctorProfileCreate) -> DoctorProfile:

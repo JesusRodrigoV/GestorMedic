@@ -10,9 +10,10 @@ services:
       - gm-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d notifications_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   gm-notifications-redis:
     image: redis:8.6-alpine
@@ -33,15 +34,75 @@ services:
       - gm-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d gestormedic_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   gm-backend-redis:
     image: redis:8.6-alpine
     container_name: gm-backend-redis
     networks:
       - gm-network
+
+  gm-ranking-db:
+    image: postgres:15-alpine
+    container_name: gm-ranking-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ranking_db
+    networks:
+      - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ranking_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  gm-ranking-api:
+    build:
+      context: ./gestormedic-ranking
+      dockerfile: Dockerfile
+    container_name: gm-ranking-api
+    env_file:
+      - ./gestormedic-ranking/.env_do
+    depends_on:
+      gm-ranking-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
+  gm-social-db:
+    image: postgres:15-alpine
+    container_name: gm-social-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: social_db
+    networks:
+      - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d social_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  gm-social-api:
+    build:
+      context: ./gestormedic-social
+      dockerfile: Dockerfile
+    container_name: gm-social-api
+    env_file:
+      - ./gestormedic-social/.env_do
+    depends_on:
+      gm-social-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
 
   gm-notifications-api:
     build:
@@ -50,12 +111,6 @@ services:
     container_name: gm-notifications-api
     env_file:
       - ./gestormedic-notification/.env_do
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     depends_on:
       gm-notifications-db:
         condition: service_healthy
@@ -87,9 +142,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/openapi.json > /dev/null || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+      timeout: 10s
+      retries: 6
+      start_period: 120s
     depends_on:
       gm-backend-db:
         condition: service_healthy
@@ -102,8 +157,13 @@ services:
     build:
       context: ./gestormedic-citas
       dockerfile: Dockerfile
+    restart: always
     env_file:
-      - ./gestormedic-citas/.env_do
+      - ./gestormedic-b/.env_do
+    # ports removed: frontend serves on 4200
+    volumes:
+      - ./gestormedic-citas:/app
+      - /app/node_modules
     depends_on:
       gm-backend-db:
         condition: service_healthy
@@ -137,6 +197,7 @@ services:
       - gm-backend
       - gm-citas
       - gm-notifications-api
+      - gm-ranking-api
       - gm-historiales
     networks:
       - gm-network
@@ -145,9 +206,10 @@ services:
   #   build: 
   #     context: ./gestormedic-f 
   #     dockerfile: Dockerfile
+  #   container_name: gm-frontend
   #   restart: always
   #   ports:
-  #     - "4200:80"
+  #     - "4200:4200"
   #   depends_on:
   #     - api-gateway
   #   networks:

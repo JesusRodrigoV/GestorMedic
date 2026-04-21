@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, doctor, patient, public
+from app.api import admin, doctor, patient, public, reports
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -11,8 +11,8 @@ from app.db.session import engine
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Ya no ejecutamos create_all aquí para evitar conflictos con el backend central
+    # Las migraciones se gestionan centralizadamente mediante Alembic o el backend principal
     yield
 
 
@@ -35,6 +35,7 @@ app.include_router(public.router, prefix=settings.API_V1_STR)
 app.include_router(patient.router, prefix=settings.API_V1_STR)
 app.include_router(doctor.router, prefix=settings.API_V1_STR)
 app.include_router(admin.router, prefix=settings.API_V1_STR)
+app.include_router(reports.router, prefix=settings.API_V1_STR)
 
 
 @app.get('/health')

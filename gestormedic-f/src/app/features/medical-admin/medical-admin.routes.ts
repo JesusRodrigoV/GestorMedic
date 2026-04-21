@@ -1,14 +1,9 @@
-import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { pendingChangesGuard } from '@core/guards/pending-changes.guard';
 import { roleGuard } from '@core/guards/role-guard';
 import { UserRole } from '@core/models/role.model';
-import { AuthStore } from '@features/auth/stores/auth.store';
 
-const getDynamicMenu = () => {
-  const authStore = inject(AuthStore);
-  const user = authStore.currentUser();
-
+const getDynamicMenu = (user: any) => {
   if (!user) return [];
 
   const baseMenu = [
@@ -21,10 +16,11 @@ const getDynamicMenu = () => {
       { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/agenda-semanal' },
       { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendario' },
       { label: 'Citas', icon: 'bx-calendar-event', route: '/app/citas' },
+      { label: 'Solicitudes Social', icon: 'bx-user-plus', route: '/app/social-inbox' }
     );
   }
 
-  // Rutas exclusivas del médico (Agregadas por el otro desarrollador)
+  // Rutas exclusivas del médico
   if (user.role_id === UserRole.MEDICO) {
     baseMenu.push(
       { label: 'Historiales', icon: 'bx-notepad', route: '/app/historiales' },
@@ -50,10 +46,8 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
     loadComponent: () => import('../../core/layouts/admin-layout/admin-layout'),
     canActivate: [roleGuard],
     data: {
-      allowedRoles: [UserRole.MEDICO, UserRole.ADMIN_CLINICA, UserRole.RECEPCIONISTA],
-    },
-    resolve: {
-      menu: () => getDynamicMenu(),
+      allowedRoles: [UserRole.MEDICO, UserRole.ADMIN_CLINICA],
+      menu: getDynamicMenu,
     },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -101,6 +95,14 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
         canActivate: [roleGuard],
         data: { allowedRoles: [UserRole.ADMIN_CLINICA] },
         loadComponent: () => import('./management/clinic-management/clinic-management'),
+      },
+      {
+        path: 'ranking',
+        loadComponent: () => import('../public/ranking').then((m) => m.default),
+      },
+      {
+        path: 'social-inbox',
+        loadComponent: () => import('./social-inbox/social-inbox').then((m) => m.default),
       },
       {
         path: 'settings',

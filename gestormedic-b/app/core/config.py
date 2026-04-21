@@ -1,4 +1,6 @@
-from typing import List, Optional
+from typing import List, Optional, Any, Union
+import json
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +19,15 @@ class Settings(BaseSettings):
 
     MEDIA_DIR: str = "./media"
     CORS_ORIGINS: List[str] = []
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",")]
+        elif isinstance(v, str) and v.startswith("["):
+            return json.loads(v)
+        return v
 
     DEFAULT_ADMIN_EMAIL: str
     DEFAULT_ADMIN_PASSWORD: str

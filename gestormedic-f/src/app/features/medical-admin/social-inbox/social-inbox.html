@@ -1,0 +1,74 @@
+<main class="page">
+  <section class="hero">
+    <h1>Solicitudes de Pacientes</h1>
+    <p>Revisa el perfil e historial de los pacientes que desean ser atendidos por ti.</p>
+  </section>
+
+  <section class="inbox-list">
+    @for (req of requests(); track req.id) {
+      <article class="request-card gm-glass-panel">
+        <div class="patient-info">
+          <div class="avatar-sm">
+            <i class="bx bx-user"></i>
+          </div>
+          <div>
+            <h3>Paciente ID: {{ req.patient_id }}</h3>
+            <span class="date">Enviada el: {{ req.created_at | date:'short' }}</span>
+          </div>
+        </div>
+        
+        <div class="actions">
+          <button class="btn-history" (click)="viewHistory(req.patient_id)">
+            <i class="bx bx-file-find"></i> Revisar Historial
+          </button>
+          <div class="decision-btns">
+            <button class="btn-accept" (click)="respondRequest(req.id, 'ACCEPTED')">Aceptar</button>
+            <button class="btn-reject" (click)="respondRequest(req.id, 'REJECTED')">Rechazar</button>
+          </div>
+        </div>
+      </article>
+    } @empty {
+      <div class="empty-state">
+        <i class="bx bx-mail-send"></i>
+        <p>No tienes solicitudes pendientes en este momento.</p>
+      </div>
+    }
+  </section>
+
+  <!-- Modal de Historial Médico -->
+  <p-dialog 
+    [(visible)]="showHistoryModal" 
+    header="Historial Médico del Paciente" 
+    [modal]="true" 
+    [style]="{width: '800px'}"
+  >
+    <div class="history-container" *ngIf="!loadingHistory(); else loader">
+      <div *ngIf="selectedPatientHistory() as history; else noHistory">
+        <div class="history-section">
+          <h4>Datos Generales</h4>
+          <p><strong>ID Paciente:</strong> {{ history.patient_user_id }}</p>
+        </div>
+        
+        <div class="history-section">
+          <h4>Entradas Clínicas</h4>
+          <div *ngFor="let entry of history.entries" class="entry-item">
+            <span class="entry-date">{{ entry.created_at | date }}</span>
+            <p><strong>Doctor:</strong> {{ entry.doctor_name }}</p>
+            <div class="entry-text">{{ entry.report_text }}</div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noHistory>
+        <p>El paciente aún no tiene registros en su historial médico.</p>
+      </ng-template>
+    </div>
+    
+    <ng-template #loader>
+      <div class="loader-box">Cargando historial...</div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cerrar" (click)="showHistoryModal.set(false)" severity="secondary"></p-button>
+    </ng-template>
+  </p-dialog>
+</main>

@@ -20,6 +20,7 @@ export class RoundedButton {
   size = input<'small' | 'large' | undefined>(undefined);
   variant = input<'outlined' | 'text' | undefined>(undefined);
   styleClass = input<string>('');
+  type = input<'button' | 'submit' | 'reset'>('button');
 
   onClick = output<MouseEvent>();
 }

@@ -1,12 +1,14 @@
-FROM oven/bun:1.2-slim AS builder
+FROM node:20-slim
 WORKDIR /app
-COPY package.json bun.lock ./
-RUN bun install
-COPY . .
-RUN bun run build
 
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist/gestormedic-f/browser /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund --loglevel=verbose
+
+# Copy source
+COPY . .
+
+EXPOSE 4200
+
+# Start dev server (expose on 0.0.0.0 for container)
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0"]

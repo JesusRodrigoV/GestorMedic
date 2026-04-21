@@ -125,7 +125,7 @@ export default class ConsultingRooms {
       },
     });
 
-    this.appointmentsService.listSpecialties().subscribe({
+    this.appointmentsService.listAdminSpecialties().subscribe({
       next: (rows) => {
         this.specialties.set(rows);
         if (rows.length) {

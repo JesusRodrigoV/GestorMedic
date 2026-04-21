@@ -48,6 +48,7 @@ export interface AppointmentItem {
   ends_at: string;
   status: string;
   extra_notes?: string | null;
+  rating?: number | null;
 }
 
 export interface RoomPermissionPayload {

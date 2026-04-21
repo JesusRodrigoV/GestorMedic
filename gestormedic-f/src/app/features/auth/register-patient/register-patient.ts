@@ -35,7 +35,7 @@ export default class RegisterPatient {
 
   formSubmitted = signal(false);
 
-  strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+  strongPasswordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
   registerForm = this.fb.nonNullable.group({
     firstName: ['', [Validators.required]],
@@ -43,7 +43,7 @@ export default class RegisterPatient {
     email: ['', [Validators.required, Validators.email]],
     password: [
       '',
-      [Validators.required, Validators.minLength(10), Validators.pattern(this.strongPasswordRegex)],
+      [Validators.required, Validators.minLength(8)],
     ],
   });
 
@@ -61,6 +61,14 @@ export default class RegisterPatient {
     this.formSubmitted.set(true);
 
     if (this.registerForm.invalid) {
+      console.warn('Registro fallido, errores del formulario:', {
+        formErrors: this.registerForm.errors,
+        passwordErrors: this.registerForm.get('password')?.errors,
+        firstNameErrors: this.registerForm.get('firstName')?.errors,
+        lastNameErrors: this.registerForm.get('lastName')?.errors,
+        emailErrors: this.registerForm.get('email')?.errors,
+      });
+
       this.notification
         .builder()
         .warn()

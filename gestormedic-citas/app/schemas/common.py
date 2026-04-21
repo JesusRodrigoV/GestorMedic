@@ -64,6 +64,7 @@ class AppointmentOut(BaseModel):
     ends_at: datetime
     status: str
     extra_notes: str | None
+    rating: int | None = None
 
 
 class ReserveAppointmentIn(BaseModel):

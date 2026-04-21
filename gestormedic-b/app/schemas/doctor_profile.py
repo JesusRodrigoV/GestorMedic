@@ -7,6 +7,7 @@ class DoctorProfileBase(BaseModel):
     bio: Optional[str] = None
     experience_years: int = 0
     signature_url: Optional[str] = None
+    photo_url: Optional[str] = None
     base_consultation_price: int = 0
     is_telemedicine_enabled: bool = False
 
@@ -19,6 +20,7 @@ class DoctorProfileUpdate(BaseModel):
     bio: Optional[str] = None
     experience_years: Optional[int] = None
     signature_url: Optional[str] = None
+    photo_url: Optional[str] = None
     base_consultation_price: Optional[int] = None
     is_telemedicine_enabled: Optional[bool] = None
     specialty_ids: Optional[List[int]] = None

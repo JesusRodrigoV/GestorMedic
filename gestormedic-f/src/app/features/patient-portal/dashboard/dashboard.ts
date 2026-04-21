@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MainContainer } from '@core/layouts/main-container';
+import { AppointmentsService } from '@core/services/appointments';
+import { AppointmentItem } from '@core/models/appointment.model';
 
 @Component({
   selector: 'app-patient-portal-dashboard',
@@ -10,15 +12,58 @@ import { MainContainer } from '@core/layouts/main-container';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PatientPortalDashboard {
-  readonly highlights = signal([
-    { label: 'Proxima cita', value: '14 Abr - 10:30', detail: 'Cardiologia con Dra. Camila Flores' },
-    { label: 'Recetas vigentes', value: '3', detail: '1 vence en 5 dias' },
-    { label: 'Estudios pendientes', value: '2', detail: 'Laboratorio y ecografia' },
-  ]);
+  private appointmentsService = inject(AppointmentsService);
 
-  readonly timeline = signal([
-    { date: '09 Abr', title: 'Resultado de laboratorio listo', status: 'Nuevo' },
-    { date: '08 Abr', title: 'Recordatorio enviado por WhatsApp', status: 'Enviado' },
-    { date: '06 Abr', title: 'Factura de consulta descargada', status: 'Completado' },
-  ]);
+  readonly highlights = signal<any[]>([]);
+  readonly timeline = signal<any[]>([]);
+  readonly nextAppointment = signal<AppointmentItem | null>(null);
+
+  constructor() {
+    this.loadData();
+  }
+
+  private loadData(): void {
+    this.appointmentsService.getMyAppointments('CONFIRMED').subscribe({
+      next: (appointments) => {
+        const now = new Date();
+        const upcoming = appointments
+          .filter(a => new Date(a.starts_at) >= now)
+          .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+
+        if (upcoming.length > 0) {
+          const next = upcoming[0];
+          this.nextAppointment.set(next);
+          const date = new Date(next.starts_at);
+          
+          this.highlights.set([
+            { 
+              label: 'Próxima cita', 
+              value: date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }), 
+              detail: `${next.specialty_name} con ${next.doctor_name}` 
+            },
+            { label: 'Recetas vigentes', value: '0', detail: 'No hay recetas activas' },
+            { label: 'Estudios pendientes', value: '0', detail: 'No hay estudios pendientes' },
+          ]);
+        } else {
+          this.highlights.set([
+            { label: 'Próxima cita', value: 'N/A', detail: 'No tienes citas programadas' },
+            { label: 'Recetas vigentes', value: '0', detail: 'No hay recetas activas' },
+            { label: 'Estudios pendientes', value: '0', detail: 'No hay estudios pendientes' },
+          ]);
+        }
+
+        // Mock timeline based on appointments for now
+        this.timeline.set(appointments.slice(0, 3).map(a => ({
+          date: new Date(a.starts_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
+          title: `Cita de ${a.specialty_name}`,
+          status: a.status
+        })));
+      },
+      error: () => {
+        this.highlights.set([
+          { label: 'Error', value: '---', detail: 'No se pudieron cargar los datos' }
+        ]);
+      }
+    });
+  }
 }

@@ -1,30 +1,133 @@
-<main class="doctor-appointments-page">
-  <header>
-    <div>
-      <p class="eyebrow">Citas</p>
-      <h2>Citas reservadas por dia</h2>
-      <p>Visualiza el detalle de cada cita reservada por pacientes.</p>
+<main class="page-container">
+  <p-card>
+    <div class="header-section">
+      <div>
+        <h2 class="m-0">Gestión de Citas</h2>
+        <p class="text-secondary">Visualiza y gestiona las citas programadas para tus pacientes.</p>
+      </div>
+      <div class="filter-controls">
+        <span class="p-float-label">
+          <input 
+            type="date" 
+            pInputText 
+            [ngModel]="day()" 
+            (ngModelChange)="onDayChange($event)" 
+          />
+        </span>
+        <p-button icon="bx bx-refresh" (onClick)="load()" severity="secondary" [loading]="loading()"></p-button>
+      </div>
     </div>
-    <label>
-      Fecha
-      <input type="date" [ngModel]="day()" (ngModelChange)="onDayChange($event)" />
-    </label>
-  </header>
 
-  <section class="cards">
-    @for (row of rows(); track row.id) {
-      <article>
-        <h3>{{ formatWindow(row) }}</h3>
-        <p><strong>Paciente:</strong> {{ row.patient_name }}</p>
-        <p><strong>Especialidad:</strong> {{ row.specialty_name }}</p>
-        <p><strong>Consultorio:</strong> {{ row.room_name }}</p>
-        <p><strong>Estado:</strong> {{ row.status }}</p>
-        @if (row.extra_notes) {
-          <p><strong>Notas:</strong> {{ row.extra_notes }}</p>
-        }
-      </article>
-    } @empty {
-      <article class="empty">No hay citas reservadas para esta fecha.</article>
-    }
-  </section>
+    <p-table 
+      [value]="rows()" 
+      [loading]="loading()"
+      [rowHover]="true"
+      styleClass="p-datatable-sm"
+      responsiveLayout="scroll"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Horario</th>
+          <th>Paciente</th>
+          <th>Especialidad</th>
+          <th>Consultorio</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-appt>
+        <tr>
+          <td>
+            <span class="font-bold">
+              {{ appt.starts_at | date:'HH:mm' }} - {{ appt.ends_at | date:'HH:mm' }}
+            </span>
+          </td>
+          <td>{{ appt.patient_name }}</td>
+          <td>{{ appt.specialty_name }}</td>
+          <td>{{ appt.room_name }}</td>
+          <td>
+            <p-tag 
+              [value]="getStatusLabel(appt.status)" 
+              [severity]="getSeverity(appt.status)"
+            ></p-tag>
+          </td>
+          <td>
+            <div class="flex gap-2">
+              <p-button 
+                *ngIf="appt.status !== 'COMPLETED' && appt.status !== 'CANCELLED'"
+                icon="bx bx-edit" 
+                label="Completar Cita" 
+                size="small"
+                (onClick)="openReportEditor(appt.id)"
+              ></p-button>
+              <p-button 
+                *ngIf="appt.status === 'COMPLETED'"
+                icon="bx bx-show" 
+                label="Ver Informe" 
+                size="small"
+                severity="secondary"
+                (onClick)="openReportEditor(appt.id)"
+              ></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-4">
+            No se encontraron citas para la fecha seleccionada.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Dialogo para Informe Clínico -->
+  <p-dialog 
+    [(visible)]="showReportDialog" 
+    [header]="'Informe Clínico - Cita #' + selectedAppointmentId()" 
+    [modal]="true" 
+    [style]="{width: '50vw'}"
+    [draggable]="false" 
+    [resizable]="false"
+  >
+    <div class="flex flex-col gap-4 p-fluid">
+      <div class="field">
+        <label for="diagnosis" class="font-bold block mb-2">Diagnóstico</label>
+        <input pInputText id="diagnosis" [(ngModel)]="reportForm().diagnosis" placeholder="Ej: Hipertensión arterial" />
+      </div>
+      
+      <div class="field">
+        <label for="report_text" class="font-bold block mb-2">Informe de la Consulta</label>
+        <textarea 
+          pTextarea 
+          id="report_text" 
+          [(ngModel)]="reportForm().report_text" 
+          rows="5" 
+          placeholder="Describe los hallazgos de la consulta..."
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label for="prescription" class="font-bold block mb-2">Receta / Prescripción</label>
+        <textarea 
+          pTextarea 
+          id="prescription" 
+          [(ngModel)]="reportForm().prescription" 
+          rows="3" 
+          placeholder="Medicamentos, dosis, frecuencia..."
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label for="follow_up" class="font-bold block mb-2">Indicaciones de Seguimiento</label>
+        <input pInputText id="follow_up" [(ngModel)]="reportForm().follow_up" placeholder="Ej: Revisión en 15 días" />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" icon="bx bx-x" severity="secondary" (onClick)="showReportDialog.set(false)" [disabled]="submittingReport()"></p-button>
+      <p-button label="Guardar Informe" icon="bx bx-check" (onClick)="saveReport()" [loading]="submittingReport()"></p-button>
+    </ng-template>
+  </p-dialog>
 </main>

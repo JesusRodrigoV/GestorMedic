@@ -1,0 +1,156 @@
+<div class="ranking-page">
+  <div class="header-container">
+    <div class="header-content">
+      <div class="title-section">
+        <i class="bx bx-trending-up"></i>
+        <h1>Ranking de Profesionales</h1>
+      </div>
+      <p>Médicos mejor valorados por la comunidad GestorMedic.</p>
+    </div>
+  </div>
+
+  <div class="ranking-layout">
+    <main class="ranking-content">
+      <section *ngIf="filteredProfessionals && filteredProfessionals.length; else emptyState">
+        
+        <!-- Podium Top 3 (Stylized, No emojis) -->
+        <div class="podium" *ngIf="topThree.length > 0">
+          <div class="podium-card second" *ngIf="topThree[1]">
+            <div class="rank-badge">2°</div>
+            <img [src]="topThree[1].photo" [alt]="topThree[1].name" class="avatar-md" />
+            <div class="p-info">
+              <h2>{{ topThree[1].name }}</h2>
+              <span class="spec-label">{{ topThree[1].specialty }}</span>
+              <div class="rating-bar">
+                <i class="bx bxs-star"></i>
+                <span class="val">{{ avg(topThree[1]) | number:'1.1-1' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="podium-card first" *ngIf="topThree[0]">
+            <div class="rank-badge highlight">1°</div>
+            <img [src]="topThree[0].photo" [alt]="topThree[0].name" class="hero-avatar" />
+            <div class="p-info">
+              <h2>{{ topThree[0].name }}</h2>
+              <span class="spec-label">{{ topThree[0].specialty }}</span>
+              <div class="rating-bar large">
+                <i class="bx bxs-star"></i>
+                <span class="val">{{ avg(topThree[0]) | number:'1.1-1' }}</span>
+              </div>
+              <div class="rec-pill" *ngIf="isRecommended(topThree[0])">Recomendado</div>
+            </div>
+          </div>
+
+          <div class="podium-card third" *ngIf="topThree[2]">
+            <div class="rank-badge">3°</div>
+            <img [src]="topThree[2].photo" [alt]="topThree[2].name" class="avatar-md" />
+            <div class="p-info">
+              <h2>{{ topThree[2].name }}</h2>
+              <span class="spec-label">{{ topThree[2].specialty }}</span>
+              <div class="rating-bar">
+                <i class="bx bxs-star"></i>
+                <span class="val">{{ avg(topThree[2]) | number:'1.1-1' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h3>Listado General</h3>
+          <span class="count-tag">{{ filteredProfessionals.length }} médicos</span>
+        </div>
+
+        <div class="ranking-list">
+          <div class="list-item" *ngFor="let p of filteredProfessionals.slice(0, 10); trackBy: trackById; let i = index" 
+               [class.top-tier]="i < 3">
+            <div class="rank-num">{{ i + 1 }}</div>
+            <img [src]="p.photo" [alt]="p.name" class="avatar-list" />
+            
+            <div class="main-info">
+              <span class="name">{{ p.name }}</span>
+              <span class="spec">{{ p.specialty }}</span>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="label">Valoraciones</span>
+                <span class="value">{{ p.ratings.length }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Experiencia</span>
+                <span class="value">{{ p?.yearsOfExperience || 0 }}a</span>
+              </div>
+            </div>
+
+            <div class="rating-preview">
+              <div class="stars">
+                <i class="bx bxs-heart" *ngFor="let h of [1,2,3]" [class.active]="h <= filledCount(p)"></i>
+              </div>
+              <span class="score-text">{{ avg(p) | number:'1.1-1' }}</span>
+            </div>
+
+            <div class="row-actions">
+              <button class="btn-primary-sm" (click)="viewProfile(p)">Ver Perfil</button>
+              <button class="btn-icon-sm" (click)="simulateRating(p.id, 3)" title="Simular Rating">
+                <i class="bx bx-plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <ng-template #emptyState>
+        <div class="empty-results">
+          <i class="bx bx-search-alt"></i>
+          <h3>Explora nuestros profesionales</h3>
+          <p>Utiliza los filtros para refinar tu búsqueda o visualiza el ranking general.</p>
+          <button class="btn-primary-sm" (click)="clearFilters()">Ver todos los profesionales</button>
+        </div>
+      </ng-template>
+    </main>
+
+    <!-- Sidebar: Filters -->
+    <aside class="ranking-sidebar">
+      <div class="filter-box">
+        <div class="box-head">
+          <i class="bx bx-filter-alt"></i>
+          <h3>Filtros</h3>
+          <button (click)="clearFilters()">Reiniciar</button>
+        </div>
+
+        <div class="filter-inputs">
+          <div class="form-group">
+            <label>Especialidad</label>
+            <select [(ngModel)]="filterSpecialty" (change)="updateList()">
+              <option value="">Todas las especialidades</option>
+              <option *ngFor="let s of specialties" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>País</label>
+            <select [(ngModel)]="filterCountry" (change)="updateList()">
+              <option value="">Cualquier país</option>
+              <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="filterCountry">
+            <label>Departamento</label>
+            <select [(ngModel)]="filterDepartment" (change)="updateList()">
+              <option value="">Todos</option>
+              <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Años de experiencia ({{ minExperience }}+)</label>
+            <input type="range" min="0" [max]="experienceMax || 30" [(ngModel)]="minExperience" (input)="updateList()" class="gm-range" />
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

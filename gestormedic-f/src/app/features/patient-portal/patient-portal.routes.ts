@@ -11,10 +11,18 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
       allowedRoles: [UserRole.PACIENTE],
       menu: [
         { label: 'Mi Resumen', icon: 'bx-pulse', route: '/portal/resumen' },
-        { label: 'Citas - Agendar', icon: 'bx-calendar-plus', route: '/portal/citas/agendar' },
-        { label: 'Citas - Historial', icon: 'bx-calendar-check', route: '/portal/citas/historial' },
-        { label: 'Mi Historial', icon: 'bx-book-heart', route: '/portal/historial' },
-        { label: 'Archivos', icon: 'bx-folder-open', route: '/portal/documentos' },
+        { 
+          label: 'Citas', 
+          icon: 'bx-calendar', 
+          route: '/portal/citas',
+          children: [
+            { label: 'Agendar Cita', icon: 'bx-calendar-plus', route: '/portal/citas/agendar' },
+            { label: 'Mis Citas', icon: 'bx-list-ul', route: '/portal/citas/historial' },
+          ]
+        },
+        { label: 'Mi Historial Clínico', icon: 'bx-book-heart', route: '/portal/historial' },
+        { label: 'Ranking', icon: 'bx-star', route: '/portal/ranking' },
+        { label: 'Documentos', icon: 'bx-folder-open', route: '/portal/documentos' },
         { label: 'Recetas', icon: 'bx-capsule', route: '/portal/recetas' },
         { label: 'Configuración', icon: 'bx-cog', route: '/portal/settings' },
       ],
@@ -46,6 +54,10 @@ export const PATIENT_PORTAL_ROUTES: Routes = [
             loadComponent: () => import('./appointment-history/appointment-history'),
           },
         ],
+      },
+      {
+        path: 'ranking',
+        loadComponent: () => import('../public/ranking').then((m) => m.default),
       },
       {
         path: 'historial',

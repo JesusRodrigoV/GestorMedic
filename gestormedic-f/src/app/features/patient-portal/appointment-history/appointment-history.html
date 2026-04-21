@@ -34,9 +34,28 @@
             </div>
 
             <div class="card-actions">
-              <span class="gm-status-badge" [attr.data-status]="item.status">
-                {{ translateStatus(item.status) }}
-              </span>
+              <div class="gm-status-group">
+                <span class="gm-status-badge" [attr.data-status]="item.status">
+                  {{ translateStatus(item.status) }}
+                </span>
+                
+                @if (item.rating) {
+                  <div class="gm-rating-display">
+                    <p-rating [ngModel]="item.rating" [readonly]="true" [stars]="3"></p-rating>
+                  </div>
+                }
+              </div>
+
+              @if (item.status === 'COMPLETED') {
+                <p-button 
+                  label="Ver Informe" 
+                  icon="bx bx-file" 
+                  size="small"
+                  severity="info"
+                  [outlined]="true"
+                  (onClick)="openReport(item.id)"
+                ></p-button>
+              }
             </div>
           </article>
         } @empty {
@@ -48,4 +67,62 @@
       </div>
     </section>
   </div>
+
+  <p-dialog 
+    [(visible)]="showReportModal" 
+    header="Informe Médico de Consulta" 
+    [modal]="true" 
+    [style]="{width: '600px'}"
+    [draggable]="false" 
+    [resizable]="false"
+  >
+    @if (selectedReport()) {
+      <div class="gm-report-content">
+        <div class="gm-report-section">
+          <label>Diagnóstico Preliminar</label>
+          <div class="gm-report-value highlight">{{ selectedReport().diagnosis || 'No especificado' }}</div>
+        </div>
+
+        <div class="gm-report-section">
+          <label>Detalles de la Consulta</label>
+          <div class="gm-report-value">{{ selectedReport().report_text }}</div>
+        </div>
+
+        @if (selectedReport().prescription) {
+          <div class="gm-report-section">
+            <label>Prescripción Farmacológica</label>
+            <div class="gm-report-value prescription">{{ selectedReport().prescription }}</div>
+          </div>
+        }
+
+        @if (selectedReport().follow_up) {
+          <div class="gm-report-section">
+            <label>Pautas de Seguimiento</label>
+            <div class="gm-report-value follow-up">{{ selectedReport().follow_up }}</div>
+          </div>
+        }
+
+        <hr class="gm-divider" />
+
+        <div class="gm-rating-section">
+          <h3>Evaluación del Servicio Clínico</h3>
+          <p>Su retroalimentación nos permite optimizar la calidad de nuestra atención médica.</p>
+          <div class="gm-rating-stars">
+            <p-rating [(ngModel)]="ratingValue" [stars]="3"></p-rating>
+          </div>
+          <p-button 
+            label="Registrar Evaluación" 
+            icon="bx bx-star" 
+            (onClick)="submitRating()" 
+            [loading]="submittingRating()"
+            styleClass="w-full"
+          ></p-button>
+        </div>
+      </div>
+    }
+    
+    <ng-template pTemplate="footer">
+      <p-button label="Cerrar Expediente" (onClick)="closeReport()" severity="secondary" [text]="true"></p-button>
+    </ng-template>
+  </p-dialog>
 </gm-main-container>

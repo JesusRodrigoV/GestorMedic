@@ -5,6 +5,28 @@
   </div>
 
   <form [formGroup]="profileForm" (ngSubmit)="onSave()" class="profile-form">
+    <div class="form-section photo-upload-section">
+      <h4>Foto de Perfil Profesional</h4>
+      <div class="photo-editor">
+        <div class="avatar-preview-box">
+          <img [src]="profileForm.get('photo_url')?.value || 'https://i.pravatar.cc/150?img=33'" alt="Avatar Preview" class="avatar-img">
+        </div>
+        <div class="photo-fields">
+          <div class="field-group">
+            <label for="photo_url">Enlace a su Fotografía (URL)</label>
+            <input
+              pInputText
+              id="photo_url"
+              formControlName="photo_url"
+              placeholder="https://ejemplo.com/su-foto.jpg"
+              fluid
+            />
+            <small class="help-text">Se recomienda una imagen cuadrada con fondo neutro.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="form-section">
       <h4>Acreditación y Experiencia</h4>
       <div class="form-grid">

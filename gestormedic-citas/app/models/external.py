@@ -37,6 +37,7 @@ class DoctorProfile(Base):
     license_number: Mapped[str] = mapped_column(String(50), nullable=False)
     bio: Mapped[str | None] = mapped_column(Text)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
+    photo_url: Mapped[str | None] = mapped_column(String(2048))
 
 
 class Specialty(Base):

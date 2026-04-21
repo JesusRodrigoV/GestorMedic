@@ -58,6 +58,7 @@ class User(Base):
     staff_profile: Mapped[Optional["StaffProfile"]] = relationship("StaffProfile", back_populates="user", uselist=False)
     doctor_profile: Mapped[Optional["DoctorProfile"]] = relationship("DoctorProfile", back_populates="user", uselist=False)
     patient_profile: Mapped[Optional["PatientProfile"]] = relationship("PatientProfile", back_populates="user", uselist=False)
+    notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     #backup_codes: Mapped[List["TwoFactorCodes"]] = relationship("TwoFactorCodes", back_populates="user", cascade="all, delete-orphan")
 
     #

@@ -1,65 +1,65 @@
-@use '../../../shared/styles/design-tokens.scss' as tokens;
-@use '../../../shared/styles/card-system.scss' as card;
-
 :host {
   display: block;
-  padding: tokens.$spacing-md;
   background-color: var(--p-surface-50);
+  min-height: 100vh;
 }
 
+.page-container,
 .doctor-appointments-page {
-  display: grid;
-  gap: tokens.$spacing-lg;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
-  header {
-    @include card.card-elevated();
-    display: flex;
-    justify-content: space-between;
-    gap: tokens.$spacing-md;
-    align-items: flex-end;
+.header-section {
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
+  .title-group {
     .eyebrow {
       margin: 0;
-      color: tokens.$color-primary;
+      color: var(--p-primary-600);
       text-transform: uppercase;
-      font-size: tokens.$font-size-xs;
-      font-weight: tokens.$font-weight-bold;
+      font-size: 0.75rem;
+      font-weight: 700;
       letter-spacing: 0.08em;
     }
 
     h2 {
-      margin: tokens.$spacing-xs 0;
-      font-size: tokens.$font-size-xl;
-      font-weight: tokens.$font-weight-bold;
+      margin: 0.25rem 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--p-surface-900);
     }
 
-    p {
+    p, .text-secondary {
       margin: 0;
-      color: tokens.$color-text-secondary;
-      font-size: tokens.$font-size-sm;
+      color: var(--p-slate-600);
+      font-size: 0.95rem;
     }
+  }
+
+  .filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 
     label {
-      display: grid;
-      gap: tokens.$spacing-xs;
-      font-size: tokens.$font-size-xs;
-      color: tokens.$color-text-secondary;
-      font-weight: tokens.$font-weight-medium;
-
-      input {
-        border: 1px solid tokens.$color-border-default;
-        border-radius: tokens.$border-radius-md;
-        padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
-        font: inherit;
-        color: tokens.$color-text-primary;
-        transition: border-color tokens.$transition-base tokens.$ease-in-out;
-
-        &:focus {
-          outline: none;
-          border-color: tokens.$color-primary;
-          box-shadow: tokens.$shadow-focus-primary;
-        }
-      }
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--p-slate-700);
+      font-weight: 600;
     }
   }
 }
@@ -67,41 +67,65 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: 1.25rem;
 
   article {
-    @include card.card-elevated();
-    @include card.card-hover-lift();
+    background: var(--p-surface-0);
+    border: 1px solid var(--p-surface-200);
+    border-radius: 10px;
+    padding: 1.25rem;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      border-color: var(--p-surface-300);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+      transform: translateY(-2px);
+    }
     
     h3 {
-      margin: 0 0 tokens.$spacing-sm 0;
-      color: tokens.$color-text-primary;
-      font-size: tokens.$font-size-lg;
-      font-weight: tokens.$font-weight-bold;
-      border-bottom: 1px solid tokens.$color-border-default;
-      padding-bottom: tokens.$spacing-xs;
+      margin: 0 0 0.75rem 0;
+      color: var(--p-surface-900);
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--p-surface-200);
+      padding-bottom: 0.5rem;
     }
 
     p {
-      margin: tokens.$spacing-xs 0 0;
-      color: tokens.$color-text-secondary;
-      font-size: tokens.$font-size-sm;
+      margin: 0.5rem 0 0;
+      color: var(--p-slate-600);
+      font-size: 0.9rem;
       
-      strong {
-        color: tokens.$color-text-primary;
-        font-weight: tokens.$font-weight-semibold;
+      strong, .font-bold {
+        color: var(--p-surface-900);
+        font-weight: 600;
       }
     }
     
     &.empty {
-      @include card.card-minimal();
       grid-column: 1 / -1;
       text-align: center;
-      padding: tokens.$spacing-xl;
-      color: tokens.$color-text-muted;
-      border-style: dashed;
+      padding: 3rem;
+      background: var(--p-surface-50);
+      color: var(--p-slate-500);
+      border: 1px dashed var(--p-surface-300);
+      box-shadow: none;
+      transform: none;
     }
   }
 }
 
+:host ::ng-deep .p-datatable {
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
+  .p-datatable-thead > tr > th {
+    background-color: var(--p-surface-50);
+    color: var(--p-surface-900);
+    font-weight: 600;
+    border-bottom: 1px solid var(--p-surface-200);
+  }
+}

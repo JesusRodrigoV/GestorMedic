@@ -39,7 +39,20 @@ export const MyPatientProfileStore = signalStore(
               tapResponse({
                 next: (profile) => patchState(store, { profile, isLoading: false }),
                 error: (err: any) => {
-                  const msg = err.error?.detail || 'Fallo de lectura en el expediente médico personal.';
+                  // If the profile is not found (404) treat as 'profile not created yet' and do not show an error notification
+                  if (err && err.status === 404) {
+                    patchState(store, { profile: null, isLoading: false, error: null });
+                    // optional: show an informational message to guide the user
+                    notification
+                      .builder()
+                      .info()
+                      .summary('Perfil incompleto')
+                      .detail('No se ha creado el perfil de paciente. Complete sus datos desde Configuración.')
+                      .show();
+                    return;
+                  }
+
+                  const msg = err.error?.detail || 'Fallo de lectura en el registro clínico.';
                   patchState(store, { error: msg, isLoading: false });
                   notification.builder().error().summary('Error de sistema').detail(msg).show();
                 },

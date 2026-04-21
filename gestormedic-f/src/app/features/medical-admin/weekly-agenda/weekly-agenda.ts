@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { WeeklyBlock } from '@core/models/appointment.model';
 import { AppointmentsService } from '@core/services/appointments';
 import { NotificationService } from '@core/services/notification';
+import { map } from 'rxjs';
 
 const WEEK_DAYS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
 
@@ -114,12 +115,18 @@ export default class WeeklyAgenda {
       next: (rows) => this.blocks.set(rows),
     });
 
-    this.appointmentsService.listSpecialties().subscribe({
-      next: (rows) => this.specialties.set(rows),
-    });
+    this.appointmentsService
+      .listPublicSpecialties()
+      .pipe(map((res: any) => res.items || res))
+      .subscribe({
+        next: (rows) => this.specialties.set(rows),
+      });
 
-    this.appointmentsService.listClinicRooms().subscribe({
-      next: (rows) => this.rooms.set(rows.filter((item) => item.is_active)),
-    });
+    this.appointmentsService
+      .listClinicRooms()
+      .pipe(map((res: any) => res.items || res))
+      .subscribe({
+        next: (rows) => this.rooms.set(rows.filter((item: any) => item.is_active)),
+      });
   }
 }

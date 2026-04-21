@@ -79,6 +79,12 @@
               }}</span>
             </div>
             <gm-rounded-button
+              label="Solicitar ser paciente"
+              severity="secondary"
+              (onClick)="onRequestConnection(doc.id)"
+              class="request-btn"
+            />
+            <gm-rounded-button
               label="Agendar Intervención"
               severity="primary"
               (onClick)="onBookAppointment(doc.id)"

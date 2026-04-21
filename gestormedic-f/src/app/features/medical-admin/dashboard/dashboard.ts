@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TimelineModule } from 'primeng/timeline';
 import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { AppointmentsService } from '@core/services/appointments';
 
 export interface DashboardMetrics {
   totalActivePatients: number;
@@ -16,29 +19,57 @@ export interface UpcomingAppointment {
   patientId: string;
   patientFullName: string;
   scheduledTime: string;
-  status: 'SCHEDULED' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED';
+  status: string;
 }
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, CardModule, TimelineModule, BadgeModule],
+  imports: [CommonModule, RouterLink, CardModule, TimelineModule, BadgeModule, ButtonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Dashboard implements OnInit {
+  private appointmentsService = inject(AppointmentsService);
+
   metrics = signal<DashboardMetrics | null>(null);
   upcomingAppointments = signal<UpcomingAppointment[]>([]);
 
   ngOnInit() {
     this.getDashboardMetrics();
+    this.loadTodayAppointments();
+  }
+
+  loadTodayAppointments() {
+    const today = new Date().toISOString().slice(0, 10);
+    this.appointmentsService.getDoctorAppointmentsByDay(today).subscribe({
+      next: (appointments) => {
+        const mapped = appointments.map(a => ({
+          appointmentId: a.id.toString(),
+          patientId: a.patient_user_id.toString(),
+          patientFullName: a.patient_name,
+          scheduledTime: new Date(a.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: a.status
+        }));
+        this.upcomingAppointments.set(mapped);
+        
+        // Update metrics based on real data if possible
+        const currentMetrics = this.metrics();
+        if (currentMetrics) {
+          this.metrics.set({
+            ...currentMetrics,
+            appointmentsToday: mapped.length
+          });
+        }
+      }
+    });
   }
 
   getDashboardMetrics() {
-    // Mock Service Response
+    // Mock Service Response for other metrics
     const mockMetrics: DashboardMetrics = {
       totalActivePatients: 1250,
-      appointmentsToday: 14,
+      appointmentsToday: 0,
       pendingResults: 8,
       appointmentsTrend: [
         { date: 'Lun', count: 12 },
@@ -52,23 +83,14 @@ export default class Dashboard implements OnInit {
     };
     
     this.metrics.set(mockMetrics);
-
-    const mockAppointments: UpcomingAppointment[] = [
-      { appointmentId: '1', patientId: 'p1', patientFullName: 'Juan Pérez', scheduledTime: '09:00', status: 'COMPLETED' },
-      { appointmentId: '2', patientId: 'p2', patientFullName: 'María Gómez', scheduledTime: '10:30', status: 'IN_PROGRESS' },
-      { appointmentId: '3', patientId: 'p3', patientFullName: 'Carlos López', scheduledTime: '11:15', status: 'ARRIVED' },
-      { appointmentId: '4', patientId: 'p4', patientFullName: 'Ana Torres', scheduledTime: '14:00', status: 'SCHEDULED' },
-      { appointmentId: '5', patientId: 'p5', patientFullName: 'Luis Sánchez', scheduledTime: '15:30', status: 'SCHEDULED' }
-    ];
-    this.upcomingAppointments.set(mockAppointments);
   }
 
   getSeverity(status: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
     switch (status) {
       case 'COMPLETED': return 'success';
-      case 'IN_PROGRESS': return 'info';
-      case 'ARRIVED': return 'warn';
-      case 'SCHEDULED': return 'secondary';
+      case 'CONFIRMED': return 'info';
+      case 'PENDING': return 'warn';
+      case 'CANCELLED': return 'danger';
       default: return 'info';
     }
   }
@@ -76,10 +98,10 @@ export default class Dashboard implements OnInit {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'COMPLETED': return 'Completada';
-      case 'IN_PROGRESS': return 'En Progreso';
-      case 'ARRIVED': return 'Llegó';
-      case 'SCHEDULED': return 'Programada';
-      default: return 'Desconocido';
+      case 'CONFIRMED': return 'Confirmada';
+      case 'PENDING': return 'Pendiente';
+      case 'CANCELLED': return 'Cancelada';
+      default: return status;
     }
   }
 }
