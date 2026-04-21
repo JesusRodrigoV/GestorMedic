@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { pendingChangesGuard } from '@core/guards/pending-changes.guard';
-import { roleGuard } from '@core/guards/role.guard';
+import { roleGuard } from '@core/guards/role-guard';
 import { UserRole } from '@core/models/role.model';
 import { AuthStore } from '@features/auth/stores/auth.store';
 
