@@ -74,6 +74,35 @@ services:
     networks:
       - gm-network
 
+  gm-social-db:
+    image: postgres:15-alpine
+    container_name: gm-social-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: social_db
+    networks:
+      - gm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d social_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  gm-social-api:
+    build:
+      context: ./gestormedic-social
+      dockerfile: Dockerfile
+    container_name: gm-social-api
+    env_file:
+      - ./gestormedic-social/.env_do
+    depends_on:
+      gm-social-db:
+        condition: service_healthy
+    networks:
+      - gm-network
+
   gm-historiales:
     build:
       context: ./historiales-medicos

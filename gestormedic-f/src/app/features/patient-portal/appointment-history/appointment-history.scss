@@ -62,7 +62,20 @@
   }
 
   .status-container {
-    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+
+    .rating-display {
+      margin-top: 0.25rem;
+
+      ::ng-deep .p-rating .p-rating-icon {
+        font-size: 1rem;
+        color: #ffc107;
+      }
+    }
   }
 
   .actions {

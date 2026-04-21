@@ -1,15 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
 import { RoundedButton } from '@shared/ui/rounded-button';
-import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import { CurrencyPipe, NgOptimizedImage, CommonModule } from '@angular/common';
 import { Doctor } from '@core/models/doctor.model';
+import { AuthService } from '@core/services/auth.service';
+import { SocialService } from '@core/services/social.service';
+import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'gm-search',
+  standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
     CheckboxModule,
     SliderModule,
@@ -26,9 +31,14 @@ import { Doctor } from '@core/models/doctor.model';
   },
 })
 export default class Search {
+  private authService = inject(AuthService);
+  private socialService = inject(SocialService);
+  private notification = inject(NotificationService);
+
   specialty = input<string>('');
   location = input<string>('');
 
+  protected readonly currentUser = this.authService.currentUser;
   protected readonly maxPrice = signal<number>(500);
   protected readonly selectedModalities = signal<string[]>([]);
 
@@ -90,5 +100,23 @@ export default class Search {
 
   protected onBookAppointment(doctorId: string): void {
     console.log('Iniciando flujo de reserva para el doctor:', doctorId);
+  }
+
+  protected onRequestConnection(doctorId: string): void {
+    const user = this.currentUser();
+    if (!user) {
+      this.notification.builder().warn().summary('Inicia sesión').detail('Debes ser un paciente para enviar solicitudes.').show();
+      return;
+    }
+
+    const docId = parseInt(doctorId, 10);
+    this.socialService.sendRequest(docId, user.id).subscribe({
+      next: () => {
+        this.notification.builder().success().summary('Solicitud enviada').detail('El doctor revisará tu perfil e historial.').show();
+      },
+      error: () => {
+        this.notification.builder().warn().summary('Error').detail('Ya existe una solicitud pendiente o activa.').show();
+      }
+    });
   }
 }

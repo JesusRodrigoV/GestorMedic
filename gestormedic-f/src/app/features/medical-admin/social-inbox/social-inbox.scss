@@ -1,0 +1,102 @@
+.page {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero {
+  margin-bottom: 2.5rem;
+  h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  p { color: #6b7280; }
+}
+
+.request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #eee;
+
+  .patient-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .avatar-sm {
+      width: 48px;
+      height: 48px;
+      background: #eff6ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b82f6;
+      font-size: 1.5rem;
+    }
+
+    h3 { margin: 0; font-size: 1.1rem; }
+    .date { font-size: 0.85rem; color: #9ca3af; }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+}
+
+.btn-history {
+  background: #f3f4f6;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  &:hover { background: #e5e7eb; }
+}
+
+.decision-btns {
+  display: flex;
+  gap: 0.5rem;
+  
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-accept { background: #10b981; color: white; &:hover { background: #059669; } }
+  .btn-reject { background: #ef4444; color: white; &:hover { background: #dc2626; } }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 5rem;
+  color: #9ca3af;
+  i { font-size: 4rem; margin-bottom: 1rem; }
+}
+
+.history-section {
+  margin-bottom: 2rem;
+  h4 { border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+}
+
+.entry-item {
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3b82f6;
+
+  .entry-date { font-size: 0.8rem; font-weight: 700; color: #6b7280; }
+  .entry-text { margin-top: 0.5rem; }
+}

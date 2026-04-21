@@ -105,7 +105,11 @@ export default class AppointmentHistory {
     }
 
     this.submittingRating.set(true);
-    this.appointmentsService.postAppointmentRating(report.appointment_id, { rating: val }).subscribe({
+    this.appointmentsService.postAppointmentRating(report.appointment_id, { 
+      rating: val,
+      doctor_id: report.doctor_id,
+      patient_id: report.patient_user_id
+    }).subscribe({
       next: () => {
         this.notification.builder().success().summary('¡Gracias!').detail('Tu calificación ha sido enviada correctamente').show();
         this.closeReport();

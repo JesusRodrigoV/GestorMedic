@@ -9,7 +9,7 @@ export class RankingService {
   private storageKey = 'gm:professionals:v1';
   private professionals: Professional[] = [];
   private http = inject(HttpClient);
-  private apiUrl = environment.appointmentsApiUrl;
+  private apiUrl = environment.apiUrl.replace('/api/v1', '/ranking/api/v1');
 
   constructor() {
     const saved = localStorage.getItem(this.storageKey);
@@ -129,44 +129,42 @@ export class RankingService {
     this.save();
   }
 
-  // Fetch ranking from backend and adapt to local Professional shape. Falls back to local seed on error.
+  // Fetch ranking from backend and update local scores.
   async fetchRemoteAll(filters: { specialty_id?: number; min_experience?: number; page?: number; page_size?: number } = {}): Promise<Professional[]> {
     try {
-      const params = { ...(filters as Record<string, any>) };
       const resp = await lastValueFrom(
-        this.http.get<{ items: any[]; meta: any }>(`${this.apiUrl}/public/ranking`, {
-          params: params as any,
+        this.http.get<any[]>(`${this.apiUrl}/top-doctors`, {
           withCredentials: true,
         }),
       );
 
-      const pros: Professional[] = (resp.items || []).map((item: any) => {
-        const positive = item.positive_count || 0;
-        const total = item.total_count || 0;
-        const avg = item.avg_rating || 0;
-        const ratings: number[] = [];
-        for (let i = 0; i < positive; i++) ratings.push(3);
-        const fillVal = Math.max(1, Math.round(avg || 1));
-        for (let i = positive; i < total; i++) ratings.push(fillVal);
-
-        return {
-          id: item.doctor_id,
-          name: item.doctor_name,
-          specialty: (item.specialties && item.specialties.length && item.specialties[0]) || '',
-          photo: item.photo_url || `https://i.pravatar.cc/150?img=${(item.doctor_id % 70) + 1}`,
-          ratings: ratings,
-          totalPatients: item.total_count || 0,
-          country: item.country || '',
-          department: item.department || '',
-          yearsOfExperience: item.experience_years || 0,
-        } as Professional;
-      });
-
-      this.professionals = pros;
-      this.save();
-      return pros;
+      // Update our local seed/storage with real scores from the microservice
+      if (resp && Array.isArray(resp)) {
+        resp.forEach(item => {
+          const pro = this.professionals.find(p => p.id === item.doctor_id);
+          if (pro) {
+            // Convert score (1-5) to our internal 1-3 heart representation if needed, 
+            // or just map it directly. Here we'll just store the count to show it's "connected"
+            const total = item.total_ratings || 0;
+            const avg = item.average_score || 0;
+            
+            // Re-generate a representative ratings array for our Wilson formula
+            const ratings: number[] = [];
+            const positiveCount = Math.round((avg / 5) * total); // approximation
+            for(let i=0; i<positiveCount; i++) ratings.push(3);
+            for(let i=positiveCount; i<total; i++) ratings.push(1);
+            
+            pro.ratings = ratings;
+            pro.totalPatients = total;
+          }
+        });
+        this.save();
+      }
+      
+      return this.getAll();
     } catch (_e) {
-      return this.professionals;
+      console.error('Error fetching remote ranking', _e);
+      return this.getAll();
     }
   }
 }

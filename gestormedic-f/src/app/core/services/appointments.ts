@@ -102,8 +102,15 @@ export class AppointmentsService {
     return this.http.get<any>(`${this.apiUrl}/patient/appointments/${appointmentId}/report`, this.httpOptions);
   }
 
-  postAppointmentRating(appointmentId: number, payload: { rating: number; comment?: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/patient/appointments/${appointmentId}/rating`, payload, this.httpOptions);
+  postAppointmentRating(appointmentId: number, payload: { rating: number; doctor_id: number; patient_id: number; comment?: string }): Observable<any> {
+    const rankingUrl = this.apiUrl.replace('/citas/api/v1', '/ranking/api/v1');
+    return this.http.post<any>(`${rankingUrl}/`, {
+      appointment_id: appointmentId,
+      doctor_id: payload.doctor_id,
+      patient_id: payload.patient_id,
+      score: payload.rating, // microservice uses 'score'
+      comment: payload.comment
+    }, this.httpOptions);
   }
 
   listClinicRooms(): Observable<{ id: number; name: string; is_active: boolean }[]> {

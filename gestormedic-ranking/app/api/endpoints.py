@@ -10,8 +10,8 @@ router = APIRouter()
 
 from app.core.config import settings
 
-# URL interna de docker para el microservicio de historiales
-HISTORIALES_SERVICE_URL = "http://gm-historiales:8000"
+# URL interna de docker para el microservicio de citas
+CITAS_SERVICE_URL = "http://gm-citas:8000"
 
 @router.post("/", response_model=schemas.Rating)
 async def create_rating(rating: schemas.RatingCreate, db: Session = Depends(get_db)):
@@ -20,27 +20,26 @@ async def create_rating(rating: schemas.RatingCreate, db: Session = Depends(get_
     if db_rating:
         raise HTTPException(status_code=400, detail="Appointment already rated")
     
-    # 2. Verificar con el microservicio de HISTORIALES si la consulta fue registrada en MongoDB
+    # 2. Verificar con el microservicio de CITAS si el informe fue registrado
     try:
         async with httpx.AsyncClient() as client:
-            headers = {"X-Internal-Key": getattr(settings, "INTERNAL_API_KEY", "CHANGE_THIS_INTERNAL_KEY")}
+            # El microservicio de citas tiene el endpoint internal que verifica el informe
             response = await client.get(
-                f"{HISTORIALES_SERVICE_URL}/api/v1/internal/appointments/{rating.appointment_id}/can-rate",
-                headers=headers
+                f"{CITAS_SERVICE_URL}/api/v1/internal/appointments/{rating.appointment_id}/can-rate"
             )
             if response.status_code != 200:
-                raise HTTPException(status_code=404, detail="Could not verify consultation status")
+                raise HTTPException(status_code=404, detail="Could not verify appointment status with Citas service")
             
             data = response.json()
             if not data.get("can_rate"):
-                raise HTTPException(status_code=422, detail=data.get("detail", "Cita no apta para calificar (Falta historial)"))
+                raise HTTPException(status_code=422, detail=data.get("detail", "Cita no apta para calificar (Falta informe)"))
             
             # Asegurar que los IDs coincidan
             if data.get("doctor_id") != rating.doctor_id or data.get("patient_id") != rating.patient_id:
                  raise HTTPException(status_code=400, detail="Data mismatch: Doctor or Patient ID is incorrect for this consultation")
 
-    except httpx.RequestError:
-        raise HTTPException(status_code=503, detail="Historiales service unavailable for validation")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=503, detail=f"Citas service unavailable for validation: {str(e)}")
 
     # 3. Crear el rating
     new_rating = models.Rating(**rating.model_dump())

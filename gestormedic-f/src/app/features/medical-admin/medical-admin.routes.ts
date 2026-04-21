@@ -18,6 +18,7 @@ const getDynamicMenu = (user: any) => {
       { label: 'Agenda Semanal', icon: 'bx-calendar-edit', route: '/app/weekly-agenda' },
       { label: 'Calendario', icon: 'bx-calendar-alt', route: '/app/calendar' },
       { label: 'Citas', icon: 'bx-calendar-event', route: '/app/appointments' },
+      { label: 'Solicitudes Social', icon: 'bx-user-plus', route: '/app/social-inbox' },
     );
   }
 
@@ -74,6 +75,10 @@ export const CLINIC_WORKSPACE_ROUTES: Routes = [
       {
         path: 'ranking',
         loadComponent: () => import('../public/ranking').then((m) => m.default),
+      },
+      {
+        path: 'social-inbox',
+        loadComponent: () => import('./social-inbox/social-inbox').then((m) => m.default),
       },
       {
         path: 'settings',
