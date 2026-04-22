@@ -89,49 +89,51 @@ $animation-emphasis: 1s; // Emphasis animations (loader, bounce)
 // ============================================================================
 // COLOR TOKENS (via CSS Custom Properties)
 // ============================================================================
-// These reference the theme-preset.ts CSS custom properties
+// These reference the theme-preset.ts CSS custom properties and PrimeNG semantic variables
+// which automatically adapt to light/dark mode.
+
 // Primary color palette (Energy - for actions and highlights)
-$color-primary: var(--p-energy-500); // #4a90e2
-$color-primary-hover: var(--p-energy-600); // #4382cc
-$color-primary-light: var(--p-energy-50); // #ebf4fc
-$color-primary-dark: var(--p-energy-900); // #0f1d2d
+$color-primary: var(--p-primary-500);
+$color-primary-hover: var(--p-primary-600);
+$color-primary-light: var(--p-primary-50);
+$color-primary-dark: var(--p-primary-900);
 
 // Secondary color palette (Yale - for branding and dark elements)
-$color-secondary: var(--p-yale-500); // #1a3c5a
-$color-secondary-hover: var(--p-yale-600); // #143055
-$color-secondary-light: var(--p-yale-50); // #ecf2f7
-$color-secondary-dark: var(--p-yale-900); // #07121b
+$color-secondary: var(--p-yale-500);
+$color-secondary-hover: var(--p-yale-600);
+$color-secondary-light: var(--p-yale-50);
+$color-secondary-dark: var(--p-yale-900);
 
-// Background colors (Slate - for neutral surfaces)
-$color-bg-primary: #ffffff; // Pure white
-$color-bg-secondary: var(--p-slate-50); // #eff2f3 (very light gray)
-$color-bg-tertiary: var(--p-slate-100); // Even lighter slate
-$color-bg-hover: var(--p-slate-100); // Hover state background
+// Background colors (Semantic surfaces)
+$color-bg-primary: var(--p-surface-50); // Base background (#0c1e2d)
+$color-bg-secondary: var(--p-surface-100); // Cards, toolbars (#132d44)
+$color-bg-tertiary: var(--p-surface-0); // Inputs, deep dark (#07121b)
+$color-bg-hover: var(--p-surface-200);
 
 // Border colors
-$color-border-default: var(--p-slate-200); // #b0c0c6 (medium gray)
-$color-border-subtle: var(--p-slate-100);
-$color-border-focus: $color-primary; // Energy blue on focus
+$color-border-default: var(--p-surface-700);
+$color-border-subtle: var(--p-surface-800);
+$color-border-focus: var(--p-primary-500);
 $color-border-error: #ef4444; // Red for errors
 $color-border-success: #22c55e; // Green for success
 
 // Text colors
-$color-text-primary: var(--p-slate-900); // Dark text
-$color-text-secondary: var(--p-slate-600); // Medium gray text
-$color-text-tertiary: var(--p-slate-500); // Light gray text (placeholders)
-$color-text-inverse: #ffffff; // White text on dark backgrounds
-$color-text-muted: var(--p-slate-400); // Muted text (disabled)
+$color-text-primary: #ffffff; // High contrast white
+$color-text-secondary: #e2e8f0; // Light gray for muted text
+$color-text-tertiary: #94a3b8; // Lighter gray for hints
+$color-text-inverse: var(--p-surface-950);
+$color-text-muted: #64748b;
 
 // Semantic colors
 $color-error: #ef4444; // Red
-$color-error-light: #fee2e2; // Light red background
+$color-error-light: rgba(239, 68, 68, 0.1); // Light red background
 $color-success: #22c55e; // Green
 $color-warning: #f59e0b; // Amber
 $color-info: $color-primary; // Info is primary color
 
 // Glass-morphism overlay
-$color-glass-overlay: rgba(255, 255, 255, 0.8);
-$color-glass-border: rgba(255, 255, 255, 0.5);
+$color-glass-overlay: rgba(var(--p-surface-0), 0.8);
+$color-glass-border: rgba(var(--p-surface-200), 0.5);
 
 // ============================================================================
 // GLASS-MORPHISM

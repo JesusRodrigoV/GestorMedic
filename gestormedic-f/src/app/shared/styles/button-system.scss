@@ -123,8 +123,8 @@
   
   // Hover state
   &:hover:not(:disabled) {
-    background-color: var(--p-slate-100);
-    border-color: var(--p-slate-300);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--p-primary-500);
     box-shadow: $shadow-light;
   }
   
@@ -137,7 +137,7 @@
   
   // Active/pressed state
   &:active:not(:disabled) {
-    background-color: var(--p-slate-200);
+    background-color: rgba(255, 255, 255, 0.1);
     transform: scale(0.98);
   }
 }

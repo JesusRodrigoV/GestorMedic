@@ -76,7 +76,7 @@ p {
     padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
     font: inherit;
     color: tokens.$color-text-primary;
-    background-color: white;
+    background-color: tokens.$color-bg-tertiary;
     transition: all tokens.$transition-base tokens.$ease-in-out;
 
     &:focus {
@@ -127,7 +127,7 @@ p {
     border-radius: tokens.$border-radius-md;
     padding: tokens.$form-input-padding-v tokens.$form-input-padding-h;
     min-width: 280px;
-    background-color: white;
+    background-color: tokens.$color-bg-tertiary;
     font: inherit;
     transition: border-color tokens.$transition-base tokens.$ease-in-out;
 

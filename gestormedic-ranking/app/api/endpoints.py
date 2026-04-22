@@ -91,43 +91,71 @@ def get_doctor_ranking(doctor_id: int, db: Session = Depends(get_db)):
     return schemas.DoctorRanking(**base)
 
 @router.get("/top-doctors", response_model=List[schemas.DoctorRanking])
-def get_top_doctors(limit: int = 10, db: Session = Depends(get_db)):
+def get_top_doctors(limit: int = 50, db: Session = Depends(get_db)):
+    # 1. Obtener todos los doctores desde el microservicio de CITAS
+    all_doctors = []
+    try:
+        with httpx.Client(timeout=6.0) as client:
+            # Intentamos con el prefijo /api/v1 que es el estándar
+            resp = client.get(f"{CITAS_SERVICE_URL}/api/v1/public/doctors", params={"page_size": 100})
+            if resp.status_code != 200:
+                # Si falla, intentamos sin el prefijo por si acaso
+                resp = client.get(f"{CITAS_SERVICE_URL}/public/doctors", params={"page_size": 100})
+            
+            if resp.status_code == 200:
+                data = resp.json()
+                all_doctors = data.get("items") or []
+    except Exception as e:
+        print(f"Error fetching doctors from Citas: {e}")
+
+    # 2. Obtener ratings agrupados
     results = db.query(
         models.Rating.doctor_id,
         func.avg(models.Rating.score).label('average'),
         func.count(models.Rating.id).label('count')
-    ).group_by(models.Rating.doctor_id).order_by(func.avg(models.Rating.score).desc()).limit(limit).all()
-    # Preparar respuesta base
-    rankings = [
-        {
-            "doctor_id": r.doctor_id,
-            "average_score": round(float(r.average), 2),
-            "total_ratings": r.count,
-        }
+    ).group_by(models.Rating.doctor_id).all()
+    
+    rating_map = {
+        int(r.doctor_id): {"average": round(float(r.average), 2), "count": r.count}
         for r in results
-    ]
+    }
 
-    # Enriquecer con metadatos desde el servicio de Citas (batch fetch)
-    try:
-        doctor_ids = [r["doctor_id"] for r in rankings]
-        if doctor_ids:
-            with httpx.Client(timeout=6.0) as client:
-                resp = client.get(f"{CITAS_SERVICE_URL}/api/v1/public/doctors/", params={"page_size": max(100, len(doctor_ids) * 2)})
-                if resp.status_code == 200:
-                    data = resp.json()
-                    items = data.get("items") or data
-                    doctor_map = {int(d.get("doctor_id")): d for d in items}
-                    for r in rankings:
-                        d = doctor_map.get(int(r["doctor_id"]))
-                        if d:
-                            r.update({
-                                "doctor_name": d.get("doctor_name"),
-                                "specialties": d.get("specialties"),
-                                "experience_years": d.get("experience_years"),
-                                "photo": d.get("photo") or d.get("avatar_url"),
-                            })
-    except Exception:
-        # Silenciar errores de red/servicio de Citas
-        pass
+    # 3. Combinar
+    rankings = []
+    processed_ids = set()
 
-    return [schemas.DoctorRanking(**r) for r in rankings]
+    for d in all_doctors:
+        try:
+            d_id = int(d.get("doctor_id"))
+            processed_ids.add(d_id)
+            stats = rating_map.get(d_id, {"average": 0.0, "count": 0})
+            
+            rankings.append({
+                "doctor_id": d_id,
+                "doctor_name": d.get("doctor_name") or "Doctor",
+                "specialties": d.get("specialties") or [],
+                "experience_years": int(d.get("experience_years") or 0),
+                "photo": d.get("photo_url") or d.get("photo"),
+                "average_score": stats["average"],
+                "total_ratings": stats["count"]
+            })
+        except:
+            continue
+
+    # Añadir los que tengan ratings pero no estén en el listado de Citas
+    for d_id, stats in rating_map.items():
+        if d_id not in processed_ids:
+            rankings.append({
+                "doctor_id": d_id,
+                "doctor_name": f"Doctor #{d_id}",
+                "specialties": [],
+                "experience_years": 0,
+                "photo": None,
+                "average_score": stats["average"],
+                "total_ratings": stats["count"]
+            })
+
+    # 4. Ordenar por score descendente y limitar
+    rankings.sort(key=lambda x: (x["average_score"], x["total_ratings"]), reverse=True)
+    
+    return [schemas.DoctorRanking(**r) for r in rankings[:limit]]

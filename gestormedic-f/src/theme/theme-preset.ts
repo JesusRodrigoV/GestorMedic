@@ -4,7 +4,7 @@ import Aura from "@primeuix/themes/aura";
 const GMPreset = definePreset(Aura, {
     primitive: {
         yale: {
-            50: '#021422',
+            50: '#f0f4f8',
             100: '#d1e0ed',
             200: '#a3c1db',
             300: '#75a1c9',
@@ -13,7 +13,7 @@ const GMPreset = definePreset(Aura, {
             600: '#173652',
             700: '#132d44',
             800: '#102639',
-            900: '#0c1e2d',
+            900: '#0c1e2d', // Color base solicitado
             950: '#07121b'
         },
         energy: {
@@ -28,19 +28,6 @@ const GMPreset = definePreset(Aura, {
             800: '#254871',
             900: '#162b44',
             950: '#0f1d2d'
-        },
-        slate: {
-            50: '#eff2f3',
-            100: '#d7dfe2',
-            200: '#b0c0c6',
-            300: '#88a0aa',
-            400: '#748e9a',
-            500: '#607d8b',
-            600: '#56717d',
-            700: '#435861',
-            800: '#303f45',
-            900: '#1d262a',
-            950: '#13191c'
         }
     },
     semantic: {
@@ -61,57 +48,45 @@ const GMPreset = definePreset(Aura, {
             light: {
                 surface: {
                     0: '#ffffff',
-                    50: '#f4f7f9',
-                    100: '{slate.50}',
-                    200: '{slate.100}',
-                    300: '{slate.200}',
-                    400: '{slate.300}',
-                    500: '{slate.400}',
-                    600: '{slate.500}',
-                    700: '{slate.600}',
-                    800: '{slate.700}',
-                    900: '{slate.800}',
-                    950: '{slate.900}'
+                    50: '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b',
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
+                    950: '#020617'
                 },
                 primary: {
                     color: '{primary.500}',
                     contrastColor: '#ffffff',
                     hoverColor: '{primary.600}',
                     activeColor: '{primary.700}'
-                },
-                highlight: {
-                    background: '{energy.50}',
-                    focusBackground: '{energy.100}',
-                    color: '{energy.700}',
-                    focusColor: '{energy.800}'
                 }
             },
             dark: {
                 surface: {
-                    0: '#ffffff',
-                    50: '{yale.950}',
-                    100: '{yale.900}',
-                    200: '{yale.800}',
-                    300: '{yale.700}',
-                    400: '{yale.600}',
-                    500: '{yale.500}',
-                    600: '{yale.400}',
-                    700: '{yale.300}',
-                    800: '{yale.200}',
-                    900: '{yale.100}',
-                    950: '{yale.50}'
+                    0: '{yale.950}',
+                    50: '{yale.900}',  // Fondo base oscuro solicitado (#0c1e2d)
+                    100: '{yale.800}',
+                    200: '{yale.700}',
+                    300: '{yale.600}',
+                    400: '{yale.500}',
+                    500: '{yale.400}',
+                    600: '{yale.300}',
+                    700: '{yale.200}',
+                    800: '#e2e8f0',
+                    900: '#f1f5f9',
+                    950: '#ffffff'
                 },
                 primary: {
                     color: '{primary.400}',
                     contrastColor: '{yale.950}',
                     hoverColor: '{primary.300}',
                     activeColor: '{primary.200}'
-                },
-                highlight: {
-                    background: '{yale.900}',
-                    focusBackground: '{yale.800}',
-                    color: '{primary.50}',
-                    focusColor: '{primary.100}'
                 }
             }
         }

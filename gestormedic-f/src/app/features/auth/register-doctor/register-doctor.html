@@ -66,6 +66,17 @@
                 styleClass="gm-password-full"
               />
             </div>
+            @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+              <small class="error-msg">
+                @if (registerForm.get('password')?.errors?.['required']) { 
+                  La contraseña es obligatoria. 
+                } @else if (registerForm.get('password')?.errors?.['minlength']) {
+                  Mínimo 8 caracteres.
+                } @else if (registerForm.get('password')?.errors?.['pattern']) {
+                  Debe incluir una Mayúscula y un Número.
+                }
+              </small>
+            }
           </div>
         </div>
       </fieldset>
@@ -136,6 +147,9 @@
                 rows="4"
               ></textarea>
             </div>
+            @if (registerForm.get('bio')?.touched && registerForm.get('bio')?.invalid) {
+              <small class="error-msg">Mínimo 10 caracteres.</small>
+            }
           </div>
         </div>
       </fieldset>

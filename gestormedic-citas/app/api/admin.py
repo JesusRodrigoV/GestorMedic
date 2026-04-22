@@ -48,7 +48,7 @@ async def list_clinic_doctors(
 
 @router.get('/specialties')
 async def list_specialties(
-    current_user: CurrentUser = Depends(require_admin),
+    current_user: CurrentUser = Depends(require_doctor),
     db: AsyncSession = Depends(get_db),
 ):
     rows = (await db.execute(select(Specialty.id, Specialty.name).order_by(Specialty.name))).all()

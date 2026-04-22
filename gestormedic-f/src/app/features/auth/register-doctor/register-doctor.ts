@@ -40,8 +40,15 @@ export default class RegisterDoctor {
     firstName: ['', [Validators.required, Validators.minLength(3)]],
     lastName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    professional_license: ['', [Validators.required, /*Validators.pattern(/^[A-Z0-9\-]{5,20}$/)*/]],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/), // Al menos una mayúscula y un número
+      ],
+    ],
+    professional_license: ['', [Validators.required]],
     phone: ['', [Validators.required, Validators.pattern(/^[+\d\s\-()]+$/)]],
     experience_years: [0, [Validators.required, Validators.min(0), Validators.max(70)]],
     bio: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
@@ -49,7 +56,16 @@ export default class RegisterDoctor {
 
   async executeRegistrationFlow() {
     if (this.registerForm.invalid) {
-      this.notification.builder().warn().summary('Por favor, revise todos los campos').show();
+      if (this.registerForm.controls.password.errors?.['pattern']) {
+        this.notification
+          .builder()
+          .warn()
+          .summary('Contraseña débil')
+          .detail('La contraseña debe contener al menos una mayúscula y un número.')
+          .show();
+      } else {
+        this.notification.builder().warn().summary('Por favor, revise todos los campos').show();
+      }
       return;
     }
 
@@ -66,7 +82,16 @@ export default class RegisterDoctor {
         last_name: formValues.lastName,
       };
 
-      await firstValueFrom(this.authService.register(userPayload));
+      try {
+        await firstValueFrom(this.authService.register(userPayload));
+      } catch (regError: any) {
+        // Si el error es 400 y el mensaje dice que ya existe, continuamos al login
+        if (regError.status === 400 && regError.error?.detail?.includes('ya está registrado')) {
+          console.warn('El usuario ya existe, intentando completar perfil médico...');
+        } else {
+          throw regError; // Si es otro error, lo lanzamos al catch principal
+        }
+      }
 
       // 2. Iniciar sesión automáticamente (usando email, no username)
       const loginRes = await firstValueFrom(
@@ -102,11 +127,21 @@ export default class RegisterDoctor {
       this.authStore.fetchUser();
     } catch (error: any) {
       console.error('Error en registro:', error);
+      
+      let detail = 'Fallo de validación en el servidor.';
+      if (error?.error?.detail) {
+        if (Array.isArray(error.error.detail)) {
+          detail = error.error.detail.map((d: any) => d.msg).join(', ');
+        } else {
+          detail = error.error.detail;
+        }
+      }
+
       this.notification
         .builder()
         .error()
         .summary('Error en el registro')
-        .detail(error?.error?.detail || 'Fallo de validación en el servidor.')
+        .detail(detail)
         .show();
     } finally {
       this.isProcessing.set(false);

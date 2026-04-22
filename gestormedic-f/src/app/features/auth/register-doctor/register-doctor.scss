@@ -300,12 +300,16 @@
 // ============================================================================
 // ERROR MESSAGES
 // ============================================================================
-.field-error {
+.field-error, .error-msg {
   @include form-error-message($animate: true);
   
   display: flex;
   align-items: center;
   gap: $spacing-xs;
+  color: $color-border-error;
+  font-size: $font-size-sm;
+  margin-top: $spacing-xs;
+  font-weight: $font-weight-medium;
   
   i {
     font-size: $font-size-sm;

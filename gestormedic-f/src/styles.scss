@@ -12,4 +12,104 @@ body {
   margin: 0;
   box-sizing: border-box;
   font-family: "Source Sans 3", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--p-surface-50);
+  color: var(--p-text-color);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--p-text-color) !important;
+  margin-top: 0;
+}
+
+p, span, label, small {
+  color: var(--p-text-muted-color);
+}
+
+// Sobreescritura agresiva para campos de texto en modo oscuro
+.dark-mode {
+  // Fondos base y contenedores
+  background-color: #0c1e2d !important;
+  
+  .p-card, .p-dialog, .p-panel, .card {
+    background-color: #132d44 !important; // Color solicitado para contenedores
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    
+    h1, h2, h3, h4, h5, h6, .p-card-title {
+      color: #ffffff !important;
+    }
+  }
+
+  // Textos y etiquetas (KPIs, Nombres, etc)
+  h1, h2, h3, h4, h5, h6, 
+  p, span, label, small, b, strong,
+  .activity-item .content h4,
+  .activity-item .date,
+  .gm-kpi-card .info h3,
+  .gm-kpi-card .info small,
+  .gm-banner .banner-content h2,
+  .p-datatable .p-datatable-tbody > tr > td {
+    color: #ffffff !important; // Fuerza blanco para contraste con #0c1e2d / #132d44
+  }
+
+  // Campos de entrada (Inputs, Textareas, Selects)
+  input, 
+  textarea, 
+  .p-inputtext, 
+  .p-textarea, 
+  .p-inputnumber-input,
+  .p-select, // PrimeNG Select
+  .p-select-label,
+  .p-datepicker-input,
+  .p-multiselect {
+    background-color: #07121b !important; // Color solicitado para campos
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+
+    &::placeholder {
+      color: #94a3b8 !important;
+    }
+
+    &:focus {
+      border-color: var(--p-primary-500) !important;
+    }
+  }
+
+  // Especial para p-select (PrimeNG)
+  .p-select {
+    .p-select-label.p-placeholder {
+      color: #94a3b8 !important;
+    }
+    .p-select-dropdown {
+      color: #ffffff !important;
+    }
+  }
+
+  // Paneles de dropdown (popups)
+  .p-select-overlay, .p-datepicker-panel, .p-multiselect-overlay {
+    background-color: #132d44 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    
+    .p-select-option {
+      color: #ffffff !important;
+      &.p-highlight {
+        background-color: var(--p-primary-900) !important;
+      }
+      &:not(.p-highlight):hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+  }
+
+  // Botones secundarios que a veces quedan negros
+  .p-button.p-button-secondary {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+.text-secondary {
+  color: #cbd5e1 !important; // Gris claro para modo oscuro
 }

@@ -141,8 +141,8 @@ async def list_doctors(
             Specialty.name.label('specialty_name'),
         )
         .join(User, User.id == DoctorProfile.user_id)
-        .join(DoctorSpecialty, DoctorSpecialty.doctor_id == DoctorProfile.id)
-        .join(Specialty, Specialty.id == DoctorSpecialty.specialty_id)
+        .outerjoin(DoctorSpecialty, DoctorSpecialty.doctor_id == DoctorProfile.id)
+        .outerjoin(Specialty, Specialty.id == DoctorSpecialty.specialty_id)
     )
 
     if clinic_id:
@@ -172,7 +172,7 @@ async def list_doctors(
                 'photo_url': row.photo_url,
                 'specialties': [],
             }
-        if row.specialty_name not in doctor_map[row.doctor_id]['specialties']:
+        if row.specialty_name and row.specialty_name not in doctor_map[row.doctor_id]['specialties']:
             doctor_map[row.doctor_id]['specialties'].append(row.specialty_name)
 
     doctors = list(doctor_map.values())
@@ -268,6 +268,12 @@ async def generate_slots_for_doctor(
                     specialty_name = spec_row or specialty_name
                     room_name = room_row or room_name
 
+                # Un slot solo esta disponible si:
+                # 1. No esta reservado (booked_set)
+                # 2. No esta bloqueado manualmente (is_blocked)
+                # 3. NO esta en el pasado (comparado con el tiempo real actual)
+                is_in_past = slot_start < datetime.now()
+                
                 output.append(
                     {
                         'doctor_id': doctor_id,
@@ -278,7 +284,7 @@ async def generate_slots_for_doctor(
                         'room_id': room_id,
                         'room_name': room_name,
                         'consultation_price': price,
-                        'is_available': (slot_start not in booked_set) and (not is_blocked),
+                        'is_available': (slot_start not in booked_set) and (not is_blocked) and (not is_in_past),
                     }
                 )
                 slot_start = slot_start + step
