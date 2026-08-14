@@ -12,7 +12,6 @@ import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'gm-search',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
